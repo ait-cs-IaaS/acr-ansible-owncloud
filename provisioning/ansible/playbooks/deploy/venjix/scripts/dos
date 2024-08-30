@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# call this script with:
+# ./dos target="www"
+
+for ARGUMENT in "$@"
+do
+   KEY=$(echo $ARGUMENT | cut -f1 -d=)
+
+   KEY_LENGTH=${#KEY}
+   VALUE="${ARGUMENT:$KEY_LENGTH+1}"
+
+   export "$KEY"="$VALUE"
+done
+
+# use here your expected variables
+echo "target = $target"
+echo "source = $source"
+
+sudo hping3 $target -c 5
+# 8000 --flood
+
+
+# TODO: use this
+
+ssh csirt1_it@10.0.0.100 << EOF
+  ls -la;
+  ping 10.0.0.1 -c 4
+  pwd
+EOF
+
+
+
+

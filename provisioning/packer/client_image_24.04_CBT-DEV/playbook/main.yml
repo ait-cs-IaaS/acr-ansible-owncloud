@@ -1,0 +1,110 @@
+---
+- name: Install and Customize Ubuntu Mate Desktop
+  hosts: all
+  become: true
+  vars:
+    client_basic_software:
+      # basic utilities
+      - openssh-server
+      - iputils-ping
+      - dnsutils
+      - net-tools
+      - curl
+      - git
+      - unzip
+      - vim
+      - nano
+      - sudo
+      - bash-completion
+      - python3
+      - python3-pip
+      - python3-psutil
+      - wireshark
+      - acl
+      # office tools
+      - libreoffice
+    launcher_objects:
+      caja-filebrowser:
+        launcher-location: /usr/share/applications/caja.desktop
+        position: 15
+      libreoffice-base:
+        launcher-location: /usr/share/applications/libreoffice-base.desktop
+        position: 20
+      libreoffice-calc:
+        launcher-location: /usr/share/applications/libreoffice-calc.desktop
+        position: 20
+      libreoffice-writer:
+        launcher-location: /usr/share/applications/libreoffice-writer.desktop
+        position: 20
+      libreoffice-impress:
+        launcher-location: /usr/share/applications/libreoffice-impress.desktop
+        position: 20
+      firefox:
+        launcher-location: /usr/share/applications/firefox.desktop
+        position: 25
+      thunderbird:
+        launcher-location: /usr/share/applications/thunderbird.desktop
+        position: 30
+      mate-terminal:
+        launcher-location: /usr/share/applications/mate-terminal.desktop
+        position: 35
+    customize_user: placeholder
+
+  tasks:
+    - name: Manage unattended upgrades
+      ansible.builtin.include_role:
+        name: manage-unattended-upgrades
+
+    - name: Update repositories cache
+      become: true
+      ansible.builtin.apt:
+        update_cache: true
+
+    - name: Install mate desktop
+      ansible.builtin.include_role:
+        name: mate-desktop
+
+    - name: Install basic software
+      become: true
+      ansible.builtin.apt:
+        name: '{{ client_basic_software }}'
+        state: present
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: MATE mozilla apps
+      ansible.builtin.include_role:
+        name: install-mozilla-apps
+
+    - name: Create placeholder user
+      ansible.builtin.user:
+        name: '{{ customize_user }}'
+        shell: /bin/bash
+        state: present
+
+    - name: Install mattermost-client
+      ansible.builtin.include_role:
+        name: mattermost-client
+      vars:
+        username: '{{ customize_user }}'
+        mattermost_url: 'localhost'
+
+    - name: MATE dconf settings
+      ansible.builtin.include_role:
+        name: mate-dconf-settings
+
+    - name: MATE autostart
+      ansible.builtin.include_role:
+        name: mate-autostart
+
+    - name: MATE Desktop Background
+      ansible.builtin.include_role:
+        name: mate-desktop-background
+
+    - name: MATE panel list
+      ansible.builtin.include_role:
+        name: mate-panel-list
+
+    - name: Install vncserver
+      ansible.builtin.include_role:
+        name: vnc-server

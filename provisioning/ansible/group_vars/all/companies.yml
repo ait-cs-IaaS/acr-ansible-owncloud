@@ -1,0 +1,12 @@
+---
+
+company_names: "{{ groups['companies'] | map('split', '_') | map('first') | unique }}"
+company_name: "{{ company_info.name | default('') }}"
+
+# utility dictionary containing company infos of all configured companies
+companies: |
+  {
+  {% for name in company_names %}
+    "{{ name }}": {{ hostvars[name + "_firewall_external"].company_info }},
+  {% endfor %}
+  }

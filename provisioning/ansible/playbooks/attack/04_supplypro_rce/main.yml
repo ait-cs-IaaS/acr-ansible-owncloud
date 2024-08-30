@@ -1,0 +1,117 @@
+---
+- name: Prepare attacker
+  hosts: attacker_4
+  become: true
+  tasks:
+    - name: Create user exfil
+      ansible.builtin.user:
+        name: exfil
+        create_home: true
+
+    - name: Ensure .ssh folder exists
+      ansible.builtin.file:
+        path: /home/exfil/.ssh
+        owner: exfil
+        group: exfil
+        mode: "0755"
+        state: directory
+
+    - name: Copy the SSH private key
+      ansible.builtin.copy:
+        src: files/exfil_private_key
+        dest: /home/exfil/.ssh/id_rsa
+        mode: "0600"
+        owner: exfil
+        group: exfil
+
+    - name: Copy the SSH public keys
+      ansible.builtin.copy:
+        src: files/exfil_public_key
+        dest: /home/exfil/.ssh/id_rsa.pub
+        mode: "0644"
+        owner: exfil
+        group: exfil
+
+    - name: Add exfil key to authorized keys
+      ansible.posix.authorized_key:
+        user: exfil
+        state: present
+        key: "{{ lookup('file', 'files/exfil_public_key') }}"
+
+    # Serve Payload
+    - name: Install Nginx
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+
+    - name: Ensure dirs are present
+      ansible.builtin.file:
+        path: /var/www/html/payloads
+        state: directory
+
+    - name: Template exfil script
+      ansible.builtin.template:
+        src: exfil.sh.j2
+        dest: /var/www/html/payloads/index.html
+
+    - name: Remove nginx default
+      ansible.builtin.file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+
+    - name: Configure nginx
+      ansible.builtin.template:
+        src: nginx_payloads.conf.j2
+        dest: /etc/nginx/sites-enabled/payloads.conf
+        mode: "0644"
+      notify:
+        - Restart nginx
+
+    - name: Enable Nginx
+      ansible.builtin.systemd:
+        name: nginx
+        enabled: true
+        state: started
+
+    - name: Create attack directory
+      become: true
+      ansible.builtin.file:
+        path: /opt/supplypro_exfil/
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+    - name: Deploy attacker scripts
+      become: true
+      ansible.builtin.copy:
+        dest: /opt/supplypro_exfil/
+        src: supplypro_exfil/
+        mode: "0755"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+    - name: Create attack configs directory
+      become: true
+      ansible.builtin.file:
+        path: /opt/supplypro_exfil/configs
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+    - name: Deploy attack target configs
+      become: true
+      ansible.builtin.template:
+        dest: /opt/supplypro_exfil/configs/{{ company }}
+        src: config.j2
+        mode: "0644"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+      loop: "{{ company_names }}"
+      loop_control:
+        loop_var: company
+
+  handlers:
+    - name: Restart nginx
+      ansible.builtin.systemd:
+        name: nginx
+        state: restarted

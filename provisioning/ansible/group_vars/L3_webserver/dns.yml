@@ -1,0 +1,6 @@
+---
+dns_hostname: webserver
+_dns_aliases:
+  - www
+
+create_cert: true

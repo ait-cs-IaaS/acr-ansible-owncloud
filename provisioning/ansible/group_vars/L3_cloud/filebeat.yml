@@ -1,0 +1,6 @@
+---
+
+filebeat_modules_host:
+  - module: mysql
+  - module: nginx
+  - module: redis

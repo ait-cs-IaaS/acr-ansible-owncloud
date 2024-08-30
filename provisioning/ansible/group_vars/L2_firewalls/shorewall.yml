@@ -1,0 +1,16 @@
+---
+shorewall_startup: 1
+shorewall_ipforward: "On"
+shorewall_configs_dir: /etc/shorewall
+
+shorewall_configs:
+  zones: "{{ shorewall_zones | default([]) }}"
+  policy: "{{ shorewall_policy | default([]) }}"
+  rules: "{{ shorewall_rules | default([]) }}"
+  snat: "{{ shorewall_snat | default([]) }}"
+  params: "{{ shorewall_params | default([]) }}"
+  hosts: "{{ shorewall_hosts | default([]) }}"
+  shorewall.conf: "{{ shorewall_conf | default({}) }}"
+
+shorewall_conf:
+  log_file: /var/log/kern.log

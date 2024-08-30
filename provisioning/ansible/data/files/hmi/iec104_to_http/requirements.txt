@@ -1,0 +1,4 @@
+c104 == 1.18.0
+fastapi == 0.103.0
+uvicorn[standard] == 0.23.2
+uvloop==0.14.0

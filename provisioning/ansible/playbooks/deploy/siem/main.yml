@@ -1,0 +1,183 @@
+---
+# Install nginx as reverse proxy and use the very
+# simple nginx-config from the templates folder.
+
+- name: Configure nginx reverseporxy
+  hosts: elk
+  become: true
+  roles:
+    - role: nginx-simple-webserver
+      vars:
+        nginx_conf_src: nginx_kibana.conf.j2
+        nginx_conf_dest: kibana
+
+# Installs the ELK stack on the elk server.
+
+- name: Configure basic elk stack
+  hosts: elk
+  become: true
+  roles:
+    - role: elasticsearch
+    - role: kibana
+    - role: logstash
+
+# Installs and configures suricata and various beats on the company servers.
+# All rules from "data/files/suricata/rules/" are loaded via gitlab for this purpose.
+# ! IMPORTANT ! These files must be pushed before the playbook is executed.
+
+- name: Configure suricata on servers
+  hosts: servers
+  become: true
+  roles:
+    # Deploys rules specified in the data dir via asyncronous git download.
+    # Files must be pushed beforehand
+    - role: async_git_download
+      vars:
+        agd_absolute_project_path: "{{ local_ansible_dir }}"
+        agd_relative_src_path: data/files/suricata/rules/
+        agd_git_token: "{{ gitlab_pat }}"
+        agd_data_dest: /etc/suricata/rules/
+        agd_owner: root
+        agd_group: root
+        agd_mode: "0644"
+
+    # Installs and configures suricata
+    - role: suricata
+
+    # filebeat
+    - role: elastic.beats
+      vars:
+        beat: filebeat
+        beat_conf: "{{ filebeat_beat_conf }}"
+        output_conf: "{{ beats_output_conf }}"
+        logging_conf: "{{ filebeat_logging_conf}}"
+
+    - role: elastic-beats-modules
+      vars:
+        elastic_beats_modules_beat: filebeat
+        elastic_beats_modules: "{{ filebeat_modules }}"
+
+    # metricbeats
+    - role: elastic.beats
+      vars:
+        beat: metricbeat
+        beat_conf: "{{ metricbeat_beat_conf }}"
+        output_conf: "{{ beats_output_conf }}"
+        logging_conf: "{{ metricbeat_logging_conf}}"
+
+    - role: elastic-beats-modules
+      vars:
+        elastic_beats_modules_beat: metricbeat
+        elastic_beats_modules: "{{ metricbeat_modules }}"
+
+    # auditbeats
+    - role: elastic.beats
+      vars:
+        beat: auditbeat
+        beat_conf: "{{ auditbeat_beat_conf }}"
+        output_conf: "{{ beats_output_conf }}"
+        logging_conf: "{{ auditbeat_logging_conf}}"
+
+    - role: arillso.logrotate
+
+  tasks:
+    - name: Check if logrotate is installed
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Create logrotate hourly link
+      ansible.builtin.file:
+        src: /etc/cron.daily/logrotate
+        path: /etc/cron.hourly/logrotate
+        state: link
+      when: "'logrotate' in ansible_facts.packages"
+
+# Installs and configures auditbeat on all company employee hosts
+
+- name: Configure monitoring and beats on employees
+  hosts: employees
+  become: true
+  roles:
+    - role: elastic.beats
+      vars:
+        beat: auditbeat
+        beat_conf: "{{ auditbeat_beat_conf }}"
+        output_conf: "{{ beats_output_conf }}"
+        logging_conf: "{{ auditbeat_logging_conf}}"
+
+    - role: arillso.logrotate
+
+  tasks:
+    - name: Check if logrotate is installed
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Create logrotate hourly link
+      ansible.builtin.file:
+        src: /etc/cron.daily/logrotate
+        path: /etc/cron.hourly/logrotate
+        state: link
+      when: "'logrotate' in ansible_facts.packages"
+
+- name: Setup beats ilm, dashboards, etc.
+  hosts: elk
+  become: true
+  tasks:
+    - name: Populate service facts
+      ansible.builtin.service_facts:
+
+    - name: Configure beats ilm policies
+      ansible.builtin.template:
+        src: ilm-policy.json.j2
+        dest: /etc/{{ item }}/ilm-policy.json
+        owner: root
+        group: root
+        mode: "0640"
+      loop:
+        - filebeat
+        - metricbeat
+        - auditbeat
+
+    - name: Run setup for beat
+      become: true
+      ansible.builtin.command:
+        cmd: /usr/bin/{{ item.beat }} setup {{ '-E ' + (item.options | join(' -E ')) if item.options is defined }}
+      loop:
+        - beat: filebeat
+          options:
+            - setup.ilm.overwrite=true
+            - setup.ilm.policy_file=/etc/filebeat/ilm-policy.json
+        - beat: auditbeat
+          options:
+            - setup.ilm.overwrite=true
+            - setup.ilm.policy_file=/etc/auditbeat/ilm-policy.json
+        - beat: metricbeat
+          options:
+            - setup.ilm.overwrite=true
+            - setup.ilm.policy_file=/etc/metricbeat/ilm-policy.json
+      when: item.beat in services
+      changed_when: false
+
+    - name: Import additional dashboards
+      ansible.builtin.uri:
+        url: "{{ kibana_server_url }}/api/kibana/dashboards/import?exclude=index-pattern"
+        method: POST
+        user: "{{ kibana_xpack_username }}"
+        password: "{{ kibana_xpack_password }}"
+        force_basic_auth: true
+        body: "{{ lookup('ansible.builtin.file', dashboard_file) }}"
+        body_format: json
+        headers:
+          Content-Type: application/json; charset=utf-8
+          Kbn-xsrf: true
+      loop: "{{ kibana_additional_dashboards }}"
+      loop_control:
+        loop_var: dashboard_file
+      tags: [configure]
+
+  handlers:
+    - name: Restart filebeat
+      ansible.builtin.service:
+        name: filebeat
+        state: restarted
+      when: "'filebeat' in services"

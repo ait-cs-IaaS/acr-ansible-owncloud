@@ -1,0 +1,11 @@
+module_version: 1.0
+
+var:
+  - name: paths
+    default:
+      - /var/log/dnsmasq.log*
+
+ingest_pipeline: ingest/pipeline.yml
+input: config/dns.yml
+
+requires.processors: []

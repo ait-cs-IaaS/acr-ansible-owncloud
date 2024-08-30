@@ -1,0 +1,89 @@
+
+- name: Fact gathering for clients
+  hosts: all
+  gather_subset: [min]
+
+- name: Install learners
+  hosts: learners
+  gather_subset: [min]
+  become: true
+  pre_tasks:
+    # Create learners service user
+    - name: Create user {{ learners_user }}
+      become: true
+      ansible.builtin.user:
+        name: '{{ learners_user }}'
+        home: '{{ learners_basepath }}'
+        shell: /usr/sbin/nologin
+        create_home: false
+
+  roles:
+    # Configure novnc server
+    - role: novnc
+
+    # Ensure git lfs is installed since some exercise repos rely on it
+    - role: git-lfs
+
+    # Clone Learners App Repo to destination
+    - role: get-git-repo
+      vars:
+        repo_user: learners
+        repo_basepath: '{{ learners_basepath }}'
+        repo_url: https://{{ learners_github_pat }}@github.com/ait-cs-IaaS/learners.git
+        repo_branch: '{{ learners_backend_branch }}'
+
+    # Install nodejs
+    - role: nodejs
+      vars:
+        nodejs_version: 20.x
+
+    # Creating static frontend files to serve via nginx 
+    - role: build-npm-project
+      vars:
+        project_user: '{{ learners_user }}'
+        project_path: '{{ learners_basepath }}/frontend'
+        project_env: '{{ learners_env }}'
+        project_dest: /var/www/html/learners
+
+    # Install flask app and its requirements 
+    - role: install-flask-app
+      vars:
+        app_user: learners
+        app_basepath: '{{ learners_basepath }}'
+        app_use_setuptools: true
+
+    # Install gunicorn and serve via systemd service
+    - role: serve-flask-via-gunicorn
+      vars:
+        app_name: learners
+        app_user: learners
+        app_basepath: '{{ learners_basepath }}'
+        app_service_execstart: '{{ learners_service_execstart }}'
+
+    # Create simple nginx server to serve frontend files
+    - role: nginx-simple-webserver
+      vars:
+        nginx_conf_src: nginx_learners.conf.j2
+        nginx_conf_dest: default.conf
+
+# Clone exercises repository, install hugo and build the content 
+- name: Build learners content
+  ansible.builtin.import_playbook: update.yml
+
+- name: Install Mattermost
+  hosts: learners
+  gather_subset: [min]
+  become: true
+  roles:
+      # Install and configure mattermost server
+    - role: mattermost
+    
+    # Add a mattermost-playbook for the participants to use 
+    # (e.g. a incident response playbook)
+    - role: mattermost-add-playbook
+      vars:
+        mattermost_url: http://127.0.0.1:8065
+
+# Apply certbot to create public certs - only run if it's deployed on ovh
+- name: Use certbot
+  ansible.builtin.import_playbook: certbot.yml

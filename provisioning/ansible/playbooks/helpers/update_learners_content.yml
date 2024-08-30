@@ -1,0 +1,10 @@
+---
+
+- name: Update learners content
+  hosts: novnc
+  tasks:
+
+      - name: Update learners
+        ansible.builtin.include_role:
+            name: learners
+            tasks_from: update

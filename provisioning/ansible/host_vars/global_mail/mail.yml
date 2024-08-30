@@ -1,0 +1,14 @@
+---
+
+mailserver_domain: cyberrange.at
+mail_user_domains: "{{ users | select_users(filter={'mailserver': 'global_mail'}, returns=['domain'], unique=true) }}"
+
+postfix_myhostname: cyberrange.at
+postfix_domain_name: mail.cyberrange.at
+postfix_mynetworks: 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128 {{ ip_addresses['internet'] }}/32
+postfix_mydestination: $myhostname, cyberrange.at, localhost.localdomain, localhost, {{ mail_user_domains | unique | join(', ') }}
+
+mail_users: "{{ users | select_users(filter={'mailserver': 'global_mail'}) }}"
+
+postfix_dovecot_lmtp: true
+dovecot_postfix_lmtp: true

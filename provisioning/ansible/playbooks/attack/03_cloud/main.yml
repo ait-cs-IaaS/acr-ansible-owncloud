@@ -1,0 +1,155 @@
+---
+- name: Gather facts abouts other hosts
+  hosts: cloud,mail,webserver,file_share,firewall,application_server
+  gather_facts: true
+
+- name: Configure and deploy dnsteal on attacker host
+  become: true
+  hosts: attacker_3
+  handlers:
+    - name: Reload dnsteal
+      ansible.builtin.systemd:
+        name: dnsteal
+        state: "{{ dnsteal_service_state | default('stopped') }}"
+        enabled: false
+        daemon_reload: true
+  tasks:
+    - name: Ensure python python3-pip and git is installed
+      ansible.builtin.apt:
+        name:
+          - python3-pip
+          - git
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Ensure virtualenv is installed
+      ansible.builtin.pip:
+        name: virtualenv
+        executable: pip3
+
+    - name: Git checkout dnsteal
+      ansible.builtin.git:
+        repo: "{{ dnsteal_repo }}"
+        dest: "{{ dnsteal_install_dir }}"
+        version: "{{ dnsteal_tag | default(omit) }}"
+
+    - name: Change git directory ownership
+      ansible.builtin.file:
+        path: "{{ dnsteal_install_dir }}"
+        owner: "{{ dnsteal_service_user | default(omit) }}"
+        group: "{{ dnsteal_service_group | default(omit) }}"
+        state: directory
+        recurse: true
+
+    - name: Ensure venv path exists
+      ansible.builtin.file:
+        path: "{{ dnsteal_venv }}"
+        owner: "{{ dnsteal_service_user | default(omit) }}"
+        group: "{{ dnsteal_service_group | default(omit) }}"
+        state: directory
+        recurse: true
+
+    - name: Install dnsteal requirements
+      ansible.builtin.pip:
+        requirements: "{{ dnsteal_install_dir }}/requirements.txt"
+        virtualenv: "{{ dnsteal_venv }}"
+        virtualenv_python: python3
+      become_user: "{{ dnsteal_service_user | default(omit) }}"
+
+    - name: Set group to venv
+      ansible.builtin.file:
+        path: "{{ dnsteal_venv }}"
+        owner: "{{ dnsteal_service_user | default(omit) }}"
+        group: "{{ dnsteal_service_group | default(omit) }}"
+        recurse: true
+
+    - name: Ensure dnsteal files dir exists
+      ansible.builtin.file:
+        path: "{{ dnsteal_files_dir }}"
+        owner: "{{ dnsteal_service_user | default(omit) }}"
+        group: "{{ dnsteal_service_group | default(omit) }}"
+        state: directory
+        recurse: true
+
+    - name: Copy dnssteal service script file to attacker server
+      ansible.builtin.template:
+        src: dnsteal.sh.j2
+        dest: "{{ dnsteal_service_script }}"
+        owner: root
+        group: root
+        mode: "0755"
+      notify:
+        - Reload dnsteal
+
+    - name: Copy systemd service file to attacker server
+      ansible.builtin.template:
+        src: dnsteal.service.j2
+        dest: /etc/systemd/system/dnsteal.service
+        owner: root
+        group: root
+      notify:
+        - Reload dnsteal
+
+- name: Deploy attack scripts
+  hosts: attacker_3
+  tasks:
+    - name: Ensure python python3-pip and git is installed
+      ansible.builtin.apt:
+        name:
+          - python3-pip
+          - git
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install Dependencies
+      become: true
+      ansible.builtin.apt:
+        update_cache: true
+        name:
+          - curl
+          - golang
+          - nmap
+          - nikto
+          - expect
+          - ruby
+          - ruby-bundler
+          - ruby-dev
+          - libsqlite3-dev
+          - sqlite3
+
+    - name: Deploy attacker scripts
+      become: true
+      ansible.builtin.copy:
+        dest: "{{ cloud_attack_dir }}/"
+        src: cloud_chain/
+        mode: "0755"
+
+    - name: Create attack target directories
+      become: true
+      ansible.builtin.file:
+        state: directory
+        path: "{{ cloud_attack_dir }}/configs/"
+
+    - name: Deploy attack target configs
+      become: true
+      ansible.builtin.template:
+        dest: "{{ cloud_attack_dir }}/configs/{{ company }}"
+        src: config.j2
+        mode: "0644"
+      loop: "{{ company_names }}"
+      loop_control:
+        loop_var: company
+
+    - name: Deploy expect script
+      become: true
+      ansible.builtin.template:
+        dest: "{{ cloud_attack_dir }}/expect_scripts/04_recon_server_expect.sh"
+        src: "04_recon_server_expect.sh.j2"
+        mode: "0755"
+
+    - name: Deploy exfil script
+      become: true
+      ansible.builtin.template:
+        dest: "{{ exfil_service_script_dest }}"
+        src: exfil.sh.j2
+        mode: a+x

@@ -1,0 +1,41 @@
+---
+- name: Setup and configure samba shares
+  hosts: fileshare
+  gather_facts: true
+  gather_subset: [network]
+  become: true
+  pre_tasks:
+    # FIXME: Currently this role is only working on GitLab projects, not on GitHub projects (like RTC)
+    - name: Loop through shares
+      tags: [skip_ansible_lint]
+      ansible.builtin.include_role:
+        name: async_git_download
+      vars:
+        agd_absolute_project_path: "{{ local_ansible_dir }}"
+        agd_relative_src_path: /data/files/smb_shares/{{ samba_share.name }}
+        agd_git_token: "{{ gitlab_pat }}"
+        agd_data_dest: /srv/shares/{{ samba_share.name }}
+        agd_owner: root
+        agd_group: "{{ samba_share.group }}"
+        agd_mode: 774
+      loop: "{{ samba_shares }}"
+      loop_control:
+        loop_var: samba_share
+
+  roles:
+    - role: grog.group
+    - role: grog.user
+      vars:
+        user_list_host: "{{ samba_users }}"
+        user_createhome: false
+        user_shell: /usr/sbin/nologin
+    - role: samba
+
+- name: Automount samba shares on clients
+  hosts: clients,employees,!control
+  gather_facts: false
+  tasks:
+    - name: Configure posix mounts
+      ansible.builtin.include_tasks:
+        file: automount_shares.yml
+      when: client_user.samba_groups | length > 0 | default(False)

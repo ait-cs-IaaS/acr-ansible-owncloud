@@ -1,0 +1,121 @@
+#!/bin/bash
+
+# Default hardcoded list of playbooks
+DEFAULT_PLAYBOOKS=("bootstrap" "dns" "certs" "user_management" "clients" "firewall" "proxy" "mailservers" "fileshares" "opensearch" "learners")
+PLAYBOOKS=()
+MAX_ATTEMPTS=3
+
+# Ensure the retry directory and file exist
+RETRY_FILE="./.ansible-retry/main.retry"
+if [ ! -f $RETRY_FILE ]; then
+  mkdir -p $(dirname $RETRY_FILE)
+  touch $RETRY_FILE
+fi
+
+# Function to display help
+show_help() {
+  echo "Usage: deploy.sh [--plays playbook1 playbook2 ...] [--full] [--help]"
+  echo ""
+  echo "Options:"
+  echo "  --plays   Specify the list of playbooks to run (space-separated)."
+  echo "  --full    Run the full set of playbooks."
+  echo "  --help    Display this help message."
+}
+
+# Function to format duration
+format_duration() {
+  local duration=$1
+  local minutes=$((duration / 60))
+  local seconds=$((duration % 60))
+  printf "%dm %ds" $minutes $seconds
+}
+
+# Function to run the ansible-playbook and measure the time
+run_playbook() {
+  local playbook=$1
+  local attempt=$2
+  start_time=$(date +%s)
+
+  if [ -s "$RETRY_FILE" ]; then
+    echo -e "\n********* RETRYING PLAYBOOK ON FAILED HOSTS *********\n"
+    cat "$RETRY_FILE" | tr '\n' ', '
+    echo -e "\n"
+    ansible-playbook playbooks/deploy/$playbook/main.yml --limit @$RETRY_FILE
+  else
+    echo -e "\n********* RUNNING PLAYBOOK WITHOUT LIMIT *********\n"
+    ansible-playbook playbooks/deploy/$playbook/main.yml
+  fi
+  
+  ret_code=$?
+  end_time=$(date +%s)
+  duration=$((end_time - start_time))
+  formatted_duration=$(format_duration $duration)
+  
+  if [ $ret_code -eq 0 ]; then
+    results+=("$(printf "%-19s | %-7s | %-7s | %-10s" "$playbook" "$attempt" "Success" "$formatted_duration")")
+    # Empty the retry file if the playbook execution was successful
+    > $RETRY_FILE
+  else
+    results+=("$(printf "%-19s | %-7s | %-7s | %-10s" "$playbook" "$attempt" "Fail" "$formatted_duration")")
+  fi
+  
+  return $ret_code
+}
+
+# Parse command-line arguments
+while [[ "$#" -gt 0 ]]; do
+  case $1 in
+    --plays)
+      shift
+      while [[ "$#" -gt 0 && ! "$1" =~ ^-- ]]; do
+        PLAYBOOKS+=("$1")
+        shift
+      done
+      ;;
+    --full)
+      PLAYBOOKS=("${DEFAULT_PLAYBOOKS[@]}")
+      shift
+      ;;
+    --help)
+      show_help
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $1"
+      show_help
+      exit 1
+      ;;
+  esac
+done
+
+# Check if no playbooks were provided and if so, show help
+if [ ${#PLAYBOOKS[@]} -eq 0 ]; then
+  echo "Error: No playbooks specified."
+  show_help
+  exit 1
+fi
+
+# Array to store the results
+results=()
+
+# Run each playbook with retries
+for PLAYBOOK in "${PLAYBOOKS[@]}"; do
+  attempt=1
+  > $RETRY_FILE
+  while [ $attempt -le $MAX_ATTEMPTS ]; do
+    run_playbook $PLAYBOOK $attempt
+    if [ $? -eq 0 ]; then
+      break
+    fi
+    attempt=$((attempt + 1))
+  done
+done
+
+# Output the results as a markdown table
+header="| Playbook            | Attempt | State   | Duration   |"
+separator="|---------------------+---------+---------+------------|"
+echo -e "$header"
+echo -e "$separator"
+for result in "${results[@]}"; do
+  echo -e "| $result |"
+done

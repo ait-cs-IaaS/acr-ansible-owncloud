@@ -1,0 +1,117 @@
+
+- name: Build learners content
+  hosts: learners
+  gather_subset: [min]
+  become: true
+
+  pre_tasks:
+
+    - name: Ensure hugo is installed
+      become: true
+      ansible.builtin.apt:
+        deb: "{{ hugo_install_url }}"
+
+  roles:
+
+    # Learners Exercise
+    - role: get-git-repo
+      vars:
+        repo_user: learners
+        repo_basepath: '{{ learners_exercise_build_path }}'
+        repo_url: '{{ learners_exercise_repository }}'
+        repo_branch: '{{ learners_exercise_branch }}'
+
+    # Learners Theme
+    - role: get-git-repo
+      vars:
+        repo_user: learners
+        repo_basepath: '{{ learners_exercise_build_path }}/themes/learners'
+        repo_url: '{{ learners_theme_repository }}'
+        repo_branch: '{{ learners_theme_branch }}'
+
+  tasks:
+  
+    - name: Ensure database is absent
+      become: true
+      ansible.builtin.file:
+        path: '{{ learners_basepath }}/data.db'
+        state: absent
+
+    - name: Write config
+      become: true
+      ansible.builtin.template:
+        owner: "{{ learners_user }}"
+        group: "{{ learners_user }}"
+        src: templates/config.yml.j2
+        dest: "{{ learners_basepath }}/config.yml"
+        mode: preserve
+      when: learners_static_config is not defined
+
+    - name: Copy static learners config
+      become: true
+      ansible.builtin.copy:
+        dest: "{{ learners_basepath }}/config.yml"
+        src: "{{ learners_static_config }}"
+        mode: "0755"
+      when: learners_static_config is defined
+
+    - name: Create uploads folder {{ learners_config_learners.upload_folder }}
+      become: true
+      ansible.builtin.file:
+        path: "{{ learners_config_learners.upload_folder }}"
+        owner: "{{ learners_user }}"
+        group: "{{ learners_user }}"
+        mode: "0755"
+        state: directory
+        recurse: true
+      when: learners_config_learners.upload_folder is defined
+
+    - name: Create www_root {{ learners_wwwroot }}
+      become: true
+      ansible.builtin.file:
+        path: "{{ learners_wwwroot }}"
+        owner: "{{ learners_user }}"
+        group: "{{ learners_user }}"
+        mode: "0755"
+        state: directory
+        recurse: true
+  
+    - name: Replace theme colors
+      become: true
+      ansible.builtin.lineinfile:
+        path: "{{ learners_exercise_build_path }}/themes/learners/static/css/theme-cyberrange.css"
+        regexp: "(--{{ item.color }}: )(.*?);"
+        line: "--{{ item.color }}: {{ item.value }};"
+      loop:
+        - color: primary-color
+          value: "{{ learners_config_learners.theme.secondary | default('#009899') }}"
+        - color: success-color
+          value: "{{ learners_config_learners.theme.success | default('#6cbd8e') }}"
+
+    - name: Remove build flag
+      become: true
+      ansible.builtin.file:
+        path: "{{ learners_wwwroot }}/hugo/base"
+        state: absent
+
+    - name: Build static content
+      become: true
+      become_user: "{{ learners_user }}"
+      ansible.builtin.command:
+        cmd: "./build.py -d {{ learners_wwwroot }} -c {{ learners_basepath }}/config.yml -o False -b {{ learners_url_basepath }}"
+      args:
+        chdir: "{{ learners_exercise_build_path }}/themes/learners"
+        creates: "{{ learners_wwwroot }}/hugo/base"
+      register: build_status
+      retries: 3
+      delay: 5
+      until: "'goroutine' not in build_status.stdout_lines"
+      notify: Restart learners
+
+  handlers:
+        
+    - name: Restart learners
+      become: true
+      ansible.builtin.service:
+        name: learners
+        state: restarted

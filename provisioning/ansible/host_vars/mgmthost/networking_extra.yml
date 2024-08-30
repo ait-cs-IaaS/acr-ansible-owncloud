@@ -1,0 +1,19 @@
+---
+mgmthost_interfaces_names: "{{ ansible_interfaces | map('extract', ansible_facts) | selectattr('macaddress', 'defined') }}"
+mgmthost_address_names_raw: "{{ openstack.addresses.keys() }}"
+mgmthost_interfaces: |
+  {
+  {% for name in mgmthost_address_names_raw %}
+    "{{ name }}": {{ (mgmthost_interfaces_names | selectattr('macaddress', 'equalto', openstack.addresses[name][0]['OS-EXT-IPS-MAC:mac_addr']))[0] }},
+  {% endfor %}
+  }
+
+networking_extra_configs: |
+  [
+  {% for _company in companies %}
+    {
+      "network_conf": "10-netplan-{{ mgmthost_interfaces[_company + "_dmz"].device }}.network",
+      "domains": ["~{{ companies[_company].domain }}"]
+    },
+  {% endfor %}
+  ]

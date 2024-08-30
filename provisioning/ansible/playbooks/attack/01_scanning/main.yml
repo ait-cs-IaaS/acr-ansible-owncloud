@@ -1,0 +1,85 @@
+---
+- name: Gather facts abouts other hosts
+  hosts: cloud,mail,webserver,file_share,firewall,application_server
+  gather_facts: true
+
+- name: Deploy webservice scanning
+  hosts: attacker_0
+  become: true
+  tasks:
+    - name: Ensure python python3-pip and git is installed
+      ansible.builtin.apt:
+        name:
+          - python3-pip
+          - git
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install Dependencies
+      become: true
+      ansible.builtin.apt:
+        update_cache: true
+        name:
+          - curl
+          - golang
+          - nmap
+          - nikto
+          - expect
+          - ruby
+          - ruby-bundler
+          - ruby-dev
+          - libsqlite3-dev
+          - sqlite3
+
+    - name: Install nextcry-exploit Binary
+      become: true
+      ansible.builtin.command: go get -v github.com/ait-cs-IaaS/phuip-fpizdam
+      register: _get_nextcry
+      changed_when: "'download' in _get_nextcry.stdout"
+
+    - name: Create attack directory
+      become: true
+      ansible.builtin.file:
+        path: "{{ scanning_attack_dir }}/"
+        state: directory
+
+    - name: Install wpscan
+      become: true
+      community.general.gem:
+        name: wpscan
+        user_install: false
+        state: present
+
+    - name: Deploy attacker scripts
+      become: true
+      ansible.builtin.copy:
+        dest: "{{ scanning_attack_dir }}/"
+        src: attack_scripts/
+        mode: "0755"
+
+    - name: Create attack target directories
+      become: true
+      ansible.builtin.file:
+        state: directory
+        path: "{{ scanning_attack_dir }}/configs/"
+
+    - name: Deploy attack target configs
+      become: true
+      ansible.builtin.template:
+        dest: "{{ scanning_attack_dir }}/configs/{{ company }}"
+        src: config.j2
+        mode: "0644"
+      loop: "{{ company_names }}"
+      loop_control:
+        loop_var: company
+
+    - name: Deploy attack control scripts
+      become: true
+      ansible.builtin.template:
+        dest: "{{ scanning_attack_dir }}/{{ item }}.sh"
+        src: "{{ item }}.sh.j2"
+        mode: "0755"
+      loop:
+        - "01_discover_webservers"
+        - "02_webscans"
+        - "03_upload_webshell_to_cloud"

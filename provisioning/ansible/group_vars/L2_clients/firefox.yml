@@ -1,0 +1,8 @@
+---
+
+firefox_trusted_certs:
+  - '{{ ca_cert }}'
+
+firefox_default_lang: "en-GB, en"
+firefox_default_region: "GB"
+firefox_default_locale: "en-GB"

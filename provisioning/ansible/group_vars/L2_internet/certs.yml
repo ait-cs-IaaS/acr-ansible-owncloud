@@ -1,0 +1,16 @@
+---
+site_certificate:
+  cert_type: sites
+  common_name: "{{ dns_hostname }}.{{ dns_domain }}"
+  host: "{{ ansible_hostname }}"
+  subject_alt_name: |
+    [
+      {% for alias in dns_aliases %}
+        "DNS:{{ alias }}",
+      {% endfor %}
+    ]
+  country: "{{ dns_country | default('AT') }}"
+  state: "{{ dns_state | default('Vienna') }}"
+  locality: "{{ dns_locality | default('Vienna') }}"
+  organization: "{{ dns_organization | default('Cyber Range') }}"
+  

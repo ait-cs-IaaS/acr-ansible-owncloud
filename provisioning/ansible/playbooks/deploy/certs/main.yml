@@ -1,0 +1,115 @@
+---
+
+- name: Gather facts of hosts
+  hosts: all
+  gather_subset: [network]
+
+# If not already present, generates a new CA certificate that is used
+# to sign the subsequent certs.
+
+- name: Generate CA certificate on localhost
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - role: generate-certs
+      vars:
+        certificates: ['{{ ca_info }}']
+        ca_base_path: '{{ certs_base_path }}'
+
+- name: Ensure CA certs are installed on all hosts
+  hosts: all
+  gather_subset: [network]
+  roles:
+    - role: ca-certs
+      become: true
+      vars:
+        ca_certs: ['{{ ca_cert }}']
+        ca_certs_update_certifi: true
+
+# For all servers for which a certificate is to be created, indicated
+# by 'certificate: true', the corresponding certs are created below
+# and stored on localhost.
+
+- name: Generate SITE certificates on localhost
+  hosts: localhost
+  gather_subset: [min]
+  pre_tasks:
+
+    - name: Extract cert information
+      ansible.builtin.set_fact:
+        certs_sites: |
+          [
+          {% for host in groups['all'] %}
+            {% if hostvars[host].create_cert | default(false) 
+              and hostvars[host].site_certificate is defined %}
+                {{ hostvars[host].site_certificate }},
+            {% endif %}
+          {% endfor %}
+          ]
+
+  roles:
+    - role: generate-certs
+      vars:
+        certificates: '{{ certs_sites }}'
+        ca_base_path: '{{ certs_base_path }}'
+  
+
+# The SITE certs and keys that have just been created are distributed to
+# all hosts and stored in the respective '/etc/ssl/' folder.
+
+- name: Distribute Certs for all hosts
+  hosts: all
+  gather_subset: [network]
+  roles:
+
+    - role: distribute-certs
+      vars:
+        cert_src_path:
+          '{{ local_ansible_dir }}/data/certs/sites/{{ site_certificate.host }}/{{ site_certificate.common_name }}/'
+        cert_dest_path: /etc/ssl/
+      when: site_certificate is defined and create_cert | default(false)
+
+# The corresponding SMIME certs are created for all users with
+# 'smime: true' and stored on localhost.
+
+- name: Generate SMIME certificates on localhost
+  hosts: localhost
+  gather_facts: false
+  pre_tasks:
+    # To all userobject 'cert_type: smime' is appended.
+    - name: Extract smime information
+      ansible.builtin.set_fact:
+        smime_emails: |
+          [
+          {% for user in (users | select_users(filter={'smime': true})) %}
+            {% do user.update({"cert_type": "smime"}) %}
+            {% do user.update({"name": user.email.split('@')[0]}) %}
+            {{ user }},
+          {% endfor %}
+          ]
+
+  roles:
+    - role: generate-certs
+      vars:
+        certificates: '{{ smime_emails }}'
+        ca_base_path: '{{ certs_base_path }}'
+
+# The SMIME certs that have just been created are distributed to
+# all hosts where the client_user expects a smime cert and stored
+# in the respective '/home/<username>/.smime' folder.
+
+- name: Distribute SMIME Certs
+  hosts: all
+  gather_subset: [network]
+  roles:
+    - role: distribute-smime-certs
+      vars:
+        cert_root_src_path: '{{ local_ansible_dir }}/data/certs/mails/'
+        cert_main_inbox: '{{ client_user }}'
+        cert_additional_inboxes: |
+          [
+          {% for _group_email in client_user.group_emails %}
+            {{ users | select_users(filter={'email': _group_email}, single=true) }},
+          {% endfor %}
+          ]
+      when: client_user.smime | default(false)

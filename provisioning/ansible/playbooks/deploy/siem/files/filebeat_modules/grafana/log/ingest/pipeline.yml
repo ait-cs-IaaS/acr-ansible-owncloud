@@ -1,0 +1,209 @@
+---
+description: Pipeline for grafana server logs
+processors:
+  - date:
+      field: t
+      formats:
+        - ISO8601
+      on_failure:
+        - append:
+            field: error.message
+            value: "{{ _ingest.on_failure_message }}"
+  - remove:
+      field: t
+      ignore_missing: true
+  - rename:
+      field: msg
+      target_field: message
+  - rename:
+      field: logger
+      target_field: log.logger
+  - rename:
+      field: lvl
+      target_field: log.level
+  - rename:
+      field: branch
+      target_field: grafana.source.branch
+      ignore_missing: true
+  - rename:
+      field: commit
+      target_field: grafana.source.commit
+      ignore_missing: true
+  - rename:
+      field: compiled
+      target_field: grafana.source.compiled
+      ignore_missing: true
+  - rename:
+      field: version
+      target_field: grafana.source.version
+      ignore_missing: true
+  - rename:
+      field: file
+      target_field: grafana.settings.path
+      ignore_missing: true
+  - rename:
+      field: arg
+      target_field: grafana.settings.arg
+      ignore_missing: true
+  - rename:
+      if: ctx.log.logger == 'settings' || ctx.log.logger == 'server'
+      field: path
+      target_field: grafana.settings.path
+      ignore_missing: true
+  - rename:
+      if: ctx.log.logger != 'settings' && ctx.log.logger != 'server'
+      field: path
+      target_field: url.path
+      ignore_missing: true
+  - rename:
+      field: pid
+      target_field: process.pid
+      ignore_missing: true
+  - rename:
+      field: dbtype
+      target_field: grafana.settings.dbtype
+      ignore_missing: true
+  - rename:
+      if: ctx.log.logger == 'migrator'
+      field: duration
+      target_field: grafana.migration.duration
+      ignore_missing: true
+  - rename:
+      if: ctx.log.logger == 'migrator'
+      field: performed
+      target_field: grafana.migration.performed
+      ignore_missing: true
+  - rename:
+      if: ctx.log.logger == 'migrator'
+      field: skipped
+      target_field: grafana.migration.skipped
+      ignore_missing: true
+  - rename:
+      if: ctx.log.logger == 'plugins'
+      field: id
+      target_field: grafana.plugin.id
+      ignore_missing: true
+  - rename:
+      if: ctx.log.logger == 'http.server'
+      field: address
+      target_field: server.address
+      ignore_missing: true
+  - rename:
+      if: ctx.log.logger == 'http.server'
+      field: protocol
+      target_field: network.protocol
+      ignore_missing: true
+  - rename:
+      if: ctx.log.logger == 'http.server'
+      field: socket
+      target_field: network.socket
+      ignore_missing: true
+  - rename:
+      if: ctx.log.logger == 'http.server'
+      field: subUrl
+      target_field: url.path
+      ignore_missing: true
+  - rename:
+      field: allowedOrigins
+      target_field: grafana.settings.allowed_origins
+      ignore_missing: true
+  - rename:
+      field: appUrl
+      target_field: server.address
+      ignore_missing: true
+  - rename:
+      field: origin
+      target_field: destination.address
+      ignore_missing: true
+  - rename:
+      field: method
+      target_field: http.request.method
+      ignore_missing: true
+  - rename:
+      field: referer
+      target_field: http.request.referrer
+      ignore_missing: true
+  - rename:
+      field: size
+      target_field: http.response.body.bytes
+      ignore_missing: true
+  - rename:
+      field: status
+      target_field: http.response.status_code
+      ignore_missing: true
+  - rename:
+      field: orgId
+      target_field: user.domain
+      ignore_missing: true
+  - rename:
+      field: remote_addr
+      target_field: source.ip
+      ignore_missing: true
+  - script:
+      if: ctx.time_ms != null
+      lang: painless
+      source: ctx['time_ms'] = ctx['time_ms'] * 1000000;
+  - rename:
+      field: time_ms
+      target_field: event.duration
+      ignore_missing: true
+  - rename:
+      field: uname
+      target_field: user.name
+      ignore_missing: true
+  - rename:
+      field: userId
+      target_field: user.id
+      ignore_missing: true
+  - rename:
+      field: User
+      target_field: user.email
+      ignore_missing: true
+  - rename:
+      field: error
+      target_field: error.message
+      ignore_missing: true
+  - set:
+      if: ctx.message == 'Request Completed'
+      field: event.action
+      value: request
+  - set:
+      if: ctx.message == 'Successful Login'
+      field: event.action
+      value: login
+  - set:
+      if: ctx.message == 'Successful Logout'
+      field: event.action
+      value: logout
+  - set:
+      if: ctx.message == 'Invalid username or password'
+      field: event.action
+      value: invalid_login
+  - geoip:
+      field: source.ip
+      target_field: source.geo
+      ignore_missing: true
+  - geoip:
+      field: destination.ip
+      target_field: destination.geo
+      ignore_missing: true
+  - geoip:
+      database_file: GeoLite2-ASN.mmdb
+      field: source.ip
+      target_field: source.as
+      properties:
+        - asn
+        - organization_name
+      ignore_missing: true
+  - geoip:
+      database_file: GeoLite2-ASN.mmdb
+      field: destination.ip
+      target_field: destination.as
+      properties:
+        - asn
+        - organization_name
+      ignore_missing: true
+on_failure:
+  - set:
+      field: error.message
+      value: "{{ _ingest.on_failure_message }}"

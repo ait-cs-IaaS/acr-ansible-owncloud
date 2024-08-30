@@ -1,0 +1,16 @@
+---
+
+customize_user: "{{ client_user.username }}"
+
+host_user: |
+    {
+      "name": "{{ client_user.username }}",
+      "password": "{{ client_user.password | password_hash('sha512', client_user.password_salt) }}",
+      "authorized_keys": [{"key": "{{ venjix_key_string }}"}],
+      {% if client_user.ssh_key %}
+        "local_ssh_key": "{{ ssh_keys_base_path }}/{{ client_user.ssh_key_path }}/id_rsa",
+      {% endif %}
+      {% if client_user_sudo %}
+        "sudo": {{ client_user.sudo }}
+      {% endif %}
+    }

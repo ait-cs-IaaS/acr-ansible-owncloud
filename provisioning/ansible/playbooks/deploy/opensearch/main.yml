@@ -1,0 +1,66 @@
+---
+
+# - name: Manage certs and keys
+#   hosts: elk
+#   tasks:
+
+    # - name: Copy certs and keys
+    #   become: true
+    #   ansible.builtin.copy:
+    #     src: "{{ item.src }}"
+    #     dest: "{{ os_conf_dir }}/{{ item.dest }}"
+    #     mode: 0600
+    #   with_items:
+    #     - src: "{{ ca_cert }}"
+    #       dest: root-ca.crt
+    #     - src: "{{ ca_key }}"
+    #       dest: root-ca.key
+    #     - src: "{{ certs_base_path }}/sites/elk/{{ opensearch_hostname }}/{{ opensearch_hostname }}.crt"
+    #       dest: "{{ opensearch_hostname }}.crt"
+    #     - src: "{{ certs_base_path }}/sites/elk/{{ opensearch_hostname }}/{{ opensearch_hostname }}.key"
+    #       dest: "{{ opensearch_hostname }}.key"
+    #     - src: "{{ certs_base_path }}/sites/elk/{{ opensearch_hostname }}/{{ opensearch_hostname }}.crt"
+    #       dest: "{{ opensearch_hostname }}_http.crt"
+    #     - src: "{{ certs_base_path }}/sites/elk/{{ opensearch_hostname }}/{{ opensearch_hostname }}.key"
+    #       dest: "{{ opensearch_hostname }}_http.key"
+    #     # - src: "{{ certs_base_path }}/sites/elk/{{ opensearch_hostname }}/{{ opensearch_hostname }}.crt"
+    #     #   dest: "admin.crt"
+    #     # - src: "{{ certs_base_path }}/sites/elk/{{ opensearch_hostname }}/{{ opensearch_hostname }}.key"
+    #     #   dest: "admin.key"
+
+    # - name: Convert certificates to .pem format
+    #   become: true
+    #   ansible.builtin.command: >
+    #     openssl x509 -in {{ item }}.crt -out {{ item }}.pem -outform PEM
+    #   with_items:
+    #     - "{{ os_conf_dir }}/root-ca"
+    #     - "{{ os_conf_dir }}/{{ opensearch_hostname }}"
+    #     - "{{ os_conf_dir }}/{{ opensearch_hostname }}_http"
+    #     # - "{{ os_conf_dir }}/admin"
+      
+- name: Install opensearch
+  hosts: elk
+  become: true
+  gather_subset: [min]
+  pre_tasks:
+
+    - name: Install Java 8
+      become: true
+      ansible.builtin.apt:
+        name: openjdk-8-jre-headless
+
+  roles:
+    - role: opensearch-install
+      vars:
+        os_home: /usr/share/opensearch
+        os_conf_dir: /usr/share/opensearch/config
+        os_plugin_bin_path: /usr/share/opensearch/bin/opensearch-plugin
+        os_sec_plugin_conf_path: /usr/share/opensearch/config/opensearch-security
+        os_sec_plugin_tools_path: /usr/share/opensearch/plugins/opensearch-security/tools
+
+    - role: opensearch-dashboards
+      vars:
+        os_dashboards_home: /usr/share/opensearch-dashboards
+        os_conf_dir: /usr/share/opensearch-dashboards/config
+        os_plugin_bin_path: /usr/share/opensearch-dashboards/bin/opensearch-dashboards-plugin
+

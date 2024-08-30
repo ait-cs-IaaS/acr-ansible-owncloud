@@ -1,0 +1,8 @@
+---
+horde_webmail_reverse_proxy: true
+horde_apache2modules:
+  - ssl
+  - rewrite
+  - headers
+  - deflate
+  - remoteip

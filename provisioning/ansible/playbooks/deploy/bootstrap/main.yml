@@ -1,0 +1,127 @@
+---
+
+- name: Reset and re-init fact cache
+  ansible.builtin.import_playbook: ../reset_cache/main.yml
+
+- name: Temporarly DNS settings and update apt-Cache
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Temporarly use upstream DNS server as main
+      become: true
+      ansible.builtin.lineinfile:
+          path: /etc/resolv.conf
+          regexp: ^nameserver\s+.*
+          line: nameserver 8.8.8.8
+    
+    - ansible.builtin.debug:
+        msg: "Updating apt cache ... Be patient!"
+
+    - name: Updating apt-Cache
+      become: true
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 86400
+        update_cache_retries: 2
+        update_cache_retry_max_delay: 5
+
+# The following plays ensures that the netwerk configuration is
+# applied and active. "netplan apply" is executed with the corresponding
+# command on all hosts of the deployment.
+
+- name: Setup networking on mgmthosts
+  tags: [bootstrap, mgmt]
+  hosts: mgmthost,management
+  gather_facts: false
+  roles:
+    - role: networking-setup
+    - role: iptables-forwarding
+
+- name: Setup networking for the firewall hosts
+  tags: [bootstrap, firewalls]
+  hosts: firewalls
+  gather_facts: false
+  roles:
+    - role: networking-setup
+      vars:
+        if_setup: /root/ifsetup.py
+    - role: iptables-forwarding
+
+- name: Setup networking for all other hosts
+  hosts: all,!mgmthost,!firewalls,!management
+  gather_facts: false
+  tags: [bootstrap, hosts]
+  roles:
+    - role: networking-setup
+
+- name: Setup custom DNS and route configs for special hosts
+  hosts: control,mgmthost,mailgin
+  gather_facts: true
+  gather_subset: [network]
+  tags: [bootstrap, networking]
+  roles:
+    - role: systemd-networkd
+
+# Sets escaped hostname and adds corresponding mapping in the hosts file.
+
+- name: Set hostnames
+  hosts: companies
+  gather_subset: [min]
+  tags: [bootstrap, hostname]
+  roles:
+    - role: set-hostname
+
+# Renames the original placeholder user so that it corresponds to the appropriate
+# client_user. The placeholder user is automatically determined via the passwd file
+# by extracting usernames from the /etc/passwd file for user accounts with UIDs
+# ending in four digits.
+
+- name: Rename deployment user
+  hosts: clients
+  tags: [bootstrap, user]
+  pre_tasks:
+    # Set the username to be renamed to the last 4-digit user id
+    - name: Get current installed username
+      ansible.builtin.shell:
+        cmd: |
+          set -o pipefail
+          cut -d: -f1,3 /etc/passwd | egrep ':[0-9]{4}$' | cut -d: -f1 | head -n 1
+        executable: /bin/bash
+      register: _rename_user_src
+      changed_when: false
+
+    - name: Kill all held processes by this user
+      become: true
+      ansible.builtin.shell:
+        cmd: pkill -u {{ _rename_user_src.stdout_lines | last }}
+      failed_when: false
+
+  roles:
+    - role: linux-rename-user
+      vars:
+        rename_user_target: '{{ client_user.username }}'
+        rename_user_src: '{{ _rename_user_src.stdout_lines | last }}'
+
+# Provided the necessary credentials for ovh management are available and the
+# deployment is on OVH, a DNS entry for the auth_url with the corresponding
+# floating IP of the learners server is registered below.
+
+- name: Set DNS entry on OVH
+  tags: [bootstrap, dns]
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Set DNS entry on OVH
+      synthesio.ovh.domain:
+        endpoint: "{{ lookup('env', 'ENDPOINT') }}"
+        application_key: "{{ lookup('env', 'APPLICATION_KEY') }}"
+        application_secret: "{{ lookup('env', 'APPLICATION_SECRET') }}"
+        consumer_key: "{{ lookup('env', 'CONSUMER_KEY') }}"
+        record_type: A
+        value: "{{ hostvars['learners'].floating_ip }}"
+        domain: "{{ public_domain }}"
+        name: '{{ (subdomain | split(public_domain))[0] }}'
+      loop: '{{ hostvars["learners"].certbot_domains }}'
+      loop_control:
+        loop_var: subdomain
+      when: ovh_deployment and lookup('env', 'APPLICATION_SECRET') is defined

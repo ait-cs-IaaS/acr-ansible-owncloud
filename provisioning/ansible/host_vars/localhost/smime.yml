@@ -1,0 +1,3 @@
+---
+mail_users: "{{ game_mail_users_list | selectattr('smime', 'defined') | selectattr('smime', 'equalto', True) | list }}"
+smime_mail_domains: "{{ smime_emails | map(attribute='domain') | unique }}"

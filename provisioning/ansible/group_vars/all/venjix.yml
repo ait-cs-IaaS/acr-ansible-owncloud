@@ -1,0 +1,4 @@
+
+venjix_user: "{{ users | select_users(filter={'username': 'ait.venjix'}, single=true) }}"
+venjix_key_path: "{{ ssh_keys_base_path }}/{{ venjix_user.ssh_key_path }}"
+venjix_key_string: '{{ lookup("file", venjix_key_path + "id_rsa.pub") }}'

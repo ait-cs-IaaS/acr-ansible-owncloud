@@ -1,0 +1,13 @@
+---
+mattermost_user: "{{ users | select_users(filter={'mattermost_admin': true}, returns=['username'], single=true) }}"
+mattermost_password: "{{ users | select_users(filter={'mattermost_admin': true}, returns=['password'], single=true) }}"
+mattermost_playbook_json: "{{ local_ansible_dir }}/data/files/mattermost/incident_response_plan.json"
+
+mattermost_ssl_cert: "{{ ssl_cert }}"
+mattermost_ssl_key: "{{ ssl_key }}"
+
+mattermost_init_config_src: /opt/learners/config.yml
+mattermost_init_config_remote_source: true
+
+mattermost_server_name: mattermost.{{ auth_url }}
+mattermost_url: https://{{ mattermost_server_name }}

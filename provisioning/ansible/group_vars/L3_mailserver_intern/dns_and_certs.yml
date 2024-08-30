@@ -1,0 +1,7 @@
+---
+dns_hostname: mailserver
+_dns_aliases:
+  - mail
+
+create_cert: true
+dns_proxied: false

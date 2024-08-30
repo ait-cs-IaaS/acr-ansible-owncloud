@@ -1,0 +1,25 @@
+---
+ulogd2_logfile: /var/log/ulog/ulogd.log
+ulogd2_loglevel: 7
+ulogd2_conf_template: templates/ulogd2.conf.j2
+
+ulogd2_plugins:
+  - ulogd_inppkt_NFLOG.so"
+  - ulogd_filter_IFINDEX.so"
+  - ulogd_filter_IP2STR.so"
+  - ulogd_filter_PRINTPKT.so"
+  - ulogd_output_LOGEMU.so"
+  - ulogd_raw2packet_BASE.so"
+
+ulogd2_stack:
+  - log:NFLOG
+  - base1:BASE
+  - ifi1:IFINDEX
+  - ip2str1:IP2STR
+  - print1:PRINTPKT
+  - firewall:LOGEMU
+
+ulogd2_config:
+  firewall:
+    file: /var/log/firewall
+    sync: 1

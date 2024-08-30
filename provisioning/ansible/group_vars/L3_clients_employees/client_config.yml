@@ -1,0 +1,3 @@
+---
+
+hostname: EC-{{ (ansible_facts['nodename'] | hash('sha256'))[:4] | upper }}{{ host_index }}

@@ -1,0 +1,26 @@
+---
+elasticsearch_host: "0.0.0.0"
+elasticsearch_discovery_type: single-node
+elasticsearch_xpack_enabled: true
+elasticsearch_xpack_ssl_ca: "{{ ca_cert }}"
+elasticsearch_xpack_ssl_cert: "{{ ssl_cert_src }}"
+elasticsearch_xpack_ssl_key: "{{ ssl_key_src }}"
+
+elasticsearch_xpack_roles:
+  beat_writers:
+    cluster: [monitor, manage_index_templates, manage_ilm, manage_ingest_pipelines]
+    indices:
+      - names: [filebeat-*, metricbeat-*, auditbeat-*]
+        privileges: [read, write, create_index, create_doc, view_index_metadata, manage]
+
+elasticsearch_kibana_users: |
+  [
+    {% for user in user_groups.company_soc_users %}
+      {% do user.update({"roles": ["kibana_admin", "superuser"]}) %}
+      {{ user }},
+    {% endfor %}
+  ]
+
+elasticsearch_xpack_users: "{{ (elk_users.values() | list) + elasticsearch_kibana_users }}"
+
+ansible_shell_allow_world_readable_temp: true

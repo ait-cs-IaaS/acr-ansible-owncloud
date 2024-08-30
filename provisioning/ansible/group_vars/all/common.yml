@@ -1,0 +1,16 @@
+---
+local_ansible_dir: "{{ lookup('env', 'LOCAL_PACKAGE_ANSIBLE_PATH') }}"
+provisioning_dir: '{{ local_ansible_dir }}/../'
+ssh_keys_base_path: '{{ local_ansible_dir }}/data/ssh-keys'
+certs_base_path: '{{ local_ansible_dir }}/data/certs'
+
+control_password: mozart.rocks! #sW8RjVBzdHTU
+hashed_control_password:
+  "{{ control_password | password_hash('sha512', '6f5bd223ace34f64') }}"
+
+github_pat: "{{ lookup('ansible.builtin.env', 'GITHUB_PAT') }}"
+gitlab_pat: "{{ lookup('ansible.builtin.env', 'CR_GITLAB_ACCESS_TOKEN') }}"
+
+ansible_shell_allow_world_readable_temp: true
+
+ovh_deployment: "{{ ('ovh' in lookup('env', 'OS_AUTH_URL')) | default(false) }}"

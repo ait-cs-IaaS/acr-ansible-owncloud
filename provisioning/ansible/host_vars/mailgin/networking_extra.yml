@@ -1,0 +1,39 @@
+---
+mailgin_interfaces_names: "{{ ansible_interfaces | map('extract', ansible_facts) | selectattr('macaddress', 'defined') }}"
+mailgin_address_names_raw: "{{ openstack.addresses.keys() }}"
+mailgin_interfaces: |
+  {
+  {% for name in mailgin_address_names_raw %}
+    "{{ name }}": {{ (mailgin_interfaces_names
+      | selectattr('macaddress', 'equalto', openstack.addresses[name][0]['OS-EXT-IPS-MAC:mac_addr']))[0] }},
+  {% endfor %}
+  }
+
+# combine all firewall cidrs into one big dict
+all_firewall_cidrs: |
+  {
+  {% for _company in company_names %}
+    "{{ _company }}": {{ hostvars[_company + "_firewall_internal"].firewall_cidrs |
+        combine(hostvars[_company + "_firewall_external"].firewall_cidrs) }},
+  {% endfor %}
+  }
+
+networking_extra_configs: |
+  [
+  {% for _company in company_names %}
+    {
+      "network_conf": "10-netplan-{{ mailgin_interfaces[_company + "_dmz"].device }}.network",
+      "domains": ["~{{ companies[_company].domain }}"],
+      "routes": [
+        {% for _key, _cidr in all_firewall_cidrs[_company].items() %}
+          {% if _key is not in mailgin_interfaces.keys() %}
+            {
+              "gateway": "{{ hostvars[_company + "_firewall_internal"].openstack.addresses[_company+"_dmz"][0].addr }}",
+              "dest": "{{ _cidr }}"
+            },
+          {% endif %}
+        {% endfor %}
+      ]
+    },
+  {% endfor %}
+  ]

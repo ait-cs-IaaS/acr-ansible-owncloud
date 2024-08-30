@@ -1,0 +1,88 @@
+---
+shorewall_zones:
+  - name: field
+    type: ipv4
+    interface: { name: $FIELDIF, broadcast: detect, options: routeback }
+
+  - name: external
+    type: ipv4
+    interface: { name: $EXTERNALIF }
+
+  - name: soc
+    type: ipv4
+
+  - name: sv
+    type: ipv4
+
+  - name: access
+    type: ipv4
+
+  - name: dmz
+    type: ipv4
+
+shorewall_policy:
+  - { source: fw, dest: all, policy: ACCEPT }
+  # SOC gets full access to everything
+  - { source: soc, dest: all, policy: ACCEPT }
+  - THIS POLICY HAS TO BE THE LAST
+  - { source: all, dest: all, policy: REJECT, log: info }
+
+#SHOREWALL RULES
+shorewall_rules: "{{ rules_ssh + rules_ping + rules_basic_software_update + rules_siem + rules_management  }}" # add iec rule
+
+rules_ssh:
+  - Permit Access to SSH
+  - action: SSH/ACCEPT
+    source: all
+    dest: fw
+
+rules_ping:
+  - Ping Rules
+  - { action: Ping/ACCEPT, source: all, dest: all }
+
+rules_basic_software_update:
+  - Basic Software Update Rules
+  - { action: ACCEPT, source: "field", dest: external, proto: tcp, dest_port: "80,443" }
+  - { action: ACCEPT, source: "field", dest: external, proto: tcp, dest_port: 53 }
+  - { action: ACCEPT, source: "field", dest: external, proto: udp, dest_port: 53 }
+
+iec_rule:
+  - IEC 104 Rule
+  - { action: ACCEPT, source: "field:$plc", dest: external, proto: tcp, dest_port: "2405" }
+
+rules_siem:
+  - SIEM connection
+  - { action: ACCEPT, source: "external,sv", dest: soc:$siem, proto: tcp, dest_port: "5044,9200" }
+
+rules_management:
+  - Management Rules
+  - { action: ACCEPT, source: "external:$hmi", dest: all } # to test
+
+shorewall_snat: []
+
+shorewall_params: "{{ params_interfaces + params_hosts + params_networks }}"
+
+params_interfaces:
+  - Interfaces
+  - { name: EXTERNALIF, value: "{{ firewall_interfaces.supervisory.device }}" }
+  - { name: FIELDIF, value: "{{ firewall_interfaces.field.device }}" }
+
+params_hosts:
+  - Hosts
+  - { name: siem, value: "{{ hostvars[company_name + '_elk'].ip_addresses['soc'] }}" }
+  - { name: hmi, value: "{{ hostvars[company_name + '_hmi'].ip_addresses['supervisory'] }}" }
+  - { name: plc, value: "{{ hostvars[company_name + '_plc'].ip_addresses['field'] }}" }
+  # Hier eventuell Jumphost, etc.
+
+params_networks:
+  - Networks
+  - { name: DMZNET, value: "{{ hostvars[company_name + '_firewall_internal'].firewall_cidrs.dmz }}" }
+  - { name: SVNET, value: "{{ firewall_cidrs.supervisory }}" }
+  - { name: ACCESSNET, value: "{{ hostvars[company_name + '_firewall_internal'].firewall_cidrs.access }}" }
+  - { name: SOCNET, value: "{{ hostvars[company_name + '_firewall_internal'].firewall_cidrs.soc }}" }
+
+shorewall_hosts:
+  - { zone: dmz, host: $EXTERNALIF:$DMZNET, options: routeback }
+  - { zone: access, host: $EXTERNALIF:$ACCESSNET, options: routeback }
+  - { zone: soc, host: $EXTERNALIF:$SOCNET, options: routeback }
+  - { zone: sv, host: $EXTERNALIF:$SVNET, options: routeback }

@@ -1,0 +1,16 @@
+var oc_debug=false;
+var oc_isadmin=false;
+var oc_dataURL=false;
+var oc_webroot="";
+var oc_appswebroots={"files":"/apps/files","comments":"/apps/comments","configreport":"/apps/configreport","dav":"/apps/dav","federatedfilesharing":"/apps/federatedfilesharing","federation":"/apps/federation","files_external":"/apps/files_external","files_mediaviewer":"/apps/files_mediaviewer","files_sharing":"/apps/files_sharing","files_trashbin":"/apps/files_trashbin","files_versions":"/apps/files_versions","market":"/apps/market","notifications":"/apps/notifications","provisioning_api":"/apps/provisioning_api","systemtags":"/apps/systemtags","updatenotification":"/apps/updatenotification"};
+var datepickerFormatDate="M\/d\/yy";
+var dayNames=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+var dayNamesShort=["Sun.","Mon.","Tue.","Wed.","Thu.","Fri.","Sat."];
+var dayNamesMin=["Su","Mo","Tu","We","Th","Fr","Sa"];
+var monthNames=["January","February","March","April","May","June","July","August","September","October","November","December"];
+var monthNamesShort=["Jan.","Feb.","Mar.","Apr.","May.","Jun.","Jul.","Aug.","Sep.","Oct.","Nov.","Dec."];
+var firstDay=0;
+var oc_config={"session_lifetime":86400,"session_keepalive":true,"enable_avatars":true,"lost_password_link":null,"modRewriteWorking":false,"blacklist_files_regex":"\\.(part|filepart)$"};
+var oc_appconfig={"core":{"defaultExpireDateEnabled":true,"defaultExpireDate":7,"defaultExpireDateEnforced":false,"enforceLinkPasswordReadOnly":false,"enforceLinkPasswordReadWrite":false,"enforceLinkPasswordReadWriteDelete":false,"enforceLinkPasswordWriteOnly":false,"defaultExpireDateUserEnabled":false,"defaultExpireDateUser":7,"enforceDefaultExpireDateUser":false,"defaultExpireDateGroupEnabled":false,"defaultExpireDateGroup":7,"enforceDefaultExpireDateGroup":false,"sharingDisabledForUser":false,"resharingAllowed":true,"remoteShareAllowed":true,"allowGroupSharing":false,"previewsEnabled":true,"enabledPreviewProviders":["text\\\/plain","text\\\/(x-)?markdown","image\\\/png","image\\\/jpeg","image\\\/gif","image\\\/bmp","image\\\/x-xbitmap","audio\\\/mpeg"]},"files":{"max_chunk_size":10485760,"upload_stall_timeout":60,"upload_stall_retries":100}};
+var oc_defaults={"entity":"ownCloud","name":"ownCloud","title":"ownCloud","baseUrl":"https:\/\/owncloud.org","syncClientUrl":"https:\/\/owncloud.org\/install\/#install-clients","slogan":"A safe home for all your data","logoClaim":"","shortFooter":"<a href=\"https:\/\/owncloud.org\" target=\"_blank\" rel=\"noreferrer\">ownCloud<\/a> &ndash; A safe home for all your data","longFooter":"<a href=\"https:\/\/owncloud.org\" target=\"_blank\" rel=\"noreferrer\">ownCloud<\/a> &ndash; A safe home for all your data","folder":""};
+var theme={"name":"","directory":""};

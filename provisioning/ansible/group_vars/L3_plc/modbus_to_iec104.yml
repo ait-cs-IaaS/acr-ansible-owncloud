@@ -1,0 +1,13 @@
+modbus_converter_user: root
+modbus_converter_group: '{{ modbus_converter_user }}'
+modbus_converter_basepath: /opt/modbus_to_iec104
+modbus_converter_virtualenv: '{{ modbus_converter_basepath }}/venv'
+
+app_user: '{{ modbus_converter_user }}'
+app_name: modbus_to_iec104
+app_description: Modbus to IEC104 Converter
+app_service_execstart:
+  '{{ modbus_converter_virtualenv }}/bin/python3 modbus_to_iec104.py'
+app_type: simple
+app_envs:
+  - SHIFT_OPENPLC_IP=127.0.0.1

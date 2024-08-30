@@ -1,0 +1,198 @@
+---
+- name: Gather facts abouts other hosts
+  hosts: hmi,attacker,mailservers
+  gather_facts: true
+
+- name: Make application server (entrypoint) vulnerable
+  become: true
+  hosts: application_server
+  roles:
+    - role: rootkeys
+      become: true
+      vars:
+        rootkeys_public_key_user: root
+        rootkeys_install_private: true
+        rootkeys_install_public: false
+        rootkeys_private_dir: /root/.bkp
+    - role: sudoweakness
+      vars:
+        sudoweakness_user: "{{ supplypro_user }}"
+        sudoweakness_filename: 20{{ supplypro_user }}
+        sudoweakness_vulnbin: /usr/bin/dmesg
+
+- name: Make mailserver (target) vulnerable
+  become: true
+  hosts: mailservers, !global_mail
+  roles:
+    - role: rootkeys
+      become: true
+      vars:
+        rootkeys_public_key_user: root
+        rootkeys_install_private: false
+        rootkeys_install_public: true
+
+- name: Prepare supporting attacker
+  hosts: attacker_1
+
+  pre_tasks:
+    - name: Load ransom vars
+      ansible.builtin.include_vars:
+        dir: "{{ local_ansible_dir }}/group_vars/supplypro_ransom"
+
+  tasks:
+    - name: Update apt cache
+      become: true
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install basic software
+      become: true
+      ansible.builtin.apt:
+        name: [python3-pip, python3, ncat, libxcb-image0, python3-tk, python3-pip, apache2]
+        state: present
+
+    - name: Uninstall crypto and pycrypto
+      become: true
+      ansible.builtin.pip:
+        name: [crypto, pycrypto]
+        state: absent
+
+    - name: Install pycryptodome
+      become: true
+      ansible.builtin.pip:
+        name: [pycryptodome, pyinstaller, shodan, BeautifulSoup4]
+        state: present
+
+    - name: Ensure apache is running
+      become: true
+      ansible.builtin.systemd:
+        name: apache2
+        state: started
+
+    - name: Remove artefacts from webroot
+      become: true
+      ansible.builtin.file:
+        path: /var/www/html/{{ attack_supplypro_ransom_payload_name }}
+        state: absent
+
+    - name: Create Payload Source directory
+      become: true
+      ansible.builtin.file:
+        path: /opt/ransom_payload/
+        state: directory
+        mode: "0755"
+
+    - name: Copy Payload Source Files
+      become: true
+      ansible.builtin.copy:
+        src: payload_src/
+        dest: /opt/ransom_payload/
+
+    - name: Change lockscreen color
+      become: true
+      ansible.builtin.replace:
+        path: /opt/ransom_payload/ransomware/gui.py
+        regexp: "#722020"
+        replace: "{{ ransomware_data.ransomware_lockscreen_bg_color }}"
+      when: ransomware_data.ransomware_lockscreen_bg_color is defined
+
+    - name: Write Ransomware Config
+      become: true
+      ansible.builtin.copy:
+        content: "{{ ransomware_data | to_nice_yaml(indent=4) }}"
+        dest: /opt/ransom_payload/data.yml
+        mode: "0644"
+
+    - name: Remove build artefacts
+      become: true
+      ansible.builtin.file:
+        path: /opt/ransom_payload/dist
+        state: absent
+
+    - name: Create ransomware payload via pyinstaller
+      become: true
+      ansible.builtin.command:
+        cmd: pyinstaller -F -n ransomware --clean --add-data 'data.yml:.' -p . -y ransomware/__main__.py
+        chdir: /opt/ransom_payload/
+      changed_when: false
+
+    - name: Copy exploit to apache webroot
+      become: true
+      ansible.builtin.copy:
+        src: /opt/ransom_payload/dist/ransomware
+        dest: /var/www/html/{{ attack_supplypro_ransom_payload_name }}
+        remote_src: true
+
+- name: Prepare attackmate
+  hosts: attack_mate_0,attack_mate_1,attack_mate_2,attack_mate_3
+  roles:
+    - role: metasploit
+      become: true
+      vars:
+        metasploit_msfdb: true
+        metasploit_msfrpcd: true
+        metasploit_user: ait
+
+  pre_tasks:
+    - name: Load ransom vars
+      ansible.builtin.include_vars:
+        dir: "{{ local_ansible_dir }}/group_vars/supplypro_ransom/{{attackmate_mapping[inventory_hostname]}}"
+
+  tasks:
+    - name: Python pip
+      become: true
+      ansible.builtin.apt:
+        name: [python3, python3-pip, python3-venv, libmagic1]
+        state: present
+
+    - name: Copy attackmate dir
+      ansible.builtin.unarchive:
+        src: files/attackmate/attackmate.tar.gz
+        dest: /home/ait/
+        owner: ait
+        group: ait
+
+    - name: Install dependencies in virtualenv
+      become: true
+      become_user: ait
+      ansible.builtin.pip:
+        name: /home/ait/attackmate
+        virtualenv: /home/ait/attackmate/venv
+        virtualenv_command: python3 -m venv
+
+    - name: Customize playbooks
+      become: true
+      become_user: ait
+      ansible.builtin.template:
+        src: playbooks/{{ item.src }}
+        dest: /home/ait/attackmate/playbooks/{{ item.dest }}
+        owner: ait
+        group: ait
+      loop:
+        - src: attack_stage_1.yml.j2
+          dest: attack_stage_1.yml
+        - src: attack_stage_2.yml.j2
+          dest: attack_stage_2.yml
+        - src: hmi.yml.j2
+          dest: hmi.yml
+        - src: lockscreen.service.j2
+          dest: lockscreen.service
+        - src: mail.yml.j2
+          dest: mail.yml
+        - src: mailtext.j2
+          dest: mailtext
+        - src: muttrc.j2
+          dest: muttrc
+
+    - name: Copy odt file containing malicious macros
+      ansible.builtin.copy:
+        src: attachments/{{ attack_supplypro_ransom_attachment }}
+        dest: /home/ait/attackmate/playbooks/Nutzungshinweise_BIT-PRNT-2023.odt
+
+    - name: Ensure metasploit is running
+      become: true
+      ansible.builtin.systemd:
+        name: msfrpcd
+        state: started
+        enabled: true

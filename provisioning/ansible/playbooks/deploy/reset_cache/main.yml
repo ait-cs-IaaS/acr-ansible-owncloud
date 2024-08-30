@@ -1,0 +1,16 @@
+---
+# Deletes the content of the local "facts_cache" folder
+# For a new deployment it is advisable to clear the ansible cache,
+# this may also be necessary if there have been major changes so
+# that these are propagated and applied accordingly.
+
+- name: Clear ansible cache
+  tags: [bootstrap, clear_cache]
+  hosts: all
+  tasks:
+    - name: Clear gathered facts from all currently targeted hosts
+      ansible.builtin.meta: clear_facts
+
+- name: Gather all initial facts
+  hosts: all
+  gather_facts: true

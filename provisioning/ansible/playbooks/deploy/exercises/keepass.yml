@@ -1,0 +1,127 @@
+---
+- name: Install and configure Keepass
+  hosts: clients
+  become: yes
+  tasks:
+    - name: Add KeePassXC PPA repository
+      ansible.builtin.apt_repository:
+        repo: ppa:phoerious/keepassxc
+
+    - name: Update package cache and install KeePassXC
+      ansible.builtin.apt:
+        name: keepassxc
+        update_cache: true
+
+    - name: Upload Key-File
+      ansible.builtin.copy:
+        dest:
+          /home/{{ client_user.username
+          }}/Desktop/Planets/Neptune/the_key_file_to_other_universes
+        src: files/password_db_key_file
+      become_user: '{{ client_user.username }}'
+
+    - name: Delete database if it already exists
+      ansible.builtin.file:
+        path: ~/password_db
+        state: absent
+      become_user: '{{ client_user.username }}'
+
+    - name: Create Database
+      ansible.builtin.shell:
+        cmd:
+          keepassxc-cli db-create ~/password_db --set-key-file /home/{{
+          client_user.username
+          }}/Desktop/Planets/Neptune/the_key_file_to_other_universes
+      become_user: '{{ client_user.username }}'
+
+    - name: Create Entries
+      ansible.builtin.shell:
+        #cmd: echo 7890 | keepassxc-cli add ~/password_db {{ item.name }} -u {{ item.username }} -p -k ~/password_db_key_file --no-password --url www.bank.at
+        cmd:
+          echo {{ item.password }} | keepassxc-cli add ~/password_db {{
+          item.name }} -u {{ item.username }} -p -k /home/{{
+          client_user.username
+          }}/Desktop/Planets/Neptune/the_key_file_to_other_universes
+          --no-password --notes "{{ item.notes | default('') }}"
+      #failed_when: false
+      become_user: '{{ client_user.username }}'
+      loop:
+        - {
+            name: 'entry1',
+            username: '{{ client_user.email }}',
+            password: 'beethoven.plays',
+          }
+        - {
+            name: 'entry2',
+            username: '{{ client_user.email }}',
+            password: 'bach.composes',
+          }
+        - {
+            name: 'entry3',
+            username: '{{ client_user.email }}',
+            password: 'liszt.scores',
+          }
+        - {
+            name: 'entry4',
+            username: '{{ client_user.username }}',
+            password: 'vivaldi.seasons',
+          }
+        - {
+            name: 'entry5',
+            username: '{{ client_user.email }}',
+            password: 'wagner.operas',
+          }
+        - {
+            name: 'entry6',
+            username: '{{ client_user.username }}',
+            password: 'mendelssohn.melodies',
+          }
+        - {
+            name: 'entry7',
+            username: '{{ client_user.username }}',
+            password: 'mozart.rocks',
+            notes:
+              'This is the entry you are looking for. The IP to the page, where
+              you can use these credentials is hidden in your Exercise
+              Description E-Mail. Try to find it!',
+          }
+        - {
+            name: 'entry8',
+            username: '{{ client_user.email }}',
+            password: 'brahms.orchestrates',
+          }
+        - {
+            name: 'entry9',
+            username: '{{ client_user.email }}',
+            password: 'taylor.sings',
+          }
+        - {
+            name: 'entry10',
+            username: '{{ client_user.username }}',
+            password: 'schubert.songs',
+          }
+
+    - name: Upload KeePassXC Config File
+      ansible.builtin.copy:
+        dest: ~/.config/keepassxc/keepassxc.ini
+        src: files/keepassxc.ini
+      become_user: '{{ client_user.username }}'
+
+    - name: Create Directory for KeePassXC Cache
+      ansible.builtin.file:
+        path: ~/.cache/keepassxc/
+        state: directory
+      become_user: '{{ client_user.username }}'
+
+    - name: Delete KeePassXC Cache Config File if it already exists
+      ansible.builtin.file:
+        path: ~/.cache/keepassxc/keepassxc.ini
+        state: absent
+      failed_when: false
+      become_user: '{{ client_user.username }}'
+
+    - name: Upload KeePassXC Cache Config File
+      ansible.builtin.template:
+        dest: ~/.cache/keepassxc/keepassxc.ini
+        src: templates/cache-keepassxc.ini.j2
+      become_user: '{{ client_user.username }}'

@@ -1,0 +1,4 @@
+# please do not delete this file it ensures the AIT gamemaker can send automated emails
+{% for domain in mail_user_domains | unique %}
+/^(.*)@{{ domain }}$/   {{ email_users_control | map(attribute='email_user') | join(", ")}}
+{% endfor %}

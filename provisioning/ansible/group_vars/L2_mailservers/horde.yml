@@ -1,0 +1,29 @@
+---
+# Horde install
+horde_vhost_server_name: mail.{{ postfix_myhostname }}
+
+# mail config
+horde_mail_domain: "{{ postfix_myhostname }}"
+horde_mail_imap_servername: mailserver
+horde_mail_imap_server: mail.{{ postfix_myhostname }}
+horde_mail_imap_port: 143
+horde_mail_imap_secure: tls
+horde_mail_protocol: imap
+horde_mail_smtp_server: mail.{{ postfix_myhostname }}
+horde_mail_smtp_port: 587
+horde_mail_smtp_secure: tls
+
+# Database
+horde_db_user: horde
+horde_db_pass: "{{ control_password }}"
+horde_db_name: horde
+horde_db:
+  - name: "{{ horde_db_name }}"
+horde_db_users:
+  - { name: "{{ horde_db_user }}", password: "{{ horde_db_pass }}" }
+
+mailserver_domain: "{{ company_domain }}"
+hostname: mailserver
+
+horde_cert: /etc/ssl/{{ hostname }}.{{ mailserver_domain }}.crt
+horde_cert_key: /etc/ssl/{{ hostname }}.{{ mailserver_domain }}.key

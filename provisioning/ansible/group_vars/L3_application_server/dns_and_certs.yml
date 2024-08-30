@@ -1,0 +1,6 @@
+---
+dns_hostname: supplypro
+_dns_aliases:
+  - application-server
+
+create_cert: true

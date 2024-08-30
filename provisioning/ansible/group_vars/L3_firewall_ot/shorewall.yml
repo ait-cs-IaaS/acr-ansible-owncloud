@@ -1,0 +1,69 @@
+---
+shorewall_zones:
+  - name: sv
+    type: ipv4
+    interface: { name: $SVIF, broadcast: detect, options: routeback }
+  - name: external
+    type: ipv4
+    interface: { name: $EXTERNALIF }
+  - name: soc
+    type: ipv4
+  - name: access
+    type: ipv4
+  - name: dmz
+    type: ipv4
+
+shorewall_policy:
+  - { source: fw, dest: all, policy: ACCEPT }
+  # SOC gets full access to everything
+  - { source: soc, dest: all, policy: ACCEPT }
+  - THIS POLICY HAS TO BE THE LAST
+  - { source: all, dest: all, policy: REJECT, log: info }
+
+#SHOREWALL RULES
+shorewall_rules: "{{ rules_ssh + rules_ping + rules_basic_software_update + rules_siem + rules_specialclient }}"
+rules_ssh:
+  - Permit Access to SSH
+  - action: SSH/ACCEPT
+    source: all
+    dest: fw
+rules_ping:
+  - Ping Rules
+  - { action: Ping/ACCEPT, source: all, dest: all }
+rules_basic_software_update:
+  - Basic Software Update Rules
+  - { action: ACCEPT, source: "sv", dest: external, proto: tcp, dest_port: "80,443" }
+  - { action: ACCEPT, source: "sv", dest: external, proto: tcp, dest_port: 53 }
+  - { action: ACCEPT, source: "sv", dest: external, proto: udp, dest_port: 53 }
+rules_siem:
+  - SIEM connection
+  - { action: ACCEPT, source: "external,sv", dest: soc:$siem, proto: tcp, dest_port: "5044,9200" }
+rules_specialclient:
+  - Special permissions for OT-Manager
+  - { action: ACCEPT, source: external:$otmanager, dest: sv }
+
+shorewall_snat: []
+shorewall_params: "{{ params_interfaces + params_hosts + params_specialclient_hosts + params_networks }}"
+params_interfaces:
+  - Interfaces
+  - { name: EXTERNALIF, value: "{{ firewall_interfaces.access.device }}" }
+  - { name: SVIF, value: "{{ firewall_interfaces.supervisory.device }}" }
+params_hosts:
+  - Hosts
+  - { name: siem, value: "{{ hostvars[company_name + '_elk'].ip_addresses['soc'] }}" }
+  # Hier eventuell Jumphost, etc.
+params_networks:
+  - Networks
+  #- { name: DMZNET, value: "{{ firewall_cidrs.dmz }}" }
+  - { name: ACCESSNET, value: "{{ firewall_cidrs.access }}" }
+  - { name: SOCNET, value: "{{ hostvars[company_name + '_firewall_internal'].firewall_cidrs.soc }}" }
+  - { name: DMZNET, value: "{{ hostvars[company_name + '_firewall_internal'].firewall_cidrs.dmz }}" }
+  #- { name: SUPERVNET, value: "{{ firewall_cidrs.supervisory }}" }
+params_specialclient_hosts:
+  - name: otmanager
+    value: "{{ hostvars[company_name + '_participant_client_1'].ip_addresses['access'] }}"
+
+shorewall_hosts:
+  - { zone: dmz, host: $EXTERNALIF:$DMZNET, options: routeback }
+  - { zone: access, host: $EXTERNALIF:$ACCESSNET, options: routeback }
+  - { zone: soc, host: $EXTERNALIF:$SOCNET, options: routeback }

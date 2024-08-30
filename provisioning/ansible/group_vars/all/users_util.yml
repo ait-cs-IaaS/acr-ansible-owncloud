@@ -1,0 +1,147 @@
+---
+client_user:
+  "{{ users | select_users(filter={'host': inventory_hostname}, single=true) }}"
+
+host_user_list:  >-
+  {{
+    ([] if host_user is not defined else [host_user]) +
+    ([] if ssh_users is not defined else ssh_users)
+  }}
+
+user_groups:
+  company_soc_users: >
+    {{ company_soc_users | default([]) | create_users(role='csirt',
+    companies=companies, defaults=company_soc_users_defaults) }}
+  company_regular_users: >
+    {{ company_regular_users | default([]) | create_users(role='regular',
+    companies=companies, defaults=company_regular_users_defaults) }}
+  company_simulated_users: >
+    {{ company_simulated_users | default([]) | create_users(role='simulated',
+    companies=companies, defaults=company_simulated_users_defaults) }}
+  company_extra_users: >
+    {{ company_extra_users | default([]) | create_users(role='extra',
+    companies=companies) }}
+  gov_users: >
+    {{ gov_users | default([]) | create_users(role='gov',
+    defaults=gov_users_defaults) }}
+  attacker_users: >
+    {{ attacker_users | default([]) | create_users(role='attacker',
+    defaults=attacker_users_defaults) }}
+  global_users: >
+    {{ global_users | default([]) | create_users(role='global',
+    defaults=global_users_defaults) }}
+  control_users: >
+    {{ control_users | default([]) | create_users(role='control',
+    defaults=control_users_defaults) }}
+
+_group_emails: '{{ user_groups | default([]) | create_group_emails() }}'
+
+users: "{{ user_groups | combine({'group_emails': _group_emails}) }}"
+
+company_soc_users_defaults:
+  group_emails:
+    - security
+    - office
+  owncloud_groups:
+    - csirt
+    - software
+  samba_groups:
+    - admin
+  desktop_files:
+    - all
+    - clients_csirt
+  contact_groups:
+    - companies
+    - control
+    - gov
+  password: mozart.rocks
+  novnc: true
+  wp_role: administrator
+  smime: true
+  ssh_key: true
+  ssh_admin: true
+  ot_admin: true
+  learners_groups:
+    - participants
+    - soc
+  mattermost_channels:
+    - soc
+  user_groups:
+    - csirts
+    - soc
+  host_group: csirt_client
+
+company_regular_users_defaults:
+  password: mozart.rocks
+  novnc: true
+  owncloud_groups:
+    - employees
+    - accounting
+  samba_groups:
+    - customers
+    - accounting
+  contact_groups:
+    - companies
+    - control
+    - gov
+  desktop_files:
+    - all
+    - clients_regular
+  smime: true
+  ssh_key: true
+  sudo: {}
+  wp_role: editor
+  learners_groups:
+    - participants
+    - mgmt
+  host_group: participant_client
+  group_emails:
+    - office
+  user_groups:
+    - participants
+  mattermost_channels:
+    - support
+  supplypro_admin: true
+
+company_simulated_users_defaults:
+  password: DKNekTd9Pjx
+  owncloud_groups:
+    - employees
+    - software
+    - accounting
+  samba_groups:
+    - software
+    - accounting
+  contact_groups:
+    - companies
+  ssh_key: false
+  ssh_admin: false
+  smime: true
+  wp_role: editor
+  host_group: employee
+  control_mail: true
+
+gov_users_defaults:
+  learners_groups: gov
+  host_group: internet_client
+  contact_groups:
+    - gov
+
+attacker_users_defaults:
+  host_group: attacker
+
+control_users_defaults:
+  password: mozart.rocks!
+  novnc: true
+  host_group: control_client
+  learners_groups:
+    - instructor
+    - admin
+  ssh_key: true
+  ssh_admin: true
+  control_mail: true
+  learners_role: instructor
+
+global_users_defaults:
+  control_mail: true
+  password: "{{ control_password }}"

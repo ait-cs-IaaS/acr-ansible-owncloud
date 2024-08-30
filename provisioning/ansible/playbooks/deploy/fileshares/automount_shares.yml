@@ -1,0 +1,76 @@
+---
+- name: Set path defaults
+  ansible.builtin.set_fact:
+    mount_base: /home/{{ client_user.username }}/smbshares
+
+- name: Install dependencies
+  become: true
+  ansible.builtin.apt:
+    name: cifs-utils
+
+- name: Unmount network shares
+  become: true
+  ansible.posix.mount:
+    src: "{{ share.uri }}"
+    path: "{{ mount_base }}/{{ share.name }}"
+    state: absent
+  loop: "{{ user_mount_shares }}"
+  loop_control:
+    loop_var: share
+
+- name: Remove old mountpoints
+  become: true
+  ansible.builtin.file:
+    path: "{{ mount_base }}/"
+    state: absent
+
+- name: Ensure mountpoints exists
+  become: true
+  ansible.builtin.file:
+    path: "{{ mount_base }}/{{ share.name }}"
+    state: directory
+    owner: "{{ client_user.username }}"
+    group: "{{ client_user.username }}"
+    recurse: true
+    mode: "0755"
+  loop: "{{ user_mount_shares }}"
+  loop_control:
+    loop_var: share
+
+- name: Ensure .smbcredentials file exists
+  become: true
+  ansible.builtin.file:
+    path: /home/{{ client_user.username }}/.smbcredentials
+    state: touch
+    owner: "{{ client_user.username }}"
+    group: "{{ client_user.username }}"
+    mode: "0600"
+
+- name: Write username and password to .smbcredentials file
+  become: true
+  ansible.builtin.copy:
+    dest: /home/{{ client_user.username }}/.smbcredentials
+    content: |
+      username={{ client_user.username }}
+      password={{ client_user.password }}
+
+- name: Get user/group ids
+  ansible.builtin.getent:
+    database: passwd
+
+- name: Mount network shares
+  become: true
+  ansible.posix.mount:
+    src: "{{ share.uri }}"
+    path: "{{ mount_base }}/{{ share.name }}"
+    fstype: cifs
+    opts: rw,credentials=/home/{{ client_user.username }}/.smbcredentials,users,uid={{ getent_passwd[client_user.username].1 }},gid={{ getent_passwd[client_user.username].2
+      }},forceuid,forcegid,exec
+    state: mounted
+  loop: "{{ user_mount_shares }}"
+  loop_control:
+    loop_var: share
+  register: mount_result
+  until: mount_result is succeeded
+  retries: 30
+  delay: 10

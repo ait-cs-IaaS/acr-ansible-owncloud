@@ -1,0 +1,22 @@
+---
+- name: Configure and deploy SQL injection
+  become: true
+  hosts: attacker_2
+  tasks:
+    - name: Create folder
+      become: true
+      ansible.builtin.file:
+        path: /opt/sqlinjection
+        state: directory
+
+    - name: Deploy sql injection script
+      become: true
+      ansible.builtin.copy:
+        src: sql_injection.sh
+        dest: /opt/sqlinjection/attack.sh
+
+    - name: Make it executable
+      become: true
+      ansible.builtin.file:
+        path: /opt/sqlinjection/attack.sh
+        mode: +x

@@ -1,0 +1,151 @@
+---
+# owncloud_prepared_files_src: files/prepared_files/{{ game_env }}
+# owncloud_prepared_files_dest: /mnt/data/local
+owncloud_setup_run_once: false
+cloud_fqdn: "cloud.{{ company_domain }}"
+cloud_trusted_domains:
+  - cloud.{{ company_domain }}
+  - owncloud.{{ company_domain }}
+  - localhost
+  - "{{ ip_addresses['dmz'] }}"
+
+fileshare_uri: share.{{ company_domains[company_name + '_access']['domain'] }}
+
+deploy_path: /var/www/cloud
+cloud_version: owncloud-10.4.1
+# For owncloud Role
+owncloud_download_url: https://download.owncloud.com/server/stable/owncloud-{{ owncloud_version }}.tar.bz2
+# For nextcry Role
+cloud_download_url: https://download.owncloud.com/server/stable/owncloud-{{ owncloud_version }}.tar.bz2
+
+nextcry_nginx_real_ip:
+  - "{{ hostvars[company_name + '_proxy'].ip_addresses['dmz'] }}"
+
+nextcry_nginx_ip_header: X-Forwarded-For
+
+# Cloud config
+
+owncloud_service_user: "{{ users | select_users(filter={'username': 'owncloud'}, single=true) }}"
+
+owncloud_users_group: |
+  [
+    {% for user in users | select_users(filter={'owncloud_groups': 'defined'}) %}
+      {
+        "user": "{{ user.owncloud_user | default(user.email) }}",
+        "displayname": "{{ user.display_name }}",
+        "email": "{{ user.email }}",
+        "password": "{{ user.password }}",
+        "groups": [
+          {% for user_owncloud_group in user.owncloud_groups %}
+            "{{ user.company }}_{{ user_owncloud_group }}",
+          {% endfor %}
+        ]
+      },
+    {% endfor %}
+  ]
+
+# owncloud_groups_group: |
+# owncloud_user_groups: |
+#   [
+#   {% for user_owncloud_group in (owncloud_users_group | map(attribute='groups') | flatten | unique) %}
+#     {
+#       "group": "{{ user_owncloud_group }}"
+#     },
+#   {% endfor %}
+#   ]
+
+owncloud_combined_shares: "{{ default_shares | default([]) + shared_shares | default([]) + attack_shares | default([]) }}"
+
+default_shares: |
+  [
+  {% for company_name, company in companies.items() %}
+    {
+      "mount_point": "/{{ company.display_name }} Press Releases",
+      "groups": [
+        "{{ company.name }}_clients_employees", 
+        "{{ company.name }}_csirt",
+        "{{ company.name }}_admin"
+      ],
+      "authentication_backend": "none",
+      "storage_backend": "local",
+      "local_config": {
+        "datadir": "/mnt/data/local/press_releases/{{ company.name }}"
+      },
+      "options": {
+        "read_only": "false",
+        "enable_sharing": "true"
+      }
+    },{
+      "mount_point": "/{{ company.display_name }} Accounting",
+      "groups": [
+        "{{ company.name }}_accounting",
+        "{{ company.name }}_admin"
+      ],
+      "authentication_backend": "none",
+      "storage_backend": "local",
+      "local_config": {
+        "datadir": "/mnt/data/local/accounting/{{ company.name }}"
+      },
+      "options": {
+        "read_only": "false",
+        "enable_sharing": "true"
+      }
+    },
+  {% endfor %}
+  ]
+
+shared_clouds:
+  - [puresynth, transgut]
+  - [austricom, transgut]
+  - [wertvoll, transgut]
+
+shared_shares: |
+  [
+  {% for shared_cloud in shared_clouds | default([]) %}
+    {
+    "mount_point": "{% for cloud_component in shared_cloud %}{{ companies[cloud_component].display_name }} {% endfor %}Share",
+    "groups": [
+      {% for cloud_component in shared_cloud %}
+        "{{ cloud_component }}_clients_employees",
+      {% endfor %}
+      ],
+    "authentication_backend": "none",
+    "storage_backend": "local",
+    "local_config": {
+        "datadir": "/mnt/data/local/{% for cloud_component in shared_cloud %}{{ cloud_component }}_{% endfor %}share"
+      },
+    "options": {
+        "read_only": "false",
+        "enable_sharing": "true"
+      }
+    },
+  {% endfor %}
+  ]
+
+attack_shares:
+  - mount_point: /{{ company_info['display_name'] }} Software
+    groups:
+      - "{{ company_info['name'] }}_accounting"
+      - "{{ company_info['name'] }}_clients_employees"
+      - "{{ company_info['name'] }}_admin"
+      - "{{ company_info['name'] }}_software"
+    authentication_backend: password
+    storage_backend: smb
+    smb_config:
+      host: "{{ fileshare_uri }}"
+      share: software
+    authentication_user: "{{ owncloud_service_user.username }}"
+    authentication_password: "{{ owncloud_service_user.password }}"
+    options:
+      read_only: false
+      enable_sharing: false
+
+owncloud_data_dirs: |
+  [
+  {% for data_dir in (owncloud_combined_shares | map(attribute='local_config.datadir') | select('defined') | unique) %}
+    {
+      "src" : "{{ (data_dir | split('/mnt/data/local/'))[1] }}",
+      "dest" : "{{ data_dir }}",
+    },
+  {% endfor %}
+  ]

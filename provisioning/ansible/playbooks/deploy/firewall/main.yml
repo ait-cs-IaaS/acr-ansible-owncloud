@@ -1,0 +1,10 @@
+---
+- name: Fact gathering pre firewall configuration
+  hosts: all
+  gather_subset: [network]
+
+- name: Configure the firewalls
+  hosts: firewalls
+  roles:
+    - role: shorewall
+      become: true

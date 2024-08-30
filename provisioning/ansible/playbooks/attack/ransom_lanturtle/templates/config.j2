@@ -1,0 +1,57 @@
+red=`tput setaf 1`
+green=`tput setaf 2`
+yellow=`tput setaf 3`
+reset=`tput sgr0`
+
+PWN_PATH=/opt/ot_attack/
+LINSCADA_EXPLOIT=${PWN_PATH}/LinScada_RCE.py
+
+
+EXPLOIT_USER=apdias
+EXPLOIT_PASS=ap2021dias
+EXPLOIT_PORT=8080
+
+# SUBNET WITH HMI AND HISTORIAN
+SUBNET_IP="{{ ansible_default_ipv4.network | ansible.utils.ipv4('network') }}"
+RANGE="24"
+
+WFZ_WORDLIST=/usr/share/wfuzz/wordlist/general/common.txt
+CONTENT_DIR_PORT=8080
+CD_PATH=ScadaBR
+
+# LAPTOP
+LAPTOP_IP="{{ hostvars[company_name + '_laptop'].ansible_default_ipv4.address }}"
+LAPTOP_VNC_USER=engineer01
+
+# LAN TURTLE
+ATTACKER_LHOST_IP="{{ hostvars[company_name + '_lanturtle'].ansible_default_ipv4.address }}"
+# APACHE PORT
+ATTACKER_LPORT=80
+
+# ATTACKER 1
+ATTACKER_CC_LHOST_IP={{ attacker_cc_metasploit_ip_lanturtle }}
+# METASPLOIT
+ATTACKER_CC_LPORT={{ attacker_cc_port_lanturtle }}
+# APACHE
+ATTACKER_CC_WEBPORT={{ attacker_web_port }}
+
+# SSH USERNAME ON TARGETS FOR SSH CONNECTION
+VICTIM_SERVER_USER=$EXPLOIT_USER
+RSA_SSH_KEY_LOCATION=/app/config/.ssh/id_rsa
+
+# ATTACKER 0
+RANSOMW_WEB_HOST={{ hostvars['attacker_0'].ansible_default_ipv4.address }}
+# RANSOM SERVER
+RANSOMW_WEB_PORT=80
+
+# HISTORIAN AND HMI IPs
+GRAFANA_IP="{{ hostvars[company_name + '_historian'].ansible_default_ipv4.address }}"
+HMI_IP="{{ hostvars[company_name + '_hmi'].ansible_default_ipv4.address }}"
+
+EXPLOIT_FILENAME={{ exploit_filename }}
+RANSOM_PAYLOAD={{ ransomware_payload }}
+
+#RANSOM PAYLOAD TARGET PATH
+RANSOM_PTP={{ ransomware_path }}
+
+set -x

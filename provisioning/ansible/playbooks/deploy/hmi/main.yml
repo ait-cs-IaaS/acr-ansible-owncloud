@@ -1,0 +1,53 @@
+---
+
+- name: Installs and configure HMIs
+  hosts: hmi
+  become: true
+
+  tasks:
+
+    - name: Install required packages
+      become: true
+      ansible.builtin.apt:
+        name:
+          - python3
+          - python3-pip
+          - python3-venv
+        update_cache: true
+
+    - name: Create application directory for hmi
+      become: true
+      ansible.builtin.file:
+        path: /opt/hmi
+        state: directory
+        mode: '0770'
+        recurse: true
+
+    - name: Copy hmi files
+      become: true
+      ansible.builtin.copy:
+        src: '{{ local_ansible_dir }}/data/files/hmi/iec104_to_http/'
+        dest: /opt/hmi/
+        owner: 'root'
+        group: 'root'
+        mode: '0755'
+
+    - name: Set correct IP address
+      become: true
+      ansible.builtin.template:
+        src: '{{ local_ansible_dir }}/data/files/hmi/iec104_to_http/hmi.html.j2'
+        dest: /opt/hmi/hmi.html
+        owner: 'root'
+        group: 'root'
+        mode: '0755'
+
+    - name: Install Python dependencies for hmi
+      become: true
+      ansible.builtin.pip:
+        requirements: /opt/hmi/requirements.txt
+        virtualenv: '/opt/hmi/venv'
+        virtualenv_command: 'python3 -m venv'
+
+    - name: Serve via systemd service
+      ansible.builtin.include_role:
+        name: simple-systemd-service

@@ -1,0 +1,62 @@
+---
+# network zones
+shorewall_zones:
+  - name: inet
+    type: ipv4
+    interface: { name: $INETIF, broadcast: detect, options: nosmurfs }
+  - name: internal
+    type: ipv4
+    interface: { name: $INTERNALIF, broadcast: detect, options: routeback }
+  - name: dmz
+    type: ipv4
+
+shorewall_policy:
+  - { source: fw, dest: all, policy: ACCEPT }
+  - { source: internal, dest: inet, policy: ACCEPT }
+  - THIS POLICY HAS TO BE THE LAST
+  - { source: all, dest: all, policy: REJECT, log: info }
+
+shorewall_rules:
+  - DNAT Rules
+  - action: DNAT
+    source: inet
+    dest: internal:$mail
+    proto: tcp
+    dest_port: 25,465,587,143,993,110,995
+  - action: DNAT
+    source: inet
+    dest: internal:$proxy
+    proto: tcp
+    dest_port: 80,443
+  - action: DNAT
+    source: inet
+    dest: internal:$supplypro
+    proto: tcp
+    dest_port: 5000 # FIXME: change to /api
+  - Permit Access to SSH
+  - action: SSH/ACCEPT
+    source: all
+    dest: fw
+  - Ping Rules
+  - { action: Ping/ACCEPT, source: all, dest: all }
+  - DNS Rules
+  - { action: ACCEPT, source: internal, dest: fw, proto: tcp, dest_port: 53 }
+  - { action: ACCEPT, source: internal, dest: fw, proto: udp, dest_port: 53 }
+
+shorewall_snat:
+  - { dest: $INETIF, source: $INTERNALIF }
+
+shorewall_params:
+  - Interfaces
+  - { name: INETIF, value: "{{ firewall_interfaces.internet.device }}" }
+  - { name: INTERNALIF, value: "{{ firewall_interfaces.dmz.device }}" }
+  - Hosts
+  - { name: proxy, value: "{{ hostvars[company_name + '_proxy'].ip_addresses['dmz'] }}" }
+  - { name: mail, value: "{{ hostvars[company_name + '_mail'].ip_addresses['dmz'] }}" }
+  - name: supplypro
+    value: "{{ hostvars[company_name + '_application_server'].ip_addresses['dmz'] }}"
+  - Networks
+  - { name: DMZNET, value: "{{ firewall_cidrs.dmz }}" }
+
+shorewall_hosts:
+  - { zone: dmz, host: $INTERNALIF:$DMZNET, options: routeback }

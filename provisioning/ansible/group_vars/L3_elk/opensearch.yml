@@ -1,0 +1,24 @@
+
+os_version: '2.13.0'
+os_dashboards_version: '2.13.0'
+os_dashboards_user: opensearch-dashboards
+os_download_url: https://artifacts.opensearch.org/releases/bundle/opensearch
+os_user: opensearch
+os_cluster_name: os-cluster
+
+iac_enable: true
+os_test: true
+
+admin_password: 'mozart.rocks!'
+kibanaserver_password: 'Test@6789'
+logstash_password: 'Test@456'
+
+domain_name: 'soc.{{ company_domain }}'
+opensearch_hostname: '{{ dns_hostname }}.soc.{{ company_domain }}'
+opensearch_hosts: |
+    { 
+        "{{ opensearch_hostname }}" : 
+            {
+            "ip": "{{ ip_addresses['soc'] }}"
+            }
+    }

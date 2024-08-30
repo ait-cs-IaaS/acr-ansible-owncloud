@@ -1,0 +1,25 @@
+---
+- name: Gather facts abouts other hosts
+  hosts: webserver,clients_csirt
+  gather_facts: true
+
+- name: Deploy demo attack
+  become: true
+  hosts: venjix
+
+  tasks:
+    - name: Ensure demo path exists
+      become: true
+      ansible.builtin.file:
+        path: /opt/demo
+        state: directory
+
+    - name: Deploy attack scripts
+      become: true
+      ansible.builtin.template:
+        src: attack_squence.sh.j2
+        dest: /opt/demo/attack_squence_{{ item }}.sh
+        owner: "{{ venjix_control_user.username }}"
+        group: "{{ venjix_control_user.username }}"
+        mode: a+x
+      loop: "{{ company_names }}"

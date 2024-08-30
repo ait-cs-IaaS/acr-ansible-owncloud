@@ -1,0 +1,50 @@
+---
+supplypro_logfile_location: /var/log/supplypro
+
+supplypro_github_pat: "{{ lookup('env', 'GITHUB_PAT') }}"
+supplypro_basepath: /opt/supplypro
+supplypro_wwwroot: '{{ supplypro_basepath }}'
+supplypro_user: supplypro
+supplypro_backend_branch: master
+supplypro_socket_path: /var/run/supplypro/supplypro.sock
+
+supplypro_service_execstart: >
+  {{ supplypro_basepath }}/venv/bin/gunicorn backend:app --bind unix:{{
+  supplypro_socket_path }} --pythonpath={{ supplypro_basepath
+  }}/venv/lib/python3.9
+
+supplypro_packages:
+  - python3.9
+  - python3.9-venv
+  - nginx
+
+# supplypro_server_name: supplypro.{{ domains[dns_domain_id].domain }}
+supplypro_server_name: supplypro.{{ company_domain }}
+supplypro_backend_url: https://{{ supplypro_server_name }}
+
+supplypro_env:
+  VITE_BACKEND: '{{ supplypro_backend_url }}:5000/'
+  VITE_APP_TITLE: supplypro
+
+supplypro_users: |
+  {
+  {% for user in (users | select_users(filter={'company': company_name})) %}
+    "{{ user.username }}" : {
+      "first_name": "{{ user.first_name }}",
+      "last_name": "{{ user.last_name }}",
+      "email": "{{ user.email }}",
+      "admin": {{ user.supplypro_admin }},
+      "password": "{{ user.password }}"
+    },
+  {% endfor %}
+  "supplyadmin" : {
+      "first_name": "",
+      "last_name": "",
+      "email": "supplyadmin@supplypro.{{ company_domain }}",
+      "admin": true,
+      "password": "M4t4h4r1#"
+    }
+  }
+
+nginx_conf_src: nginx_supplypro.conf.j2
+nginx_conf_dest: supplypro

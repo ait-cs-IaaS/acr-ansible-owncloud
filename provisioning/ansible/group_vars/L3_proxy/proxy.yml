@@ -1,0 +1,58 @@
+---
+apache2_additional_packages:
+  - libxml2-dev
+
+# modules needed for reverse proxy
+apache2_modules:
+  - name: proxy
+  - name: proxy_ajp
+  - name: proxy_http
+  - name: rewrite
+  - name: deflate
+  - name: headers
+  - name: ssl
+  - name: proxy_connect
+  - name: proxy_html
+  - name: authz_host
+  - name: remoteip
+
+apache2_ssl_cert_path: /etc/ssl/
+apache2_ssl_key_path: /etc/ssl/
+
+# FIXME:
+apache2_proxy_vhosts:
+  - name: mail.{{ company_domain }}
+    enabled: true
+    proxy_target: mailserver.dmz.{{ company_domain }}
+    vhost_template: templates/reverse_vhost.conf.j2
+    redirect_ssl: true
+
+  - name: "{{ company_domain }}"
+    aliases:
+      - www.{{ company_domain }}
+    enabled: true
+    proxy_target: webserver.dmz.{{ company_domain }}
+    vhost_template: templates/reverse_vhost.conf.j2
+    redirect_ssl: true
+
+  - name: supplypro.{{ company_domain }}
+    enabled: true
+    proxy_target: supplypro.dmz.{{ company_domain }}
+    vhost_template: templates/reverse_vhost.conf.j2
+    redirect_ssl: true
+
+  - name: cloud.dmz.{{ company_domain }}
+    enabled: true
+    proxy_target: cloud.dmz.{{ company_domain }}
+    vhost_template: templates/reverse_vhost.conf.j2
+    redirect_ssl: true
+
+proxy_catch_all_domain: proxy.{{ company_domain }}
+apache2_webserver_vhosts:
+  # catch all vhost
+  - name: "000-catch-all"
+    server_name: "{{ proxy_catch_all_domain }}"
+    vhost_dir: false
+    vhost_template: templates/catch_all_vhost.conf.j2
+
+apache2_vhosts: "{{ apache2_proxy_vhosts + apache2_webserver_vhosts }}"

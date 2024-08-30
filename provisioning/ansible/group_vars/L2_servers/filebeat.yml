@@ -1,0 +1,65 @@
+---
+filebeat_beat_conf: "{{ filebeat_beat_conf_all | combine((filebeat_beat_conf_host | default({})), recursive=True) }}"
+
+filebeat_beat_conf_all:
+  output.elasticsearch.ssl.certificate_authorities: ["/usr/local/share/ca-certificates/{{ ca_cert | basename }}"]
+  filebeat.config.modules.path: ${path.config}/modules.d/*.yml
+
+  # set replicas to 0 since we use a single-node instance
+  setup.template.settings:
+    index.number_of_replicas: 0
+
+  setup.kibana:
+    # Kibana Host
+    # Scheme and port can be left out and will be set to the default (http and 5601)
+    # In case you specify and additional path, the scheme is required: http://localhost/path
+    # IPv6 addresses should always be defined as: https://[2001:db8::1]
+    host: https://{{ hostvars[company_name + '_elk'].ip_addresses['soc'] }}
+    username: "{{ beats_username }}"
+    password: "{{ beats_password }}"
+
+  # extra processor so *.cyberrange.at domains are considered public domains
+  processors:
+    - if:
+        or:
+          - equals.dns.type: query
+          - and:
+              - equals.dns.type: answer
+              - equals.suricata.eve.dns.version: 2
+      then:
+        - script:
+            id: cyberrange_domain
+            lang: javascript
+            source: >-
+              function process(evt) {
+                var event_type = evt.Get("suricata.eve.event_type");
+
+                if (event_type == "dns") {
+                  var name = evt.Get("suricata.eve.dns.rrname");
+                  var index = name.indexOf(".cyberrange.at");
+                  if (index != -1){
+                    var rd_index = name.substr(0,index).lastIndexOf('.');
+                    evt.Put("dns.question.registered_domain",
+              name.substr(rd_index + 1));
+                  }
+                }
+              }
+
+filebeat_modules_all:
+  - module: system
+  - module: auditd
+    enabled: false
+  - module: suricata
+
+filebeat_modules: "{{ filebeat_modules_all + (filebeat_modules_host | default([])) + (filebeat_modules_group | default([])) }}"
+
+filebeat_logging_conf:
+  level: info
+  to_files: true
+  to_syslog: false
+  files:
+    rotateeverybytes: 10485760
+    path: /var/log/filebeat
+    name: filebeat
+    keepfiles: 7
+    permissions: "0644"

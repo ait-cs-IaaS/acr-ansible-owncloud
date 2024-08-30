@@ -1,0 +1,29 @@
+---
+
+hostname: RC-{{ (ansible_facts['nodename'] | hash('sha256'))[:4] | upper }}{{ host_index }}
+
+launcher_objects:
+  caja-filebrowser:
+    launcher-location: /usr/share/applications/caja.desktop
+    position: 15
+  thunderbird:
+    launcher-location: /usr/share/applications/thunderbird.desktop
+    position: 20
+  mattermost:
+    launcher-location: /usr/share/applications/mattermost-desktop.desktop
+    position: 25
+  firefox:
+    launcher-location: /usr/share/applications/firefox.desktop
+    position: 30
+  libreoffice-base:
+    launcher-location: /usr/share/applications/libreoffice-base.desktop
+    position: 35
+  libreoffice-calc:
+    launcher-location: /usr/share/applications/libreoffice-calc.desktop
+    position: 35
+  libreoffice-writer:
+    launcher-location: /usr/share/applications/libreoffice-writer.desktop
+    position: 35
+  libreoffice-impress:
+    launcher-location: /usr/share/applications/libreoffice-impress.desktop
+    position: 35

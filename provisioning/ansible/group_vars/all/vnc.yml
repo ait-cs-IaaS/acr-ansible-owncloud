@@ -1,0 +1,9 @@
+---
+lightdm_hidden_users:
+  - nobody
+  - ait
+
+lightdm_default_user: "{{ client_user.username }}"
+
+novnc_password: "{{ client_user.password }}"
+novnc_user: "{{ client_user.username }}"

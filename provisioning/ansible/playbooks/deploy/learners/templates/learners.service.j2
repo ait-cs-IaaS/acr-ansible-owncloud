@@ -1,0 +1,17 @@
+[Unit]
+Description=Learners gunicorn
+After=network.target
+
+[Service]
+Type=notify
+User={{ learners_user }}
+Environment=LEARNERS_CONFIG={{ learners_basepath }}/config.yml
+RuntimeDirectory=learners
+WorkingDirectory={{ learners_basepath }}/
+ExecStart={{ flask_service_execstart }}
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=5
+
+[Install]
+WantedBy=multi-user.target

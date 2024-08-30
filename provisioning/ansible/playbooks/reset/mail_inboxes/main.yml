@@ -1,0 +1,10 @@
+---
+- name: Clear mailboxes
+  hosts: mailservers
+  tasks:
+    - name: Delete .mail directory for user
+      become: true
+      file:
+        name: /home/{{ item }}/.mail
+        state: absent
+      loop: "{{ user_list | map(attribute='name') }}"

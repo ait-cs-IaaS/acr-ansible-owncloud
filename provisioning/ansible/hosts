@@ -1,0 +1,10 @@
+# static host inventory config for configuring additional host groups
+#[all]
+
+#[ranswomware_attacker]
+#attacker_0
+#attacker_1
+
+#[ransomware:children]
+#lanturtle
+#ranswomware_attacker

@@ -1,0 +1,5 @@
+---
+- src: git@github.com:ait-cs-IaaS/ansible-role-samba.git
+  scm: git
+  version: v2.7.2
+  name: samba

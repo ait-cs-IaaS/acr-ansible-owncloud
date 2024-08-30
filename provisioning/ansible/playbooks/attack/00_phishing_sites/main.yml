@@ -1,0 +1,102 @@
+---
+- name: Deploy phishing site to remote server
+  hosts: attacker_4
+  become: true
+
+  tasks:
+    - name: Install Nginx
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Python pip
+      ansible.builtin.apt:
+        name: [python3, python3-pip]
+        state: present
+
+    - name: Ensure dirs are present
+      ansible.builtin.file:
+        path: /var/www/html/{{ item.company_name }}
+        state: directory
+      loop: "{{ phishing_sites }}"
+
+    - name: Copy website files
+      ansible.builtin.unarchive:
+        src: files/{{ item.phishing_site }}.tar.gz
+        dest: /var/www/html/{{ item.company_name }}
+      loop: "{{ phishing_sites }}"
+
+    - name: Configure index.html
+      ansible.builtin.template:
+        src: "{{ item.phishing_site }}/index.html.j2"
+        dest: /var/www/html/{{ item.company_name }}/{{ item.phishing_site }}/index.html
+        mode: "0644"
+      loop: "{{ phishing_sites }}"
+
+    - name: Remove nginx default
+      ansible.builtin.file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+
+    - name: Configure nginx
+      ansible.builtin.template:
+        src: nginx.conf.j2
+        dest: /etc/nginx/sites-enabled/{{ item.phishing_url }}
+        mode: "0644"
+      loop: "{{ phishing_sites }}"
+      notify:
+        - Restart nginx
+
+    - name: Enable Nginx
+      ansible.builtin.systemd:
+        name: nginx
+        enabled: true
+        state: started
+
+    # Monitoring app
+    # TODO: Check
+
+    - name: Ensure learners endpoint in /etc/hosts
+      become: true
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        line: "{{ hostvars['learners']['openstack']['addresses'][openstack.addresses.keys() | first] | list | selectattr('OS-EXT-IPS:type', 'equalto', 'fixed') |
+          map(attribute='addr') | first }} {{ global_exercise.auth_url }}"
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Install monitoring requirements
+      become: true
+      ansible.builtin.pip:
+        name: requests
+
+    - name: Deploy templates
+      become: true
+      ansible.builtin.template:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        owner: root
+        group: root
+        mode: "{{ item.mode }}"
+      loop:
+        - src: _agent/ait_agent.py.j2
+          dest: /opt/ait_agent.py
+          mode: +x
+        - src: _agent/ait_agent.service.j2
+          dest: /etc/systemd/system/ait_agent.service
+          mode: "0644"
+
+    - name: Enable agent
+      ansible.builtin.systemd:
+        name: ait_agent.service
+        enabled: true
+        state: started
+
+  handlers:
+    - name: Restart nginx
+      ansible.builtin.systemd:
+        name: nginx
+        state: restarted

@@ -1,0 +1,8 @@
+{
+    "base_image" : "Ubuntu 20.04",
+    "image_name" : "cr-samba-4.14.5-ubuntu-focal-amd64",
+    "security_group": "default",
+    "network_discovery_cidrs": ["172.31.0.0/17"],
+    "timestamp_image": false,
+    "flavor": "d2-2"
+}

@@ -1,0 +1,22 @@
+---
+
+hostname: CS-{{ (ansible_facts['nodename'] | hash('sha256'))[:4] | upper }}{{ host_index }}
+
+client_user_sudo: true
+
+client_launcher_objects:
+  caja-filebrowser:
+    launcher-location: /usr/share/applications/caja.desktop
+    position: 15
+  firefox:
+    launcher-location: /usr/share/applications/firefox.desktop
+    position: 20
+  thunderbird:
+    launcher-location: /usr/share/applications/thunderbird.desktop
+    position: 25
+  mattermost:
+    launcher-location: /usr/share/applications/mattermost-desktop.desktop
+    position: 30
+  mate-terminal:
+    launcher-location: /usr/share/applications/mate-terminal.desktop
+    position: 35

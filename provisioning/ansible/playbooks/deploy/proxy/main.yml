@@ -1,0 +1,11 @@
+---
+- name: Gather facts about proxied servers and dns server
+  hosts: proxied
+  gather_subset: [min]
+
+- name: Setup and configure the organisation reverse proxy
+  hosts: proxy
+  gather_subset: [min]
+  become: true
+  roles:
+    - role: apache2

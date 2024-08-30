@@ -1,0 +1,46 @@
+wp_themes:
+  - { name: gutenify-logistics, activate: true }
+  - { name: exs-personal, activate: false }
+  - { name: neve, activate: false }
+  - { name: hestia, activate: false }
+
+wp_categories:
+  - { name: Unternehmensnachrichten, description: Aktuelle Nachrichten von TransGut }
+  - { name: Logistik-Trends, description: Trends und Entwicklungen in der Logistikbranche }
+  - { name: Nachhaltige Logistik, description: Nachhaltige Praktiken in der Logistik }
+
+wp_posts:
+  - title: TransGut erweitert sein globales Netzwerk
+    author: jonesk
+    category: Unternehmensnachrichten
+    date: "2023-09-20 09:00:00"
+    content: |
+      <p>TransGut setzt seine Expansion fort und erweitert sein globales Logistiknetzwerk. Mit neuen Standorten und Partnerschaften bieten wir unseren Kunden noch mehr Möglichkeiten für effiziente und zuverlässige Lieferungen weltweit. Erfahren Sie mehr über unsere neuesten Entwicklungen und wie sie die Logistikbranche beeinflussen.</p>
+
+  - title: Die Zukunft der Lieferketten - Technologische Innovationen
+    author: jonesk
+    category: Logistik-Trends
+    date: "2023-09-18 14:30:00"
+    content: |
+      <p>Die Logistikbranche befindet sich im Wandel, angetrieben von technologischen Innovationen. In diesem Artikel werfen wir einen Blick auf die neuesten Trends, darunter IoT-gesteuerte Lieferketten, automatisierte Lagerhäuser und KI-gestützte Routenplanung. Erfahren Sie, wie TransGut diese Technologien einsetzt, um die Effizienz unserer Logistiklösungen zu steigern und gleichzeitig den Service für unsere Kunden zu verbessern.</p>
+
+  - title: Nachhaltige Logistikpraktiken bei TransGut
+    author: kaoc
+    category: Nachhaltige Logistik
+    date: "2023-09-16 13:45:00"
+    content: |
+      <p>TransGut engagiert sich für nachhaltige Logistikpraktiken. Wir investieren in umweltfreundliche Fahrzeuge, nutzen alternative Energien und optimieren unsere Routen, um Emissionen zu reduzieren. Erfahren Sie, wie wir unseren ökologischen Fußabdruck minimieren und unseren Beitrag zur Nachhaltigkeit leisten, während wir gleichzeitig erstklassige Logistikdienstleistungen erbringen.</p>
+
+  - title: Effizienzsteigerung in der Warenverteilung
+    author: kaoc
+    category: Logistik-Trends
+    date: "2023-09-14 11:20:00"
+    content: |
+      <p>TransGut setzt modernste Technologien ein, um die Effizienz in der Warenverteilung zu steigern. Erfahren Sie, wie wir fortschrittliche Logistiksysteme und Echtzeit-Tracking nutzen, um Lieferungen schneller und genauer zu machen. Wir unterstützen Unternehmen dabei, ihre Lieferketten zu optimieren und Kosten zu reduzieren.</p>
+
+  - title: Die Bedeutung der Kundenorientierung in der Logistik
+    author: jonesk
+    category: Unternehmensnachrichten
+    date: "2023-09-12 10:15:00"
+    content: |
+      <p>Bei TransGut steht die Zufriedenheit unserer Kunden an erster Stelle. In diesem Artikel erfahren Sie mehr über unsere Kundenorientierung und wie wir maßgeschneiderte Logistiklösungen entwickeln, um die individuellen Bedürfnisse unserer Kunden zu erfüllen. Erfahren Sie, wie TransGut eine Partnerschaft mit Ihnen aufbauen kann, um Ihre Logistik effizienter und erfolgreicher zu gestalten.</p>

@@ -1,0 +1,27 @@
+---
+
+_client_user_share_permissions: |
+  [
+    {% for samba_group in client_user.samba_groups %}
+      {{ hostvars[company_name + '_fileshare']['samba_groups'][samba_group] | default([]) | list | flatten }},
+    {% endfor %}
+  ]
+
+client_user_share_permissions: "{{ _client_user_share_permissions | list | flatten }}"
+
+fileshare_uri: "{{ hostvars[company_name + '_fileshare'].dns_hostname }}.access.{{ company_domain }}" 
+
+_user_mount_shares: |
+  [
+  {%- for _samba_share in hostvars[company_name + '_fileshare'].samba_shares -%}
+      {%- for permission in client_user_share_permissions -%}
+        {%- if permission in _samba_share.valid_users -%}
+          {
+          "name": "{{ _samba_share.name }}",
+          "uri": "//{{ fileshare_uri }}/{{  _samba_share.name }}"
+          },{%- endif -%}
+      {%- endfor -%}
+    {%- endfor -%}
+  ]
+
+user_mount_shares: "{{ _user_mount_shares | unique }}"

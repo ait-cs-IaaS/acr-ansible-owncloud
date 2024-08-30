@@ -1,0 +1,86 @@
+---
+
+# FIXME: 
+firefox_json:
+  homepage: www.google.com/ncr
+  accounts:
+    '{{ firefox_standard_accounts | default([]) + firefox_conditional_accounts |
+    default([]) }}'
+
+firefox_trusted_certs:
+  - '{{ ca_cert }}'
+
+
+# lockPref("intl.accept_languages", "{{ firefox_default_lang | default('en-US, en') }}");
+# lockPref("browser.search.defaultenginename", "Google");
+# lockPref("browser.search.defaulturl", "{{ firefox_default_search | default('www.google.com') }}");
+# lockPref("browser.search.region", "{{ firefox_default_region | default('US') }}");
+# lockPref("browser.startup.homepage", "{{ firefox_default_homepage | default('www.google.com')}}");
+
+# firefox_bookmarks:
+#   BookmarksToolbar:
+#     item.1.title: "{{ company_info.display_name }} Servers"
+#     item.1.type: folder
+#     item.1.folderId: 1
+#     item.2.title: cloud share
+#     item.2.link: https://cloud.{{ global_cloud_provider_domain | default(company_domain) }}
+#     item.3.title: siem
+#     item.3.link: https://siem.soc.{{ company_domain }}
+
+#   BookmarksFolder-1:
+#     item.1.title: website
+#     item.1.link: https://www.{{ company_domain }}
+#     item.2.title: website admin
+#     item.2.link: https://www.{{ company_domain }}/wp-admin
+#     item.3.title: webmail
+#     item.3.link: https://mail.{{ company_domain }}
+#     item.4.title: supplypro
+#     item.4.link: https://supplypro.{{ company_domain }}
+
+# firefox_standard_accounts:
+#   - hostname: https://cloud.{{ global_cloud_provider_domain | default(company_domain) }}
+#     httpRealm:
+#     formSubmitURL: https://cloud.{{ global_cloud_provider_domain | default(company_domain) }}
+#     username: "{{ company_info.name }}_{{ client_user.username | replace('_', '') }}"
+#     password: "{{ client_user.password }}"
+#     usernameField: user
+#     passwordField: password
+
+#   - hostname: https://mail.{{ company_domain }}
+#     httpRealm:
+#     formSubmitURL: https://mail.{{ company_domain }}
+#     username: "{{ client_user.username }}"
+#     password: "{{ client_user.password }}"
+#     usernameField: horde_user
+#     passwordField: horde_pass
+
+#   - hostname: https://siem.soc.{{ company_domain }}
+#     httpRealm:
+#     formSubmitURL: https://siem.soc.{{ company_domain }}/login
+#     username: "{{ client_user.username }}"
+#     password: "{{ client_user.password }}"
+#     usernameField: username
+#     passwordField: password
+
+#   - hostname: https://{{ company_domain }}
+#     httpRealm:
+#     formSubmitURL: https://{{ company_domain }}/wp-login.php
+#     username: "{{ client_user.username }}"
+#     password: "{{ client_user.password }}"
+#     usernameField: user_login
+#     passwordField: user_pass
+
+# firefox_conditional_accounts: |
+#   [
+#   {% if client_user.supplypro_admin %}
+#     {
+#       "hostname": "https://{{ global_supplypro_app_name }}.{{ company_domain }}",
+#       "httpRealm": null,
+#       "formSubmitURL": "https://{{ global_supplypro_app_name }}.{{ company_domain }}/login",
+#       "username": "{{ client_user.username }}",
+#       "password": "{{ client_user.password }}",
+#       "usernameField": "username",
+#       "passwordField": "password"
+#     }
+#   {% endif %}
+#   ]

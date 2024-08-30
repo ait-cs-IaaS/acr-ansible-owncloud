@@ -1,0 +1,13 @@
+hmi_address: "{{ ip_addresses['supervisory'] }}"
+hmi_port: 8888
+
+plc_ip: "{{ hostvars[company_name + '_plc'].ip_addresses['supervisory'] }}"
+
+app_user: 'root'
+app_name: hmi
+app_description: IEC104 to HTTP Service
+app_service_execstart: '/opt/hmi/venv/bin/uvicorn hmi:app --host 0.0.0.0 --port {{ hmi_port }}'
+app_type: simple
+app_envs:
+   - PYTHONPATH=/opt/hmi/venv/lib/python3
+   - SHIFT_MODBUS_TO_IEC104_IP={{ plc_ip }}

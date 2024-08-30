@@ -1,0 +1,57 @@
+---
+
+# STYLES ---------------------------------------------------------------------------
+
+{% if learners_config_learners is defined %}
+learners:
+  {{ learners_config_learners | to_nice_yaml(indent=2) | trim | indent(2) }}
+{% endif %}
+
+# AUTHENTICATION -------------------------------------------------------------------
+
+jwt:
+  {{ learners_config_jwt | to_nice_yaml(indent=2) | trim | indent(2) }}
+
+# MISC -----------------------------------------------------------------------------
+
+{% if learners_config_novnc is defined %}
+novnc:
+  {{ learners_config_novnc | to_nice_yaml(indent=2) | trim | indent(2) }}
+{% endif %}
+
+# TABS -----------------------------------------------------------------------------
+
+{% if learners_config_tabs is defined %}
+tabs:
+  {{ (learners_config_tabs | to_nice_yaml(indent=2)) | trim | indent(2) }}
+{% endif %}
+
+# PATHS ----------------------------------------------------------------------------
+
+database:
+  {{ learners_config_database | to_nice_yaml(indent=2) | trim | indent(2) }}
+
+{% if learners_config_statics is defined %}
+statics:
+  {{ learners_config_statics | to_nice_yaml(indent=2) | trim | indent(2) }}
+{% endif %}
+
+# VENJIX ---------------------------------------------------------------------------
+
+{% if learners_config_venjix is defined %}
+venjix:
+  {{ learners_config_venjix | to_nice_yaml(indent=2) | trim | indent(2) }}
+{% endif %}
+
+# NOTIFICATIONS --------------------------------------------------------------------
+
+{% if learners_config_init_notifications is defined %}
+init_notifications:
+  {{ learners_config_init_notifications | to_nice_yaml(indent=2) | trim | indent(2) }}
+{% endif %}
+
+# USERS ----------------------------------------------------------------------------
+
+users:
+  {{ learners_users | to_nice_yaml(indent=2) | trim | indent(2) | replace('{}','') }}
+

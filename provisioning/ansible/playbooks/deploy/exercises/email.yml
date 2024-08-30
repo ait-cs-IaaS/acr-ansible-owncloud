@@ -1,0 +1,17 @@
+---
+- name: Send out E-Mail for exercise
+  hosts: mail
+  become: true
+  tasks:
+    - name: Send email to multiple recipients
+      ansible.builtin.shell: >-
+        echo "- Open KeepassXC and log onto the default database.\n- You need a
+        key-file to open it, try to find it in the Planets folder.\n- Use an
+        empty password.\n- Once you're logged in, search through the entries and
+        look for more information." | mutt -e "my_hdr X-Custom-Header: the IP to
+        the server is {{ hostvars[company_name +
+        '_application_server'].host_ip_addresses |
+          first }}" -e "set from=cyberhunt@cyberrange.at" -e "set
+        realname='Cyberhunt'" -s "Exercise Description" -b "{{ users |
+        select_users(filter={'company': 'defined', 'role' : 'csirt'},
+        returns=['email'], unique=true) | join(',') }}"

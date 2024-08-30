@@ -1,0 +1,30 @@
+---
+
+hostname: "{{ ansible_facts['nodename'] }}"
+dns_hostname: '{{ hostname }}'
+
+_auth_url_sub: "{{ auth_url.split('.')[0] }}"
+public_domain: "{{ (auth_url | split(_auth_url_sub + '.'))[1] }}"
+
+dns_aliases: |
+  [ 
+  "{{ dns_hostname }}",
+  {% for _dns_alias in _dns_aliases | default([]) %}
+    {% if _dns_alias | length > 0 %}
+      "{{ _dns_alias }}",
+    {% else %}
+      "{{ dns_domain }}",
+    {% endif %}
+  {% endfor %}
+  ]
+
+cert_aliases: |
+  [ 
+  {% for _dns_alias in dns_aliases | default([]) %}
+    {% if _dns_alias != dns_domain %}
+      "{{ _dns_alias + '.' + dns_domain }}",
+    {% else %}
+      "{{ _dns_alias }}",
+    {% endif %}
+  {% endfor %}
+  ]

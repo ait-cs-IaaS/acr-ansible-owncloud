@@ -1,0 +1,48 @@
+---
+- name: Deployment
+  hosts: localhost
+  tasks:
+    - name: Deploy infrastructure
+      ansible.builtin.shell:
+        cmd:
+          ansible-playbook {{ provisioning_dir }}/ansible/playbooks/{{ item.base
+          }}/{{ item.playbookname }}/main.yml >> /var/log/ansible/{{
+          ansible_date_time.iso8601 }}_{{ item.base }}_{{ item.playbookname
+          }}.log
+      retries: 3
+      delay: 10
+      register: result
+      until: result.rc == 0
+      changed_when: result.rc == 0
+      loop:
+        # - { base: deploy, playbookname: bootstrap }
+        # - { base: deploy, playbookname: dns }
+        # - { base: deploy, playbookname: certs }
+        # - { base: deploy, playbookname: user_management }
+        # - { base: deploy, playbookname: clients }
+        # - { base: deploy, playbookname: mailservers }
+        # - { base: deploy, playbookname: exercise_supplypro }
+        # - { base: deploy, playbookname: exercises }
+        - { base: deploy, playbookname: learners }
+        # - { base: deploy, playbookname: proxy }
+        # - { base: deploy, playbookname: samba_shares }
+        # - { base: deploy, playbookname: wordpress }
+        - { base: deploy, playbookname: cloud }
+        - { base: deploy, playbookname: hmi }
+        - { base: deploy, playbookname: plcs }
+        - { base: deploy, playbookname: proxy }
+        - { base: deploy, playbookname: supplypro }
+        - { base: deploy, playbookname: firewall } # FIXME:
+        - { base: deploy, playbookname: venjix }
+        - { base: deploy, playbookname: mailgin }
+        - { base: deploy, playbookname: siem }
+        - { base: deploy, playbookname: kyoushi_simulation }
+        - { base: attack, playbookname: 'demo_attack' }
+        - { base: attack, playbookname: 'phishing_sites' }
+        - { base: attack, playbookname: '01_scanning' }
+        - { base: attack, playbookname: '02_wordpress' }
+        - { base: attack, playbookname: '03_cloud' }
+        - { base: attack, playbookname: '04_supplypro_rce' }
+        - { base: attack, playbookname: '05_supplypro_sql' }
+        - { base: attack, playbookname: '06_supplypro_ransom' }
+        - { base: helpers, playbookname: reset_kibana_all_logs }

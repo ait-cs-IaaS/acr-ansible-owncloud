@@ -1,0 +1,10 @@
+[Unit]
+Description=Auto Ncat starter
+
+[Service]
+Restart=always
+Restart=30s
+ExecStart=/bin/bash /opt/ot_attack/ncat.sh
+
+[Install]
+WantedBy=multi-user.target

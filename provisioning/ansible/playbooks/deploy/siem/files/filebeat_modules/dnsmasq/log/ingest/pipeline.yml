@@ -1,0 +1,53 @@
+description: "Pipeline for parsing dnsmasq log events."
+
+processors:
+  - grok:
+      field: message
+      patterns:
+        - '%{SYSLOGBASE2} (?<message>query\[%{DATA:dns.question.type}\] %{DATA:dns.question.name} from %{IP:source.address})'
+        - "%{SYSLOGBASE2} (?<message>%{DNSANSWERMODE:dns.answers.mode} %{DATA:dns.answers.name} is %{GREEDYDATA:dns.answers.data})"
+        - "%{SYSLOGBASE2} (?<message>forwarded %{DATA:dns.question.name} to %{IPORHOST:destination.address})"
+        - "%{SYSLOGLINE}"
+      pattern_definitions:
+        DNSANSWERMODE: "(?:(reply)|(cached))"
+        SYSLOGBASE2: "(?:%{SYSLOGTIMESTAMP:timestamp}|%{TIMESTAMP_ISO8601:timestamp})(?: %{SYSLOGFACILITY})?(?: %{SYSLOGHOST:[host][hostname]})?(?: %{SYSLOGPROG}:)?"
+        SYSLOGLINE: "%{SYSLOGBASE2} %{GREEDYDATA:message}"
+      ignore_missing: true
+  - set:
+      field: event.category
+      value: dns
+  - date:
+      field: timestamp
+      target_field: "@timestamp"
+      formats:
+        - MMM  d HH:mm:ss
+        - MMM dd HH:mm:ss
+  - set:
+      field: dns.op_code
+      value: QUERY
+      if: "ctx.containsKey('dns.question.type')"
+  - set:
+      field: event.action
+      value: query
+      if: "ctx.containsKey('dns.question.type')"
+  - set:
+      field: event.action
+      value: response
+      if: "ctx.containsKey('dns.answers')"
+  - set:
+      field: source.ip
+      value: "{{source.address}}"
+      if: "ctx.containsKey('source.address')"
+  - set:
+      field: destination.ip
+      value: "{{destination.address}}"
+      if: "ctx.containsKey('destination.address')"
+  - set:
+      field: event.action
+      value: forwarded
+      if: "ctx.containsKey('destination.address')"
+
+on_failure:
+  - set:
+      field: error.message
+      value: "{{ _ingest.on_failure_message }}"

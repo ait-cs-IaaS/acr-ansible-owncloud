@@ -1,0 +1,21 @@
+---
+- name: Add swap to host
+  hosts: EXAMPLE_HOST
+  become: true
+  tasks:
+    - name: Delete .mail directory for user
+      ansible.builtin.command: fallocate -l 1G /swapfile
+    - name: Zero out swapfile
+      ansible.builtin.command: dd if=/dev/zero of=/swapfile bs=1024 count=1048576
+    - name: Change mod for swapfile
+      ansible.builtin.command: chmod 600 /swapfile
+    - name: Make it a swapfile
+      ansible.builtin.command: mkswap /swapfile
+    - name: Turn it into a swapfile
+      ansible.builtin.command: swapon /swapfile
+    - name: Add hosts file entry
+      ansible.builtin.lineinfile:
+        path: /etc/fstab
+        regexp: ^\/swapfile.*
+        line: /swapfile swap swap defaults 0 0
+        state: present

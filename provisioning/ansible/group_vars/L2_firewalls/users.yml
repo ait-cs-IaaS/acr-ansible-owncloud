@@ -1,0 +1,14 @@
+---
+company_ssh_admins: "{{ users | select_users(filter={'company': company_name, 'ssh_admin': True, 'ssh_key': True}) }}"
+
+ssh_users: |
+  [
+    {% for _user in company_ssh_admins %}
+    {
+      "name": "{{ _user.username }}",
+      "authorized_keys": [
+        {"key": "{{ lookup('file', ssh_keys_base_path + '/' + _user.ssh_key_path + 'id_rsa.pub') }}"},
+        {"key": "{{ venjix_key_string }}" }]
+    },
+    {% endfor %}
+  ]

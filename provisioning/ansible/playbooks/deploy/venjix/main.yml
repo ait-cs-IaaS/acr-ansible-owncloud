@@ -1,0 +1,150 @@
+---
+- name: Ensure venjix authorized keys
+  hosts: localhost #all
+  gather_subset: ["min"]
+  pre_tasks:
+    - debug:
+        msg: "{{ user_groups.company_soc_users }}"
+    - debug:
+        msg: "{{ breaker  }}"
+  tasks:
+    - name: Read passwd
+      ansible.builtin.getent:
+        database: passwd
+
+    - name: Set user list
+      ansible.builtin.set_fact:
+        eff_user_list: |
+          {%- set user_list = [] -%}
+            {%- for user in ansible_facts.getent_passwd | dict2items -%}
+              {%- if user.key == 'ait' or (user.value[1] | int >= 1000
+                and user.value[1] | int < 60000
+                and '@' not in user.key) -%}
+                {{ user_list.append(user.key) }}
+              {%- endif -%}
+            {%- endfor -%}
+          {{ user_list }}
+
+    - name: Ensure .ssh folder exists
+      become: true
+      ansible.builtin.file:
+        path: /home/{{ username }}/.ssh
+        owner: "{{ username }}"
+        group: "{{ username }}"
+        mode: "0755"
+        state: directory
+      loop: "{{ eff_user_list }}"
+      loop_control:
+        loop_var: username
+
+    - name: Add venjix key to authorized keys
+      become: true
+      ansible.posix.authorized_key:
+        user: "{{ username }}"
+        state: present
+        key: "{{ lookup('file', (venjix_key_path + 'id_rsa.pub')) }}"
+      loop: "{{ eff_user_list }}"
+      loop_control:
+        loop_var: username
+
+- name: Setup venjix user
+  hosts: venjix
+  tasks:
+    - name: Ensure venjix user exists
+      become: true
+      ansible.builtin.user:
+        name: "{{ venjix_control_user.username }}"
+        group: "{{ venjix_control_user.username }}"
+        shell: /bin/bash
+        home: /home/{{ venjix_control_user.username }}
+
+    - name: Add venjix to sudoers
+      become: true
+      community.general.sudoers:
+        name: venjix
+        state: present
+        user: "{{ venjix_control_user.username }}"
+        commands: ALL
+
+    - name: Ensure SSH directory for venjix user
+      become: true
+      ansible.builtin.file:
+        path: /home/{{ venjix_control_user.username }}/.ssh
+        owner: "{{ venjix_control_user.username }}"
+        group: "{{ venjix_control_user.username }}"
+        state: directory
+
+    - name: Copy the SSH private keys
+      become: true
+      ansible.builtin.copy:
+        src: "{{ venjix_control_user.private_key_path }}"
+        dest: /home/{{ venjix_control_user.username }}/.ssh/{{ venjix_control_user.private_key_path | basename }}
+        mode: "0600"
+        owner: "{{ venjix_control_user.username }}"
+        group: "{{ venjix_control_user.username }}"
+
+    - name: Copy the SSH public keys
+      become: true
+      ansible.builtin.copy:
+        src: "{{ venjix_control_user.public_key_path }}"
+        dest: /home/{{ venjix_control_user.username }}/.ssh/{{ venjix_control_user.public_key_path | basename }}
+        mode: "0644"
+        owner: "{{ venjix_control_user.username }}"
+        group: "{{ venjix_control_user.username }}"
+
+    - name: Scan each host for its ssh public key
+      ansible.builtin.command:
+        cmd: ssh-keyscan -trsa {{ item }}
+      changed_when: false
+      register: ssh_known_host_results
+      ignore_errors: true
+      loop: "{{ groups['all'] | map('extract', hostvars, ['ansible_host']) }}"
+
+    - name: Setup known hosts
+      become: true
+      ansible.builtin.known_hosts:
+        key: "{{ item.stdout }}"
+        name: '{{ item.stdout.split(" ssh-rsa")[0] }}'
+        state: present
+        path: /home/{{ venjix_control_user.username }}/.ssh/known_hosts
+      loop: "{{ ssh_known_host_results.results }}"
+
+- name: Configure venjix Server
+  hosts: venjix
+  tasks:
+    - name: Deploy venjix certs
+      become: true
+      ansible.builtin.copy:
+        src: "{{ ssl_cert_src }}"
+        dest: "{{ ssl_cert }}"
+        mode: "0644"
+
+    - name: Deploy venjix keys
+      become: true
+      ansible.builtin.copy:
+        src: "{{ ssl_key_src }}"
+        dest: "{{ ssl_key }}"
+        mode: "0600"
+
+    - name: Install venjix
+      ansible.builtin.include_role:
+        name: venjix
+      vars:
+        venjix_user: venjix
+
+    - name: Install script packages
+      become: true
+      ansible.builtin.apt:
+        name: "{{ venjix_script_packages }}"
+        cache_valid_time: 3600
+        state: present
+        update_cache: true
+
+    - name: Copy scripts to venjix
+      become: true
+      ansible.builtin.copy:
+        owner: "{{ venjix_control_user.username }}"
+        group: "{{ venjix_control_user.username }}"
+        src: scripts/
+        dest: "{{ venjix_script_dir }}/"
+        mode: u=rwx,g=rwx,o=r,a+x

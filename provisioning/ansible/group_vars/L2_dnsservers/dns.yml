@@ -1,0 +1,32 @@
+---
+dns_extra_servers: []
+_dnsmasq_config:
+  - name: custom
+    content: |
+      bind-interfaces
+      # except-interface=lo
+      # don't read DNS settings from normal resolv.conf
+      resolv-file=/etc/dnsmasq.d/dnsmasq-resolv.conf
+    prio: 0
+  - name: logging
+    prio: 5
+    content: |
+      log-queries
+      log-facility=/var/log/dnsmasq.log
+  # - name: wildcard
+  #   prio: 15
+  #   content: |
+  #     address=/{{ entry.domain }}/{{ entry.wildcard }}
+  - name: upstream
+    prio: 20
+    content: |
+      {% for _extra_server in dns_extra_servers %}
+      server=/{{ _extra_server.domain }}/{{ _extra_server.ip }}
+      {% endfor %}
+      {% if dns_upstream_server is defined %}
+      server={{ dns_upstream_server }}
+      {% endif %}
+
+dnsmasq_config:
+  '{{ _dnsmasq_config + (_dnsmasq_authorative_config | default([])) +
+  (_dnsmasq_email_config | default([])) }}'

@@ -1,0 +1,44 @@
+---
+
+# Gather minimal facts from all hosts to be able to access
+# 'dns' of the respective hosts.
+
+- name: Get all dns facts
+  hosts: all
+  gather_facts: true
+  gather_subset: [network]
+
+# Installs and configures dnsmasq service. The role uses the 'dnsmasq_config'
+# variable from '/group_vars/dnsservers' and '/host_vars/internet_dns'
+
+- name: Configure the dnsservers
+  hosts: dnsservers
+  become: true
+  roles:
+    - role: dnsmasq
+
+- name: Set dnsserver for internet hosts
+  hosts: internet,control
+  become: true
+  tasks:
+    - name: Ensure /etc/systemd/resolved.conf is configured
+      ansible.builtin.lineinfile:
+        path: /etc/systemd/resolved.conf
+        state: present
+        regexp: '^#?DNS='
+        line: 'DNS={{ hostvars["internet_dns"].ip_addresses["internet"] }}'
+      notify: Restart systemd-resolved
+
+    - name: Ensure FallbackDNS is configured
+      ansible.builtin.lineinfile:
+        path: /etc/systemd/resolved.conf
+        state: present
+        regexp: '^#?FallbackDNS='
+        line: 'FallbackDNS=8.8.8.8'
+      notify: Restart systemd-resolved
+
+  handlers:
+    - name: Restart systemd-resolved
+      ansible.builtin.service:
+        name: systemd-resolved
+        state: restarted

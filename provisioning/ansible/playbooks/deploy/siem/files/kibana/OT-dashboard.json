@@ -1,0 +1,443 @@
+{
+  "version": "7.9.3",
+  "objects": [
+    {
+      "id": "2388e440-5069-11ed-ba2c-070eb53732ea",
+      "type": "dashboard",
+      "namespaces": [
+        "default"
+      ],
+      "updated_at": "2022-10-21T09:30:54.276Z",
+      "version": "WzM1OTA2LDJd",
+      "attributes": {
+        "title": "OT Dashboard",
+        "hits": 0,
+        "description": "Overview of the OT devices",
+        "panelsJSON": "[{\"embeddableConfig\":{\"title\":\"OT Netzwerk\"},\"gridData\":{\"h\":11,\"i\":\"d52eedc3-e374-4f9b-9591-fe60d0cc1095\",\"w\":23,\"x\":0,\"y\":0},\"panelIndex\":\"d52eedc3-e374-4f9b-9591-fe60d0cc1095\",\"title\":\"OT Netzwerk\",\"version\":\"7.9.3\",\"panelRefName\":\"panel_0\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":11,\"i\":\"162d373e-26e4-44f9-b4aa-19660ac8cdc1\",\"w\":24,\"x\":23,\"y\":0},\"panelIndex\":\"162d373e-26e4-44f9-b4aa-19660ac8cdc1\",\"version\":\"7.9.3\",\"panelRefName\":\"panel_1\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":10,\"i\":\"3ae2333e-32fa-4c30-a0bf-2c63fc2c6838\",\"w\":23,\"x\":0,\"y\":11},\"panelIndex\":\"3ae2333e-32fa-4c30-a0bf-2c63fc2c6838\",\"version\":\"7.9.3\",\"panelRefName\":\"panel_2\"}]",
+        "optionsJSON": "{\"hidePanelTitles\":false,\"useMargins\":true}",
+        "version": 1,
+        "timeRestore": false,
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"query\":{\"language\":\"kuery\",\"query\":\"\"},\"filter\":[]}"
+        }
+      },
+      "references": [
+        {
+          "name": "panel_0",
+          "type": "lens",
+          "id": "c8793180-5068-11ed-ba2c-070eb53732ea"
+        },
+        {
+          "name": "panel_1",
+          "type": "lens",
+          "id": "8ca7c2f0-506f-11ed-ba2c-070eb53732ea"
+        },
+        {
+          "name": "panel_2",
+          "type": "lens",
+          "id": "9a354380-506e-11ed-ba2c-070eb53732ea"
+        }
+      ],
+      "migrationVersion": {
+        "dashboard": "7.9.3"
+      }
+    },
+    {
+      "id": "c8793180-5068-11ed-ba2c-070eb53732ea",
+      "type": "lens",
+      "namespaces": [
+        "default"
+      ],
+      "updated_at": "2022-10-21T09:29:15.360Z",
+      "version": "WzM1ODMxLDJd",
+      "attributes": {
+        "title": "OT Dashboard",
+        "description": "Overview of the OT devices",
+        "visualizationType": "lnsPie",
+        "expression": "kibana\n| kibana_context  query=\"{\\\"query\\\":\\\"\\\",\\\"language\\\":\\\"kuery\\\"}\" \n  filters=\"[{\\\"$state\\\":{\\\"store\\\":\\\"appState\\\"},\\\"meta\\\":{\\\"negate\\\":false,\\\"index\\\":\\\"filebeat-*\\\",\\\"alias\\\":\\\"ot\\\",\\\"disabled\\\":false,\\\"type\\\":\\\"phrases\\\",\\\"params\\\":[\\\"hmi\\\",\\\"ot-firewall\\\",\\\"historian\\\"],\\\"value\\\":\\\"hmi, ot-firewall, historian\\\",\\\"key\\\":\\\"agent.hostname\\\"},\\\"query\\\":{\\\"bool\\\":{\\\"should\\\":[{\\\"match_phrase\\\":{\\\"agent.hostname\\\":\\\"hmi\\\"}},{\\\"match_phrase\\\":{\\\"agent.hostname\\\":\\\"ot-firewall\\\"}},{\\\"match_phrase\\\":{\\\"agent.hostname\\\":\\\"historian\\\"}}],\\\"minimum_should_match\\\":1}}}]\"\n| lens_merge_tables layerIds=\"47c95135-3d8f-46de-b191-434d36666370\" \n  tables={esaggs index=\"filebeat-*\" metricsAtAllLevels=true partialRows=true includeFormatHints=true  aggConfigs=\"[{\\\"id\\\":\\\"c5af9ee4-6b02-4b28-b761-1f9643462b1d\\\",\\\"enabled\\\":true,\\\"type\\\":\\\"terms\\\",\\\"schema\\\":\\\"segment\\\",\\\"params\\\":{\\\"field\\\":\\\"agent.hostname\\\",\\\"orderBy\\\":\\\"6e4a80cc-d333-4efe-ba32-017f1b778c28\\\",\\\"order\\\":\\\"desc\\\",\\\"size\\\":5,\\\"otherBucket\\\":false,\\\"otherBucketLabel\\\":\\\"Other\\\",\\\"missingBucket\\\":false,\\\"missingBucketLabel\\\":\\\"Missing\\\"}},{\\\"id\\\":\\\"6e4a80cc-d333-4efe-ba32-017f1b778c28\\\",\\\"enabled\\\":true,\\\"type\\\":\\\"count\\\",\\\"schema\\\":\\\"metric\\\",\\\"params\\\":{}}]\" | lens_rename_columns idMap=\"{\\\"col-0-c5af9ee4-6b02-4b28-b761-1f9643462b1d\\\":{\\\"label\\\":\\\"Top values of agent.hostname\\\",\\\"dataType\\\":\\\"string\\\",\\\"operationType\\\":\\\"terms\\\",\\\"scale\\\":\\\"ordinal\\\",\\\"sourceField\\\":\\\"agent.hostname\\\",\\\"isBucketed\\\":true,\\\"params\\\":{\\\"size\\\":5,\\\"orderBy\\\":{\\\"type\\\":\\\"column\\\",\\\"columnId\\\":\\\"6e4a80cc-d333-4efe-ba32-017f1b778c28\\\"},\\\"orderDirection\\\":\\\"desc\\\"},\\\"id\\\":\\\"c5af9ee4-6b02-4b28-b761-1f9643462b1d\\\"},\\\"col-1-6e4a80cc-d333-4efe-ba32-017f1b778c28\\\":{\\\"label\\\":\\\"Count of records\\\",\\\"dataType\\\":\\\"number\\\",\\\"operationType\\\":\\\"count\\\",\\\"isBucketed\\\":false,\\\"scale\\\":\\\"ratio\\\",\\\"sourceField\\\":\\\"Records\\\",\\\"id\\\":\\\"6e4a80cc-d333-4efe-ba32-017f1b778c28\\\"}}\"}\n| lens_pie shape=\"donut\" hideLabels=false groups=\"c5af9ee4-6b02-4b28-b761-1f9643462b1d\" metric=\"6e4a80cc-d333-4efe-ba32-017f1b778c28\" numberDisplay=\"percent\" categoryDisplay=\"default\" legendDisplay=\"show\" percentDecimals=3 nestedLegend=false",
+        "state": {
+          "datasourceStates": {
+            "indexpattern": {
+              "currentIndexPatternId": "filebeat-*",
+              "layers": {
+                "47c95135-3d8f-46de-b191-434d36666370": {
+                  "indexPatternId": "filebeat-*",
+                  "columns": {
+                    "c5af9ee4-6b02-4b28-b761-1f9643462b1d": {
+                      "label": "Top values of agent.hostname",
+                      "dataType": "string",
+                      "operationType": "terms",
+                      "scale": "ordinal",
+                      "sourceField": "agent.hostname",
+                      "isBucketed": true,
+                      "params": {
+                        "size": 5,
+                        "orderBy": {
+                          "type": "column",
+                          "columnId": "6e4a80cc-d333-4efe-ba32-017f1b778c28"
+                        },
+                        "orderDirection": "desc"
+                      }
+                    },
+                    "6e4a80cc-d333-4efe-ba32-017f1b778c28": {
+                      "label": "Count of records",
+                      "dataType": "number",
+                      "operationType": "count",
+                      "isBucketed": false,
+                      "scale": "ratio",
+                      "sourceField": "Records"
+                    }
+                  },
+                  "columnOrder": [
+                    "c5af9ee4-6b02-4b28-b761-1f9643462b1d",
+                    "6e4a80cc-d333-4efe-ba32-017f1b778c28"
+                  ]
+                }
+              }
+            }
+          },
+          "datasourceMetaData": {
+            "filterableIndexPatterns": [
+              {
+                "id": "filebeat-*",
+                "title": "filebeat-*"
+              }
+            ]
+          },
+          "visualization": {
+            "shape": "donut",
+            "layers": [
+              {
+                "legendDisplay": "show",
+                "nestedLegend": false,
+                "layerId": "47c95135-3d8f-46de-b191-434d36666370",
+                "metric": "6e4a80cc-d333-4efe-ba32-017f1b778c28",
+                "numberDisplay": "percent",
+                "groups": [
+                  "c5af9ee4-6b02-4b28-b761-1f9643462b1d"
+                ],
+                "categoryDisplay": "default"
+              }
+            ]
+          },
+          "query": {
+            "query": "",
+            "language": "kuery"
+          },
+          "filters": [
+            {
+              "$state": {
+                "store": "appState"
+              },
+              "meta": {
+                "negate": false,
+                "index": "filebeat-*",
+                "alias": "ot",
+                "disabled": false,
+                "type": "phrases",
+                "params": [
+                  "hmi",
+                  "ot-firewall",
+                  "historian"
+                ],
+                "value": "hmi, ot-firewall, historian",
+                "key": "agent.hostname"
+              },
+              "query": {
+                "bool": {
+                  "should": [
+                    {
+                      "match_phrase": {
+                        "agent.hostname": "hmi"
+                      }
+                    },
+                    {
+                      "match_phrase": {
+                        "agent.hostname": "ot-firewall"
+                      }
+                    },
+                    {
+                      "match_phrase": {
+                        "agent.hostname": "historian"
+                      }
+                    }
+                  ],
+                  "minimum_should_match": 1
+                }
+              }
+            }
+          ]
+        }
+      },
+      "references": [],
+      "migrationVersion": {
+        "lens": "7.8.0"
+      }
+    },
+    {
+      "id": "8ca7c2f0-506f-11ed-ba2c-070eb53732ea",
+      "type": "lens",
+      "namespaces": [
+        "default"
+      ],
+      "updated_at": "2022-10-20T12:09:22.447Z",
+      "version": "Wzg2ODQsMl0=",
+      "attributes": {
+        "title": "OT - Destination IPs",
+        "description": "",
+        "visualizationType": "lnsPie",
+        "expression": "kibana\n| kibana_context  query=\"{\\\"query\\\":\\\"\\\",\\\"language\\\":\\\"kuery\\\"}\" \n  filters=\"[{\\\"meta\\\":{\\\"index\\\":\\\"filebeat-*\\\",\\\"type\\\":\\\"phrases\\\",\\\"key\\\":\\\"agent.hostname\\\",\\\"value\\\":\\\"hmi, ot-firewall, historian\\\",\\\"params\\\":[\\\"hmi\\\",\\\"ot-firewall\\\",\\\"historian\\\"],\\\"alias\\\":\\\"ot\\\",\\\"negate\\\":false,\\\"disabled\\\":false},\\\"query\\\":{\\\"bool\\\":{\\\"should\\\":[{\\\"match_phrase\\\":{\\\"agent.hostname\\\":\\\"hmi\\\"}},{\\\"match_phrase\\\":{\\\"agent.hostname\\\":\\\"ot-firewall\\\"}},{\\\"match_phrase\\\":{\\\"agent.hostname\\\":\\\"historian\\\"}}],\\\"minimum_should_match\\\":1}},\\\"$state\\\":{\\\"store\\\":\\\"appState\\\"}}]\"\n| lens_merge_tables layerIds=\"47c95135-3d8f-46de-b191-434d36666370\" \n  tables={esaggs index=\"filebeat-*\" metricsAtAllLevels=true partialRows=true includeFormatHints=true  aggConfigs=\"[{\\\"id\\\":\\\"3ac31303-3445-40bd-a198-00027733b010\\\",\\\"enabled\\\":true,\\\"type\\\":\\\"terms\\\",\\\"schema\\\":\\\"segment\\\",\\\"params\\\":{\\\"field\\\":\\\"destination.ip\\\",\\\"orderBy\\\":\\\"1d885bdc-d22d-4de7-8cf1-0e4d6b0346ba\\\",\\\"order\\\":\\\"desc\\\",\\\"size\\\":5,\\\"otherBucket\\\":false,\\\"otherBucketLabel\\\":\\\"Other\\\",\\\"missingBucket\\\":false,\\\"missingBucketLabel\\\":\\\"Missing\\\"}},{\\\"id\\\":\\\"1d885bdc-d22d-4de7-8cf1-0e4d6b0346ba\\\",\\\"enabled\\\":true,\\\"type\\\":\\\"count\\\",\\\"schema\\\":\\\"metric\\\",\\\"params\\\":{}}]\" | lens_rename_columns idMap=\"{\\\"col-0-3ac31303-3445-40bd-a198-00027733b010\\\":{\\\"label\\\":\\\"Top values of destination.ip\\\",\\\"dataType\\\":\\\"ip\\\",\\\"operationType\\\":\\\"terms\\\",\\\"scale\\\":\\\"ordinal\\\",\\\"sourceField\\\":\\\"destination.ip\\\",\\\"isBucketed\\\":true,\\\"params\\\":{\\\"size\\\":5,\\\"orderBy\\\":{\\\"type\\\":\\\"column\\\",\\\"columnId\\\":\\\"1d885bdc-d22d-4de7-8cf1-0e4d6b0346ba\\\"},\\\"orderDirection\\\":\\\"desc\\\"},\\\"id\\\":\\\"3ac31303-3445-40bd-a198-00027733b010\\\"},\\\"col-1-1d885bdc-d22d-4de7-8cf1-0e4d6b0346ba\\\":{\\\"label\\\":\\\"Count of records\\\",\\\"dataType\\\":\\\"number\\\",\\\"operationType\\\":\\\"count\\\",\\\"isBucketed\\\":false,\\\"scale\\\":\\\"ratio\\\",\\\"sourceField\\\":\\\"Records\\\",\\\"id\\\":\\\"1d885bdc-d22d-4de7-8cf1-0e4d6b0346ba\\\"}}\"}\n| lens_pie shape=\"donut\" hideLabels=false groups=\"3ac31303-3445-40bd-a198-00027733b010\" metric=\"1d885bdc-d22d-4de7-8cf1-0e4d6b0346ba\" numberDisplay=\"percent\" categoryDisplay=\"default\" legendDisplay=\"show\" percentDecimals=3 nestedLegend=false",
+        "state": {
+          "datasourceStates": {
+            "indexpattern": {
+              "currentIndexPatternId": "filebeat-*",
+              "layers": {
+                "47c95135-3d8f-46de-b191-434d36666370": {
+                  "indexPatternId": "filebeat-*",
+                  "columns": {
+                    "3ac31303-3445-40bd-a198-00027733b010": {
+                      "label": "Top values of destination.ip",
+                      "dataType": "ip",
+                      "operationType": "terms",
+                      "scale": "ordinal",
+                      "sourceField": "destination.ip",
+                      "isBucketed": true,
+                      "params": {
+                        "size": 5,
+                        "orderBy": {
+                          "type": "column",
+                          "columnId": "1d885bdc-d22d-4de7-8cf1-0e4d6b0346ba"
+                        },
+                        "orderDirection": "desc"
+                      }
+                    },
+                    "1d885bdc-d22d-4de7-8cf1-0e4d6b0346ba": {
+                      "label": "Count of records",
+                      "dataType": "number",
+                      "operationType": "count",
+                      "isBucketed": false,
+                      "scale": "ratio",
+                      "sourceField": "Records"
+                    }
+                  },
+                  "columnOrder": [
+                    "3ac31303-3445-40bd-a198-00027733b010",
+                    "1d885bdc-d22d-4de7-8cf1-0e4d6b0346ba"
+                  ]
+                }
+              }
+            }
+          },
+          "datasourceMetaData": {
+            "filterableIndexPatterns": [
+              {
+                "id": "filebeat-*",
+                "title": "filebeat-*"
+              }
+            ]
+          },
+          "visualization": {
+            "shape": "donut",
+            "layers": [
+              {
+                "legendDisplay": "show",
+                "nestedLegend": false,
+                "layerId": "47c95135-3d8f-46de-b191-434d36666370",
+                "metric": "1d885bdc-d22d-4de7-8cf1-0e4d6b0346ba",
+                "numberDisplay": "percent",
+                "groups": [
+                  "3ac31303-3445-40bd-a198-00027733b010"
+                ],
+                "categoryDisplay": "default"
+              }
+            ]
+          },
+          "query": {
+            "query": "",
+            "language": "kuery"
+          },
+          "filters": [
+            {
+              "$state": {
+                "store": "appState"
+              },
+              "meta": {
+                "negate": false,
+                "index": "filebeat-*",
+                "alias": "ot",
+                "disabled": false,
+                "type": "phrases",
+                "params": [
+                  "hmi",
+                  "ot-firewall",
+                  "historian"
+                ],
+                "value": "hmi, ot-firewall, historian",
+                "key": "agent.hostname"
+              },
+              "query": {
+                "bool": {
+                  "should": [
+                    {
+                      "match_phrase": {
+                        "agent.hostname": "hmi"
+                      }
+                    },
+                    {
+                      "match_phrase": {
+                        "agent.hostname": "ot-firewall"
+                      }
+                    },
+                    {
+                      "match_phrase": {
+                        "agent.hostname": "historian"
+                      }
+                    }
+                  ],
+                  "minimum_should_match": 1
+                }
+              }
+            }
+          ]
+        }
+      },
+      "references": [],
+      "migrationVersion": {
+        "lens": "7.8.0"
+      }
+    },
+    {
+      "id": "9a354380-506e-11ed-ba2c-070eb53732ea",
+      "type": "lens",
+      "namespaces": [
+        "default"
+      ],
+      "updated_at": "2022-10-20T12:03:36.070Z",
+      "version": "Wzg0NzcsMl0=",
+      "attributes": {
+        "title": "OT - Source IPs",
+        "description": "",
+        "visualizationType": "lnsPie",
+        "expression": "kibana\n| kibana_context  query=\"{\\\"query\\\":\\\"\\\",\\\"language\\\":\\\"kuery\\\"}\" \n  filters=\"[{\\\"meta\\\":{\\\"index\\\":\\\"filebeat-*\\\",\\\"type\\\":\\\"phrases\\\",\\\"key\\\":\\\"agent.hostname\\\",\\\"value\\\":\\\"hmi, ot-firewall, historian\\\",\\\"params\\\":[\\\"hmi\\\",\\\"ot-firewall\\\",\\\"historian\\\"],\\\"alias\\\":\\\"ot\\\",\\\"negate\\\":false,\\\"disabled\\\":false},\\\"query\\\":{\\\"bool\\\":{\\\"should\\\":[{\\\"match_phrase\\\":{\\\"agent.hostname\\\":\\\"hmi\\\"}},{\\\"match_phrase\\\":{\\\"agent.hostname\\\":\\\"ot-firewall\\\"}},{\\\"match_phrase\\\":{\\\"agent.hostname\\\":\\\"historian\\\"}}],\\\"minimum_should_match\\\":1}},\\\"$state\\\":{\\\"store\\\":\\\"appState\\\"}}]\"\n| lens_merge_tables layerIds=\"47c95135-3d8f-46de-b191-434d36666370\" \n  tables={esaggs index=\"filebeat-*\" metricsAtAllLevels=true partialRows=true includeFormatHints=true  aggConfigs=\"[{\\\"id\\\":\\\"81ab90fa-8d44-4018-b324-13811c74d834\\\",\\\"enabled\\\":true,\\\"type\\\":\\\"terms\\\",\\\"schema\\\":\\\"segment\\\",\\\"params\\\":{\\\"field\\\":\\\"source.ip\\\",\\\"orderBy\\\":\\\"76f29b69-89c7-4472-bf69-450641906a6d\\\",\\\"order\\\":\\\"desc\\\",\\\"size\\\":5,\\\"otherBucket\\\":false,\\\"otherBucketLabel\\\":\\\"Other\\\",\\\"missingBucket\\\":false,\\\"missingBucketLabel\\\":\\\"Missing\\\"}},{\\\"id\\\":\\\"76f29b69-89c7-4472-bf69-450641906a6d\\\",\\\"enabled\\\":true,\\\"type\\\":\\\"count\\\",\\\"schema\\\":\\\"metric\\\",\\\"params\\\":{}}]\" | lens_rename_columns idMap=\"{\\\"col-0-81ab90fa-8d44-4018-b324-13811c74d834\\\":{\\\"label\\\":\\\"Top values of source.ip\\\",\\\"dataType\\\":\\\"ip\\\",\\\"operationType\\\":\\\"terms\\\",\\\"scale\\\":\\\"ordinal\\\",\\\"sourceField\\\":\\\"source.ip\\\",\\\"isBucketed\\\":true,\\\"params\\\":{\\\"size\\\":5,\\\"orderBy\\\":{\\\"type\\\":\\\"column\\\",\\\"columnId\\\":\\\"76f29b69-89c7-4472-bf69-450641906a6d\\\"},\\\"orderDirection\\\":\\\"desc\\\"},\\\"id\\\":\\\"81ab90fa-8d44-4018-b324-13811c74d834\\\"},\\\"col-1-76f29b69-89c7-4472-bf69-450641906a6d\\\":{\\\"label\\\":\\\"Count of records\\\",\\\"dataType\\\":\\\"number\\\",\\\"operationType\\\":\\\"count\\\",\\\"isBucketed\\\":false,\\\"scale\\\":\\\"ratio\\\",\\\"sourceField\\\":\\\"Records\\\",\\\"id\\\":\\\"76f29b69-89c7-4472-bf69-450641906a6d\\\"}}\"}\n| lens_pie shape=\"donut\" hideLabels=false groups=\"81ab90fa-8d44-4018-b324-13811c74d834\" metric=\"76f29b69-89c7-4472-bf69-450641906a6d\" numberDisplay=\"percent\" categoryDisplay=\"default\" legendDisplay=\"show\" percentDecimals=8 nestedLegend=false",
+        "state": {
+          "datasourceStates": {
+            "indexpattern": {
+              "currentIndexPatternId": "filebeat-*",
+              "layers": {
+                "47c95135-3d8f-46de-b191-434d36666370": {
+                  "indexPatternId": "filebeat-*",
+                  "columns": {
+                    "81ab90fa-8d44-4018-b324-13811c74d834": {
+                      "label": "Top values of source.ip",
+                      "dataType": "ip",
+                      "operationType": "terms",
+                      "scale": "ordinal",
+                      "sourceField": "source.ip",
+                      "isBucketed": true,
+                      "params": {
+                        "size": 5,
+                        "orderBy": {
+                          "type": "column",
+                          "columnId": "76f29b69-89c7-4472-bf69-450641906a6d"
+                        },
+                        "orderDirection": "desc"
+                      }
+                    },
+                    "76f29b69-89c7-4472-bf69-450641906a6d": {
+                      "label": "Count of records",
+                      "dataType": "number",
+                      "operationType": "count",
+                      "isBucketed": false,
+                      "scale": "ratio",
+                      "sourceField": "Records"
+                    }
+                  },
+                  "columnOrder": [
+                    "81ab90fa-8d44-4018-b324-13811c74d834",
+                    "76f29b69-89c7-4472-bf69-450641906a6d"
+                  ]
+                }
+              }
+            }
+          },
+          "datasourceMetaData": {
+            "filterableIndexPatterns": [
+              {
+                "id": "filebeat-*",
+                "title": "filebeat-*"
+              }
+            ]
+          },
+          "visualization": {
+            "shape": "donut",
+            "layers": [
+              {
+                "legendDisplay": "show",
+                "nestedLegend": false,
+                "percentDecimals": 8,
+                "layerId": "47c95135-3d8f-46de-b191-434d36666370",
+                "metric": "76f29b69-89c7-4472-bf69-450641906a6d",
+                "numberDisplay": "percent",
+                "groups": [
+                  "81ab90fa-8d44-4018-b324-13811c74d834"
+                ],
+                "categoryDisplay": "default"
+              }
+            ]
+          },
+          "query": {
+            "query": "",
+            "language": "kuery"
+          },
+          "filters": [
+            {
+              "$state": {
+                "store": "appState"
+              },
+              "meta": {
+                "negate": false,
+                "index": "filebeat-*",
+                "alias": "ot",
+                "disabled": false,
+                "type": "phrases",
+                "params": [
+                  "hmi",
+                  "ot-firewall",
+                  "historian"
+                ],
+                "value": "hmi, ot-firewall, historian",
+                "key": "agent.hostname"
+              },
+              "query": {
+                "bool": {
+                  "should": [
+                    {
+                      "match_phrase": {
+                        "agent.hostname": "hmi"
+                      }
+                    },
+                    {
+                      "match_phrase": {
+                        "agent.hostname": "ot-firewall"
+                      }
+                    },
+                    {
+                      "match_phrase": {
+                        "agent.hostname": "historian"
+                      }
+                    }
+                  ],
+                  "minimum_should_match": 1
+                }
+              }
+            }
+          ]
+        }
+      },
+      "references": [],
+      "migrationVersion": {
+        "lens": "7.8.0"
+      }
+    }
+  ]
+}

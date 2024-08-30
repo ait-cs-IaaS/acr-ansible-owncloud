@@ -1,0 +1,101 @@
+---
+- name: Restore wordpress site
+  hosts: webserver
+  become: true
+
+  tasks:
+    - name: Clean wordpress folder
+      become: true
+      ansible.builtin.file:
+        path: "{{ wp_path }}"
+        state: absent
+
+    - name: Create empty wordpress folder
+      become: true
+      ansible.builtin.file:
+        path: "{{ wp_path }}"
+        owner: "{{ wp_sys_user }}"
+        group: "{{ wp_sys_usergroup }}"
+        state: directory
+
+    - name: Restore files from backup
+      become: true
+      ansible.builtin.unarchive:
+        src: "{{ wp_backup_files }}"
+        dest: "{{ wp_path }}"
+        owner: "{{ wp_sys_user }}"
+        group: "{{ wp_sys_usergroup }}"
+        remote_src: true
+        extra_opts: [--strip-components=1]
+
+    - name: Restore Database
+      become: true
+      ansible.builtin.command: >
+        wp-cli db import {{ wp_backup_sql }} --allow-root --path='{{ wp_path
+        }}'
+      changed_when: false
+
+    - name: Ensure correct permissions on upload folder
+      become: true
+      ansible.builtin.file:
+        path: "{{ wp_path }}/wp-content/uploads"
+        state: directory
+        owner: "{{ wp_sys_user }}"
+        group: "{{ wp_sys_usergroup }}"
+        mode: "0755"
+
+- name: Reset previous attack kibana logs
+  hosts: elk
+
+  tasks:
+    - name: Reset preveous attack kibana logs (source)
+      ansible.builtin.uri:
+        method: POST
+        url: https://localhost:9200/{{ beat_name }}-*/_delete_by_query
+        url_username: "{{ elk_users.kibana.username }}"
+        url_password: "{{ elk_users.kibana.password }}"
+        force_basic_auth: true
+        timeout: 600
+        validate_certs: false
+        body_format: json
+        body: |
+          {
+            "query": {
+              "match": {
+                "source.ip": "{{ hostvars['attacker_0'].openstack.addresses.values() |
+          flatten | map(attribute='addr') | ansible.utils.ipv4 | first }}"
+              }
+            }
+          }
+      loop:
+        - filebeat
+        - metricbeat
+        - auditbeat
+      loop_control:
+        loop_var: beat_name
+
+    - name: Reset preveous attack kibana logs (destination)
+      ansible.builtin.uri:
+        method: POST
+        url: https://localhost:9200/{{ beat_name }}-*/_delete_by_query
+        url_username: "{{ elk_users.kibana.username }}"
+        url_password: "{{ elk_users.kibana.password }}"
+        force_basic_auth: true
+        timeout: 600
+        validate_certs: false
+        body_format: json
+        body: |
+          {
+            "query": {
+              "match": {
+                "destination.ip": "{{ hostvars['attacker_0'].openstack.addresses.values() |
+          flatten | map(attribute='addr') | ansible.utils.ipv4 | first }}"
+              }
+            }
+          }
+      loop:
+        - filebeat
+        - metricbeat
+        - auditbeat
+      loop_control:
+        loop_var: beat_name

@@ -1,0 +1,13 @@
+[Unit]
+Description=dnsteal service
+
+[Service]
+WorkingDirectory={{ dnsteal_files_dir }}
+User={{ dnsteal_service_user }}
+Group={{ dnsteal_service_group }}
+ExecStart={{ dnsteal_service_script }}
+ExecStop=/bin/kill -s SIGINT $MAINPID
+Restart=no
+
+[Install]
+WantedBy=multi-user.target

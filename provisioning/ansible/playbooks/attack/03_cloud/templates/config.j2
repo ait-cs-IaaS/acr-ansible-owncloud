@@ -1,0 +1,44 @@
+# disable int so we can skip script parts
+trap ' ' INT
+
+
+TARGET="{{ hostvars[company+'_firewall_external'].ansible_default_ipv4.address }}"
+TARGET_DOMAIN="{{ companies[company].domain }}"
+TARGET_CLOUD_DOMAIN="cloud.{{ companies[company].domain }}"
+TARGET_WORDPRESS_DOMAIN="{{ companies[company].domain }}"
+TARGET_MAIL_DOMAIN="mail.{{ companies[company].domain }}"
+TARGET_SAMBA_SHARE="{{ hostvars[company+'_file_share'].ansible_default_ipv4.address }}"
+TARGET_SAMBA_USER="{{ hostvars[company+'_firewall_external'].service_users.owncloud_samba.username }}"
+TARGET_SAMBA_PW="{{ hostvars[company+'_firewall_external'].service_users.owncloud_samba.password }}"
+OPEN_PORTS=25,80,110,143,443,465,993,995
+
+WEBSHELL_NAME=chron_sync.php
+ATTACKER_IP={{ ansible_default_ipv4.address }}
+REVERSE_SHELL_PORT="{{ 9999 | random(9000, seed=company) }}"
+
+BACKDOOR_USER="apdias"
+BACKDOOR_USER_PASSWORD="ap2021dias"
+EXFIL_DIR=/usr/local/src/owncloud/data/$BACKDOOR_USER/files/
+EXFIL_SERVICE_DIR="{{ exfil_service_script_target | dirname }}"
+EXFIL_SERVICE_BIN="{{ exfil_service_script_target }}"
+EXFIL_SERVICE_BIN_SRC="{{ exfil_service_script_dest }}"
+EXFIL_SERVICE_ID="{{ 9999 | random(0, seed=company) }}"
+
+read -d '' TARGET_SAMBA_SHARES << EOF
+{% for exfil_dir in exfiltration_directories %}
+{{ exfil_dir }}
+{% endfor %}
+EOF
+
+read -d '' CHECK_VHOSTS << EOF 
+$TARGET_CLOUD_DOMAIN
+$TARGET_WORDPRESS_DOMAIN
+$TARGET_MAIL_DOMAIN
+EOF
+
+function attack_wait {
+    echo "Sleeping for $1"
+    sleep $1
+}
+
+set -x

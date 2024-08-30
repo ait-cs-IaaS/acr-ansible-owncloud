@@ -1,0 +1,35 @@
+---
+
+thunderbird_inboxes: "{{ [ client_user.email ] + (client_user.group_emails) }}"
+
+thunderbird_config: |
+  [
+  {% for email_inbox in thunderbird_inboxes %}
+    {% set _inbox = users | select_users(filter={'email': email_inbox}, single=true) %}
+    {
+      "name": "{{ _inbox.first_name }} {{ _inbox.last_name }}",
+      "email": "{{ _inbox.email }}",
+      "user": "{{ _inbox.email_user }}",
+      "password": "{{ _inbox.password }}",
+      "cert": "/home/{{ client_user.username }}/.smime/{{ _inbox.email_user }}.p12",
+      "retrievServer": "mail.{{ _inbox.domain }}",
+      "smtpServer": "mail.{{ _inbox.domain }}",
+    },
+  {% endfor %}
+  ]
+
+thunderbird_contacts: |
+  [
+  {% for contact_info in users | select_users(filter={'role': '!extra', 'contact_groups': client_user.contact_groups}) %}
+    {
+      "FirstName": "{{ contact_info.first_name }}",
+      "LastName": "{{ contact_info.last_name }}",
+      "PrimaryEmail": "{{ contact_info.email }}",
+      "DisplayName": "{{ contact_info.display_name | default(contact_info.first_name + ' ' + contact_info.last_name) }}",
+      "NickName": "{{ contact_info.username | default(contact_info.email_user) }}"
+    },
+  {% endfor %}
+  ]
+
+thunderbird_trusted_certs:
+  - '{{ ca_cert }}'

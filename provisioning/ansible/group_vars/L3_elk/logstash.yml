@@ -1,0 +1,10 @@
+---
+logstash_elasticsearch_host: https://{{ ip_addresses['soc'] }}:9200
+logstash_outputs_config: |
+  elasticsearch {
+      hosts => "{{ logstash_elasticsearch_host }}"
+      index => "%{[@metadata][beat]}-%{[@metadata][version]}-%{+YYYY.MM.dd}"
+      user => "{{ elk_users.logstash.username }}"
+      password => "{{ elk_users.logstash.password }}"
+      cacert => "/usr/local/share/ca-certificates/{{ ca_cert | basename }}"
+  }

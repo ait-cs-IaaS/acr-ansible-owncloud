@@ -1,0 +1,57 @@
+---
+- name: Use certbot
+  hosts: learners
+  gather_subset: [min]
+  become: true
+
+  tasks:
+
+    - name: Skip play if not on ovh
+      ansible.builtin.meta: end_host
+      when: not ovh_deployment
+        
+    - name: Remove current certs and keys
+      ansible.builtin.file:
+        path: '{{ item }}'
+        state: absent
+      loop:
+        - '{{ ssl_cert }}'
+        - '{{ ssl_key }}'
+
+    - name: Import certbot
+      ansible.builtin.include_role:
+        name: certbot
+      vars:
+        certbot_create_if_missing: true
+        certbot_auto_renew: false
+        certbot_create_method: standalone
+        certbot_install_method: package
+        certbot_create_standalone_stop_services:
+          - nginx
+        certbot_admin_email: cerbot@cyberrange.at
+        certbot_certs:
+          - domains: |
+              [
+                "{{ auth_url }}",
+                {% for alias in dns_aliases %}
+                  "{{ alias }}.{{ auth_url }}",
+                {% endfor %}
+              ]
+
+    - name: Create symlinks for new certs
+      become: true
+      ansible.builtin.file:
+        src: '{{ item.src }}'
+        dest: '{{ item.dest }}'
+        state: link
+      loop:
+        - src: /etc/letsencrypt/live/{{ auth_url }}/fullchain.pem
+          dest: '{{ ssl_cert }}'
+        - src: /etc/letsencrypt/live/{{ auth_url }}/privkey.pem
+          dest: '{{ ssl_key }}'
+
+    - name: Restart nginx
+      become: true
+      ansible.builtin.service:
+        name: nginx
+        state: restarted

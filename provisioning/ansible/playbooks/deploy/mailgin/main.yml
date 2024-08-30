@@ -1,0 +1,32 @@
+---
+- name: Install mailgin
+  hosts: mailgin
+  gather_facts: false
+
+  pre_tasks:
+    - name: Create user mailgin
+      become: true
+      ansible.builtin.user:
+        name: mailgin
+        home: "{{ mailgin_basepath }}"
+        shell: /usr/sbin/nologin
+        create_home: false
+
+  roles:
+    - role: get-git-repo
+      vars:
+        repo_user: mailgin
+        repo_basepath: "{{ mailgin_basepath }}"
+        repo_url: https://{{ mailgin_github_pat }}@github.com/ait-cs-IaaS/mailgin.git
+
+    - role: install-flask-app
+      vars:
+        app_user: mailgin
+        app_basepath: "{{ mailgin_basepath }}"
+
+    - role: serve-flask-via-gunicorn
+      vars:
+        app_name: mailgin
+        app_user: mailgin
+        app_basepath: "{{ mailgin_basepath }}"
+        app_service_execstart: "{{ mailgin_service_execstart }}"

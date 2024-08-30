@@ -1,0 +1,114 @@
+{
+    "categorize_channel_enabled": true,
+    "category_name": "Incidents",
+    "channel_name_template": "Incident: \u003cname\u003e",
+    "checklists": [
+        {
+            "items": [
+                {
+                    "description": "Bestimmen Sie Mitglieder des IRT, einschließlich des Incident Response Managers (CISO oder IT-Sicherheitsbeauftragter).",
+                    "title": "Identifikation des Incident Response Teams (IRT)"
+                },
+                {
+                    "description": "Aktualisieren Sie eine Liste mit internen und externen Notfallkontakten, einschließlich der Kontaktdaten der Datenschutzbeauftragten.",
+                    "title": "Notfallkontaktliste"
+                }
+            ],
+            "title": "Phase I: Vorbereitung"
+        },
+        {
+            "items": [
+                {
+                    "description": "Analysieren Sie Netzwerkprotokolle und Systemdaten, um ungewöhnliche Aktivitäten zu identifizieren.",
+                    "title": "Incident-Erkennung"
+                },
+                {
+                    "description": "Nutzen Sie das SIEM um IOCs zu finden die für die Nachverfolgung und einer späteren forensischen Analyse relevant sein können.",
+                    "title": "Sammeln von IOCs (Indicators of Compromise)"
+                },
+                {
+                    "description": "Bestätigen Sie den Vorfall und bewerten Sie den Umfang des Angriffs sowie potenzielle Auswirkungen.",
+                    "title": "Incident-Bewertung"
+                }
+            ],
+            "title": "Phase 2: Erkennung und Bewertung"
+        },
+        {
+            "items": [
+                {
+                    "description": "Isolieren Sie betroffene Systeme, um die Ausbreitung des Vorfalls zu stoppen.",
+                    "title": "Isolation betroffener Systeme"
+                },
+                {
+                    "description": "Identifizieren und beheben Sie Schwachstellen, die zum Vorfall geführt haben könnten.",
+                    "title": "Schwachstellenbehebung"
+                },
+                {
+                    "description": "Analysieren Sie gegebenenfalls Malware-Proben, um ihre Funktionsweise zu verstehen und Gegenmaßnahmen zu entwickeln.",
+                    "title": "Malware-Analyse"
+                }
+            ],
+            "title": "Phase 3: Eindämmung und Beseitigung"
+        },
+        {
+            "items": [
+                {
+                    "description": "Stellen Sie betroffene Systeme aus sicheren Backups wieder her.",
+                    "title": "Systemwiederherstellung"
+                },
+                {
+                    "description": "Implementieren Sie Sicherheitspatches und Updates, um weitere Angriffe zu verhindern.",
+                    "title": "Security-Patches und Updates"
+                },
+                {
+                    "description": "Überwachen Sie die wiederhergestellten Systeme auf weitere Anzeichen von Angriffen und validieren Sie, dass alle Bedrohungen beseitigt wurden.",
+                    "title": "Überwachung und Validierung"
+                }
+            ],
+            "title": "Phase 4: Wiederherstellung"
+        },
+        {
+            "items": [
+                {
+                    "description": "Dokumentieren Sie den gesamten Vorfall, einschließlich aller Schritte, die unternommen wurden, um den Vorfall zu bewältigen.",
+                    "title": "Incident-Dokumentation"
+                },
+                {
+                    "description": "Melden Sie den Vorfall den relevanten Behörden gemäß den geltenden Datenschutzbestimmungen.",
+                    "title": "Meldung an Behörden"
+                },
+                {
+                    "description": "Informieren Sie interne und externe Stakeholder über den Vorfall, wenn dies erforderlich ist.",
+                    "title": "Kommunikation mit Stakeholdern"
+                },
+                {
+                    "description": "Führen Sie eine Post-Incident-Analyse durch, um zu verstehen, was gelernt werden kann, und aktualisieren Sie den Incident Response Plan entsprechend.",
+                    "title": "Lessons Learned"
+                }
+            ],
+            "title": "Phase 5: Dokumentation und Berichterstattung"
+        }
+    ],
+    "create_channel_member_on_new_participant": true,
+    "create_channel_member_on_removed_participant": true,
+    "description": "Dieser Incident Response Plan hilft Ihnen, schnell und effektiv auf Cyber-Vorfälle zu reagieren. Er bietet klare Schritte und Verfahren zur Erkennung, Bewertung, Eindämmung, Beseitigung, Wiederherstellung und Dokumentation von Sicherheitsvorfällen. Durch die Definition spezifischer Rollen und Verantwortlichkeiten innerhalb des Incident Response Teams ermöglicht der Plan eine koordinierte Reaktion auf Bedrohungen. Unternehmen, die diesen gut ausgearbeiteten Plan implementieren, sind besser gerüstet, um rasch auf Cyber-Bedrohungen zu reagieren und potenzielle Schäden zu minimieren.",
+    "message_on_join": "",
+    "message_on_join_enabled": true,
+    "metrics": [],
+    "reminder_timer_default_seconds": 600,
+    "retrospective_enabled": true,
+    "retrospective_reminder_interval_seconds": 86400,
+    "retrospective_template": "### Summary\n",
+    "run_summary_template": "**Kurzbeschreibung**\n\n**Auswirkungen / Customer Impact**\n\n**Schweregrad**",
+    "run_summary_template_enabled": true,
+    "signal_any_keywords": [
+        "this is serious",
+        "sev-1",
+        "sev-2",
+        "#incident"
+    ],
+    "signal_any_keywords_enabled": true,
+    "status_update_enabled": true,
+    "title": "Incident Response Plan",
+    "version": 1
+}

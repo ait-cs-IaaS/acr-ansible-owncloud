@@ -1,0 +1,8 @@
+#!/bin/bash
+
+{% for company in company_names %}
+
+echo "Executing discover_webservers on {{ company }}"
+./scripts/01_discover_webservers.sh {{ company }}
+
+{% endfor %}

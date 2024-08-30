@@ -1,0 +1,5 @@
+---
+dns_hostname: mailgin
+dns_domain: cyberrange.at
+
+create_cert: true

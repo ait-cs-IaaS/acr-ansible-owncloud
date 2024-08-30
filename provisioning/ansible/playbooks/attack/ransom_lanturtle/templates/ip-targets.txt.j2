@@ -1,0 +1,4 @@
+{{ hostvars[company_name+'_hmi'].ansible_default_ipv4.address }}
+{{ hostvars[company_name+'_historian'].ansible_default_ipv4.address }}
+{{ hostvars[company_name+'_firewall_ot'].openstack.addresses[company_name+'_facility_management'][0].addr }}
+{{ hostvars[company_name+'_laptop'].ansible_default_ipv4.address }}

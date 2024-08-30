@@ -1,0 +1,22 @@
+---
+iptables_out_interfaces: 
+  - ens3
+  - ens4
+    
+firewall_interfaces: |
+  {
+  {% for interface_name in ip_addresses.keys() %}
+    {% for interface in ansible_interfaces %}
+      {% if ansible_facts[interface].ipv4.address == ip_addresses[interface_name] %}
+        "{{ interface_name }}": {{ ansible_facts[interface] }},
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+  }
+
+firewall_cidrs: |
+  {
+    {% for name, inf in firewall_interfaces.items() %}
+      "{{ name }}": "{{ (inf.ipv4.network + '/' + inf.ipv4.netmask) | ansible.utils.ipaddr('net') }}",
+    {% endfor %}
+  }

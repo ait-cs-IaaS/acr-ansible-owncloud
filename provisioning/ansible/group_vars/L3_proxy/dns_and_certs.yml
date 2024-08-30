@@ -1,0 +1,9 @@
+---
+dns_hostname: proxy
+_dns_aliases:
+  - ""
+  - www
+  - supplypro
+  - cloud
+
+create_cert: true

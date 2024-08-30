@@ -1,0 +1,11 @@
+message_type,iec104_address,name,modbus_address,max_value
+read,11,power,IW0,16384000
+read,12,target_power,IW1,16384000
+read,13,field_current,IW2,600
+read,14,flow_rate,IW3,100
+read,15,generator_velocity,IW4,2000
+read,16,grid_voltage,IW5,40000
+read,17,grid_frequency,IW6,70
+read,18,shutdown,IX0.0,-1
+command,31,target_power_command,QW0,16384000
+command,30,shutdown_command,QX0.0,-1

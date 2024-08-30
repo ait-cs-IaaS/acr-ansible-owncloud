@@ -1,0 +1,113 @@
+---
+learners_github_pat: "{{ lookup('env', 'GITHUB_PAT') }}"
+learners_exercise_branch: 2024_08__ares
+
+learners_exercise_repository: https://{{ learners_github_pat }}@github.com/ait-cs-IaaS/learners_exercises.git
+learners_theme_repository: https://{{ learners_github_pat }}@github.com/ait-cs-IaaS/learners_theme.git
+learners_theme_branch: "feature/correct_answers"
+
+learners_backend_branch: compatibility_ubuntu2404
+
+learners_user: learners
+learners_basepath: /opt/learners
+learners_wwwroot: '{{ learners_basepath }}/webroot'
+learners_uploaddir: '{{ learners_wwwroot }}/uploads'
+learners_exercise_build_path: '{{ learners_basepath }}/exercise_repository'
+
+learners_nginx_listen: 80 default_server
+learners_nginx_listen_ssl: 443 ssl default_server
+
+learners_server_name: "{{ auth_url }}"
+learners_url: https://{{ auth_url }}
+
+learners_nginx_ssl_cert: '{{ ssl_cert }}'
+learners_nginx_ssl_key: '{{ ssl_key }}'
+
+learners_config_novnc:
+  server: https://novnc.{{ auth_url }}
+
+learners_config_learners:
+  landingpage: documentation
+  headline: 'Welcome to the CyberHunt'
+  logo: |
+    <svg viewBox="0 0 343.71 136.32" style="enable-background:new 0 0 200 200;" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="343.71 41.4 343.71 0 236 0 236 41.4 268.17 41.4 268.17 136.32 311.54 136.32 311.54 41.4 343.71 41.4" style="fill: #fff;"/>
+      <rect x="184.69" width="43.37" height="136.32" style="fill: #fff;"/>
+      <polygon points="133.38 136.32 176.75 136.32 176.75 0 136.22 0 0 136.32 55.97 136.32 133.38 58.82 133.38 136.32" style="fill: #fff;"/>
+    </svg>
+  theme:
+    primary: '#666666'
+    secondary: '#009899'
+    success: '#009899'
+  upload_folder: '{{ learners_basepath }}/webroot/uploads'
+
+learners_config_callback:
+  endpoint: https://{{ auth_url }}:5000/callback
+
+learners_config_tabs:
+  documentation:
+    icon: information-circle
+    show:
+      - all
+  flags:
+    icon: flag
+    show:
+      - all
+  # mattermost:
+  #   url: https://{{ mattermost_server_name | default('') }}
+  #   icon: mattermost
+  #   tooltip: Mattermost
+  #   show:
+  #     - admin
+
+learners_config_init_notifications:
+  - title: Pause
+    msg: Mittagspause
+
+learners_config_venjix:
+  auth_secret: "{{ hostvars['venjix'].venjix_secret }}"
+  url: https://venjix.cyberrange.at
+
+learners_users: '{{ users | extract_learners_users() }}'
+
+
+
+# learners_packages:
+#   - nginx
+#   - python3
+#   - python3-venv
+#   - python3-pip
+#   - python3-setuptools
+#   - python3-wheel
+#   - python3-build
+
+learners_env:
+  VITE_BACKEND: '{{ learners_url }}/api'
+
+learners_service_execstart: >
+  {{ learners_basepath }}/venv/bin/gunicorn
+  backend:app
+  --bind unix:{{ learners_socket_path }}
+  --pythonpath={{ learners_basepath }}/venv/lib/python3
+  --worker-class gevent
+
+learners_socket_path: /var/run/learners/learners.sock
+
+learners_external_apps:
+  - location: drawio
+    server: https://app.diagrams.net:443
+
+hugo_install_url: https://github.com/gohugoio/hugo/releases/download/v0.125.6/hugo_extended_0.125.6_linux-amd64.deb
+
+learners_url_basepath: api/
+learners_venjix_url: https://venjix.cyberrange
+learners_novnc_url: https://novnc.{{ public_domain }}
+
+learners_config_database:
+  db_uri: sqlite:///{{ learners_basepath }}/data.db
+
+learners_config_jwt:
+  jwt_secret_key: "{{ 42 | to_uuid }}"
+
+learners_config_statics:
+  directory: "{{ learners_wwwroot }}"

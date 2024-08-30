@@ -1,0 +1,8 @@
+{
+  "base_image": "cr-client-ubuntu-2404-base",
+  "image_name": "cr-client-ubuntu-2404",
+  "security_group": "default",
+  "network_discovery_cidrs": ["172.31.0.0/17"],
+  "timestamp_image": false,
+  "flavor": "d2-8"
+}

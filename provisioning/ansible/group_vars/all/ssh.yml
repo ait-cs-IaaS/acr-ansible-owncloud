@@ -1,0 +1,19 @@
+---
+ansible_user: ait
+access_ipv4: "{{ ansible_ssh_host }}"
+
+# Note that SSH will also try other keys if this key does not work
+ait_ssh_key: ~/.ssh/cyberrange
+ait_ssh_key_pub: ~/.ssh/cyberrange.pub
+
+management_user_key: "{{ lookup('file', ait_ssh_key_pub) }}"
+
+# Use mgmthost as proxy if no floating ip is given
+ait_ssh_use_proxy: "{{ floating_ip | default('') == '' }}"
+
+ait_ssh_proxy_user: ait
+ait_ssh_proxy_host: "{{ hostvars['mgmthost'].floating_ip }}"
+
+ansible_ssh_common_args_options: -o ControlMaster=auto -o ControlPersist=30m -o StrictHostKeyChecking=no
+ansible_ssh_common_args: |
+  -i {{ ait_ssh_key }} {{ ansible_ssh_common_args_options }} {% if ait_ssh_use_proxy %}-J {{ ait_ssh_proxy_user }}@{{ ait_ssh_proxy_host }}{% endif %}

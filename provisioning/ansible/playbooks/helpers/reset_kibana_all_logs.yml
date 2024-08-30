@@ -1,0 +1,27 @@
+---
+- name: Reset kibana logs
+  hosts: elk
+
+  tasks:
+    - name: Reset all kibana logs
+      ansible.builtin.uri:
+        method: POST
+        url: https://localhost:9200/{{ beat_name }}-*/_delete_by_query
+        url_username: "{{ elk_users.kibana.username }}"
+        url_password: "{{ elk_users.kibana.password }}"
+        force_basic_auth: true
+        timeout: 600
+        validate_certs: false
+        body_format: json
+        body: |
+          {
+            "query": {
+              "match_all": {}
+            }
+          }
+      loop:
+        - filebeat
+        - metricbeat
+        - auditbeat
+      loop_control:
+        loop_var: beat_name

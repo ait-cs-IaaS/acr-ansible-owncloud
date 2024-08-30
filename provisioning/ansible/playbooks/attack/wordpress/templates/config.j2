@@ -1,0 +1,29 @@
+# disable int so we can skip script parts
+trap ' ' INT
+
+TARGET="{{ hostvars[company+'_firewall_external'].ansible_default_ipv4.address }}"
+TARGET_DOMAIN="{{ companies[company].domain }}"
+TARGET_INTERNAL_DOMAIN=webserver.dmz.$TARGET_DOMAIN
+TARGET_WEBSHELL=configs/{{ company }}_shell
+TARGET_BACKUP_WEBSHELL=configs/{{ company }}_shell_backup
+MYSQL_USER="{{ hostvars[company+"_webserver"].wp_mysqldb_user }}"
+MYSQL_PASSWORD="{{ hostvars[company+"_webserver"].wp_mysqldb_password }}"
+MYSQL_DB="{{ hostvars[company+"_webserver"].wp_mysqldb_dbname }}"
+
+DEFACEMENT_INDEX=content/{{ website_defacement_content }}.html
+DEFACEMENT_INDEX_NAME=../../../../index.php
+EXPLOIT_JPG=content/shell.jpg
+EXPLOIT_WEBSHELL_NAME=2innocent-people
+BACKUP_WEBSHELL=content/shell.php
+BACKUP_WEBSHELL_NAME=../../../../wp-update.php
+BACKUP_WEBSHELL_PATH=wp-update.php
+ATTACKER_IP={{ ansible_default_ipv4.address }}
+PAYLOAD_DOMAIN={{ hostvars['attacker_0'].ansible_default_ipv4.address }}
+
+
+function attack_wait {
+    echo "Sleeping for $1"
+    sleep $1
+}
+
+set -x

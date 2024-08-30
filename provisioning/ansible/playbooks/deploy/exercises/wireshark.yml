@@ -1,0 +1,270 @@
+---
+# - name: Debug variables
+#   hosts: firewall_field #firewalls
+#   tasks:
+#     - debug:
+#         msg: "{{ company_networks }}"
+#     - debug:
+#         msg: "{{ shorewall_params }}"
+#     - debug:
+#         msg: "{{ breaker }}"
+
+- name: Install Wireshark and make default usage as sudo
+  hosts: clients
+  become: yes
+  tasks:
+    - name: Install Wireshark on Debian-based systems
+      apt:
+        name: wireshark
+        state: present
+    - name:
+        Replace 'wireshark %f' with 'sudo wireshark %f' in the desktop entry
+        file
+      lineinfile:
+        path: /usr/share/applications/org.wireshark.Wireshark.desktop
+        regexp: '^Exec=wireshark %f'
+        line: 'Exec=sudo wireshark %f'
+        backup: yes
+        state: present
+    - name: Upload PCAP File
+      copy:
+        src: wireshark.pcapng
+        dest:
+          '/home/{{ client_user.username }}/Desktop/Planets/Uranus/uranus.pcapng'
+
+#CREATE EXERCISES
+- name: Set up Apache2 to serve a simple HTML page on port 4863
+  hosts: venjix
+  become: yes
+  tasks:
+    - name: Create the document root directory
+      file:
+        path: /var/www/page2/
+        state: directory
+        owner: www-data
+        group: www-data
+        mode: '0755'
+
+    - name: Create the simple HTML file
+      copy:
+        dest: /var/www/page2/index.html
+        content: |
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <title>My Website</title>
+          </head>
+          <body>
+              <h1>Correct IP and port, but false path</h1>
+          </body>
+          </html>
+        owner: www-data
+        group: www-data
+        mode: '0644'
+
+    - name: Create the wireshark directory
+      file:
+        path: /var/www/page2/wireshark
+        state: directory
+        owner: www-data
+        group: www-data
+        mode: '0755'
+
+    - name: Create the simple HTML file
+      copy:
+        dest: /var/www/page2/wireshark/exercise.html
+        content: |
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <title>Exercise</title>
+          </head>
+          <body>
+              <h1>Congrats, you've found the right page.</h1>
+              <p> Here will your exercises be stated </p>
+          </body>
+          </html>
+        owner: www-data
+        group: www-data
+        mode: '0644'
+
+    - name: Create the simple HTML file
+      copy:
+        dest: /var/www/page2/wireshark/explanation
+        content: |
+          This is an existing page.
+        owner: www-data
+        group: www-data
+        mode: '0644'
+
+    - name: Create the Apache virtual host configuration file for port 4863
+      copy:
+        dest: /etc/apache2/sites-available/page2.conf
+        content: |
+          <VirtualHost *:4863>
+              ServerAdmin webmaster@localhost
+              DocumentRoot /var/www/page2
+              ErrorLog ${APACHE_LOG_DIR}/error.log
+              CustomLog ${APACHE_LOG_DIR}/access.log combined
+          </VirtualHost>
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Enable the new virtual host
+      command: a2ensite page2.conf
+      notify: Restart Apache
+
+    - name: Add Listen directive to ports.conf
+      lineinfile:
+        path: /etc/apache2/ports.conf
+        insertafter: EOF
+        line: 'Listen 4863'
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Restart Apache
+
+    - name: Allow traffic on port 4863
+      ufw:
+        rule: allow
+        port: 4863
+        proto: tcp
+  handlers:
+    - name: Restart Apache
+      service:
+        name: apache2
+        state: restarted
+#CREATE EXERCISES
+
+#CREATE CODEWORT2
+- name: Set up Apache2 to serve a simple HTML page on port 4863
+  hosts: venjix
+  become: yes
+  tasks:
+    - name: Create the document root directory
+      file:
+        path: /var/www/page2/
+        state: directory
+        owner: www-data
+        group: www-data
+        mode: '0755'
+
+    - name: Create the simple HTML file
+      copy:
+        dest: /var/www/page2/index.html
+        content: |
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <title>My Website</title>
+          </head>
+          <body>
+              <h1>Correct IP and port, but false path</h1>
+          </body>
+          </html>
+        owner: www-data
+        group: www-data
+        mode: '0644'
+
+    - name: Create the wireshark directory
+      file:
+        path: /var/www/page2/wireshark
+        state: directory
+        owner: www-data
+        group: www-data
+        mode: '0755'
+
+    - name: Create the simple HTML file
+      copy:
+        dest: /var/www/page2/wireshark/exercise.html
+        content: |
+          Congratulation, you are on the right path. However, the last time this page was called, there was some different content. You can find it in your pcapng-package. Try to figure out the previous content of this page, to make some progress in the Cyberhunt.
+        owner: www-data
+        group: www-data
+        mode: '0644'
+
+    - name: Create the simple HTML file
+      copy:
+        dest: /var/www/page2/wireshark/1614
+        content: |
+          Flag{UmVsaWFiaWxpdHk=}
+        owner: www-data
+        group: www-data
+        mode: '0644'
+
+    - name: Create the simple HTML file
+      copy:
+        dest: /var/www/page2/ares.html
+        content: |
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <title>Wireshark Exercise</title>
+          </head>
+          <body>
+              <h1>Congratulation, you've found the right page. Now it's your turn, to do some live package observation in Wireshark.</h1>
+              <p>Open a new Wireshark instance, choose the ens3 interface, apply the filter "ip.addr == 240.64.0.230" and make calls to following webpages using your webbrowser:</p>
+              <ul>
+                <li>240.64.0.230:1234</li>
+                <li>240.64.0.230:56015</li>
+                <li>240.64.0.230:4863/wireshark/explanation.html</li>
+                <li>240.64.0.230:4863/wireshark</li>
+              </ul>
+              <p>First: For each call, check whether an HTTP call is actually happening or whether the 3-way-handshake is already failing.</p>
+              <p>Second: If an HTTP call is happening, check the HTTP status code of the server-response and write it down.</p>
+              <p>Hint: To get clearer insights into single calls, you could stop capturing and restart again after each call</p>
+              <p>To find your next flag, calculate the following values for the stated calls: 1. sum of all http-status-code responses; 2. number of FAILED 3-way handshakes.
+              <p>Multiply these two numbers and go to following page to find your next flag: 240.64.0.230:4863/wireshark/{calculated_number}</p>
+          </body>
+          </html>
+        owner: www-data
+        group: www-data
+        mode: '0644'
+
+    - name: Create the Apache virtual host configuration file for port 4863
+      copy:
+        dest: /etc/apache2/sites-available/page2.conf
+        content: |
+          <VirtualHost *:4863>
+              ServerAdmin webmaster@localhost
+              DocumentRoot /var/www/page2
+              ErrorLog ${APACHE_LOG_DIR}/error.log
+              CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+              <Directory /var/www/page2>
+                  Options -Indexes
+                  AllowOverride None
+                  Require all granted
+              </Directory>
+          </VirtualHost>
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Enable the new virtual host
+      command: a2ensite page2.conf
+      notify: Restart Apache
+
+    - name: Add Listen directive to ports.conf
+      lineinfile:
+        path: /etc/apache2/ports.conf
+        insertafter: EOF
+        line: 'Listen 4863'
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Restart Apache
+
+    - name: Allow traffic on port 4863
+      ufw:
+        rule: allow
+        port: 4863
+        proto: tcp
+  #CREATE CODEWORT2
+
+  handlers:
+    - name: Restart Apache
+      service:
+        name: apache2
+        state: restarted

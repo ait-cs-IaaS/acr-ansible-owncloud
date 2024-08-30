@@ -1,0 +1,19 @@
+---
+
+- name: Start employee simulations
+  hosts: employees
+  gather_facts: false
+  tasks:
+    - name: Clean SM log
+      become: true
+      ansible.builtin.file:
+        path: /var/log/kyoushi/{{ kyoushi_sm_name }}/sm.log
+        state: absent
+      when: kyoushi_sm_run_clean | default(False)
+
+    - name: Start ait.beta_user SM
+      become: true
+      ansible.builtin.service:
+        name: "{{ kyoushi_sm_name }}.service"
+        state: started
+

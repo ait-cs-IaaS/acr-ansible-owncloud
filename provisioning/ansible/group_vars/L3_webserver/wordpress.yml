@@ -1,0 +1,447 @@
+---
+# vars file for wordpress instances
+
+# we cannot use remove samples
+# as it uses wp-cli site empty which also deletes the
+# special post used by wpdiscuz
+wp_remove_samples: false
+wp_remove_posts:
+  - post
+  - page
+  - attachment
+
+libapache2_mod_version: libapache2-mod-php7.4 # Ubuntu 20.04
+wp_apache_modules:
+  - name: rewrite
+  - name: deflate
+  - name: headers
+  - name: ssl
+  - name: authz_host
+  - name: remoteip
+
+wp_sys_user: www-data
+wp_sys_usergroup: www-data
+wp_version: latest
+wp_path: /var/www/{{ wp_company_domain }}
+
+wp_required_packages: [php, php-mysql, php-gd, php-ssh2, curl, php-zip, unzip]
+wp_company_domain: "{{ company_domain }}"
+wp_reverse_proxy: "{{ hostvars[company_name + '_proxy'].ip_addresses['dmz'] }}"
+
+wp_admin_password: eiY4teenae4eep9
+wp_mysqldb_user: wordpress
+wp_mysqldb_password: tainoox3aedeeSh
+wp_mysqldb_dbname: wordpress_db
+
+wp_backup_path: /var/backups/
+wp_backup_sql: "{{ wp_backup_path }}/website_database.sql"
+wp_backup_files: "{{ wp_backup_path }}/website_files.gz"
+
+wp_title: "{{ company_info.display_name }}"
+wp_tagline: "{{ company_info.display_name }} Blog"
+wp_host: "{{ openstack.addresses[company_networks.dmz][0].addr }}"
+wp_apache_hostname: "{{ wp_company_domain }}"
+wp_apache_aliases: []
+wp_apache_vhost_template: vhost-custom.conf.j2
+
+wp_apache_ssl: true
+wp_apache_ssl_cert: "{{ ssl_cert }}"
+wp_apache_ssl_key: "{{ ssl_key }}"
+wp_apache_ssl_cert_path: /etc/ssl/
+wp_apache_ssl_key_path: /etc/ssl/
+
+wp_options:
+  comment_moderation: "0"
+  comment_previously_approved: "0"
+  comments_notify: "0"
+  default_comment_status: open
+  blogdescription: "{{ wp_tagline }}"
+  siteurl: https://{{ wp_company_domain }}
+  home: https://{{ wp_company_domain }}
+
+# --------------------- wp_users ------------------------
+
+wp_users: "{{ users | select_users(filter={'wp_role': 'defined'}) }}"
+
+# -------------------------------------------------------
+
+wp_plugins:
+  - name: wpdiscuz
+    activate: true
+    version: 7.0.4
+  - name: wordpress-seo
+    activate: true
+  - name: media-library-assistant
+    activate: false
+    version: "3.10"
+  - name: contact-form-7
+    activate: false
+  - name: woocommerce
+    activate: false
+    version: 7.2.3
+  - name: wp-statistics
+    activate: true
+  - name: loco-translate
+    activate: true
+  - name: cookie-law-info
+    activate: true
+  - name: cookie-notice
+    activate: false
+  - name: wp-fastest-cache
+    activate: false
+  - name: redirection
+    activate: true
+    # version: 4.3.1
+  - name: all-in-one-wp-migration
+    activate: false
+    version: 7.74
+  - name: elementor
+    activate: false
+    version: 3.16.2
+
+wp_plugins_update: false
+
+wp_themes:
+  - { name: exs-personal, activate: true }
+  - { name: neve, activate: false, version: 3.1.2 }
+  - { name: hestia, activate: false }
+
+wp_categories:
+  - { name: Digitalization, description: News and Information about Digitalization }
+  - { name: Innovation, description: News and Information about Innovation }
+
+wp_posts:
+  - title: Automation technology
+    author: jonesk
+    category: Digitalization
+    date: "2022-10-11 12:41:13"
+    content: |
+      <em>Artificial intelligence (AI) methods are being used in a variety of ways in
+      production processes and in the development of autonomous machines and
+      vehicles. At Berlin Science Week on November 7, AIT is hosting the
+      high-profile event "AI-enabled Automation", which will discuss how
+      intelligent machines can support humans and help solve major problems of the
+      future, such as resource conservation, climate protection or labor
+      shortages.</em><br><br>
+      Machines that perform an activity automatically have fascinated mankind since
+      time immemorial. Even more so when their activities work intelligently - such as
+      the so-called "Schachtuerke", for example, which enthralled the Viennese court
+      in the spring of 1770. At that time, the Austro-Hungarian court official and
+      mechanic Wolfgang von Kempelen showed "Empress" Maria Theresa his latest work:
+      a chess table at which sat a human-like, Turkish-robed figure that could move
+      chess pieces with a mechanical arm - and also win against most opponents. For a
+      long time, people puzzled over how the machine, which had clearly audible gears
+      at work inside, managed to do this. The inventor kept silent all his life about
+      the fact that it was simply a deception, a fraud: Hidden inside the apparatus
+      was a human chess player who operated the mechanism. As technology advanced,
+      however, it became more and more plausible that machines could actually achieve
+      such capabilities. Thus, hardly anyone was surprised anymore when, in 1996,
+      IBM"s "Deep Blue" computer was able to beat a reigning world chess champion for
+      the first time. In the intervening two centuries, humanity had witnessed the
+      rise of technology and had become accustomed to the idea that machines could
+      take over many a task previously reserved for humans, and could even do some
+      things better. Calculating machines, for example, that tirelessly add up numbers
+      without error. Or, later, industrial robots that assemble parts or process
+      surfaces with a speed and/or precision unattainable by humans.<br><br>
+      <h2>Robot arms working at an assembly line</h2>
+      Autonomously operating machines must master a great many skills. This includes,
+      for example, the control of hydraulic components and the mechanical system,
+      reliable task and motion planning including localization of the machine"s own
+      position - even in changing environments - correct gripping of objects, robust
+      perception of the environment, and object classification for correct
+      interpretation of the environment. AI systems help significantly with these
+      complex tasks.<br><br>
+      <h2>Robots are already on the move in the field</h2>
+      Whether such devices can be called "intelligent" is a matter of considerable
+      debate. Today, at any rate, there are machines that can actually perform tasks
+      autonomously and largely independently of humans. One example comes from an area
+      that at first glance one would not consider all that innovative: In agriculture,
+      autonomous working machines are already in use that - controlled by GPS and
+      sensors - automatically pull their furrows in fields. Small, four-wheeled robots
+      that work together as a fleet of autonomous special machines are also already
+      ready for series production. These vehicles sow seeds, note where a crop is
+      located, detect weeds with sensors (and analyze the data using AI methods) and
+      kill unwanted plants with high-voltage pulses. Precision farming" is possible
+      with such systems: Every field, every plant, receives exactly the treatment it
+      needs - from irrigation and fertilization to pest control. Such farm robots
+      still have their price, and many questions remain unanswered, for example about
+      the use of the collected data. But they are predicted to have a bright future,
+      not least because it is becoming increasingly difficult to find harvest workers
+      and qualified personnel to work in the fields.<br><br>
+
+  - title: Quantum technology based on Nobel Prize-worthy knowledge
+    author: jonesk
+    category: Digitalization
+    date: "2022-09-29 12:41:13"
+    content: |
+      <em>In his fundamental research, which has now been awarded the world"s highest
+      science prize, physics Nobel laureate Anton Zeilinger laid the foundation for
+      the development of quantum communication technologies at the AIT Austrian
+      Institute of Technology. The goal is to make this extremely secure technology
+      suitable for everyday use and to establish a quantum communication network
+      throughout Europe.</em><br><br>
+      Every transmission of data offers a gateway for cyber criminals: eavesdropping
+      and hacker attacks are now commonplace and cause gigantic damage. One of the
+      most important measures to ensure security is the encryption of data. The
+      dominant encryption method today, so-called "symmetric" encryption, is indeed de
+      facto indecipherable (at least as long as the keys are sufficiently complex).
+      However, there is a catch: in order to be able to use this method when
+      transmitting data, the key itself must be transmitted in an absolutely secure
+      way. Traditionally, this has been done by handing over the key in person or by
+      letter. However, this is hardly feasible for worldwide communication.<br><br>
+      <h2>Safety through natural laws</h2>
+      Quantum physics comes to the rescue: There is a phenomenon called "entanglement
+      of particles": Two entangled particles have exactly the same properties, even if
+      they are very far apart. If you change the properties of one of the two
+      particles, this has an immediate effect on the other particle. This means, on
+      the one hand, that confidential information can be exchanged in this way, and on
+      the other hand, that one immediately notices if someone is listening in on this
+      communication (because reading out information also changes the state of the
+      particles). <br><br>Albert Einstein once dismissed this phenomenon as
+      "spooky action at a distance". But in 1997, the Viennese quantum physicist Anton
+      Zeilinger (University of Vienna, Austrian Academy of Sciences) was able to
+      demonstrate that this principle can indeed be used in the form of so-called
+      "teleportation" - the transport of the state of a light particle. In 1999, he
+      succeeded in proving that the phenomenon also works for the transmission of
+      confidential information. For this work on quantum-physical entanglement,
+      Zeilinger has now been awarded the 2022 Nobel Prize in Physics - together with
+      his colleagues John Clauser and Alain Aspect. <br><br>A real proof of
+      practical applicability was provided in 2004 - namely by transmitting a
+      symmetric key by means of entangled photons (light particles) over a 600-meter
+      fiber optic line between a Viennese bank and the city hall. Since then, this has
+      also been achieved in fiber-optic networks hundreds of kilometers long, between
+      two Canary Islands, and most recently via a satellite between Beijing and
+      Vienna. In technical jargon, this is called quantum key distribution (QKD).<br><br>
+      <h2>Technical application of scientific knowledge</h2>
+      Researchers at AIT have been involved in these experiments from the very
+      beginning: They develop the technical equipment for quantum cryptography and
+      organize large research networks, such as the EU project SEQOQC, which involved
+      41 partners from twelve countries. Over the past decade, AIT has gained an
+      international reputation as a specialist in both terrestrial and satellite-based
+      quantum cryptography and as a coordinator of major European projects.<br><br>Currently,
+      the work is particularly focused on miniaturizing the devices needed for quantum
+      communications. "We are building prototypes that have the same functionality as
+      large laboratory setups but are integrated on an optical chip," explains AIT
+      researcher Hannes Hübel. The goal is to create small and compact terminals that
+      can be easily used by anyone with a fiber-optic connection - similar to the way
+      people today keep a modem by their computer for Internet access.<br><br>
+      <h2>Quantum Flagship: Towards a Quantum Industry</h2>
+      For the technology to actually gain a foothold in practice, three factors play a
+      key role: the robustness, size and price of the devices. "We try to reduce the
+      technological complexity as much as possible, use standard components and make
+      the whole thing robust, i.e. stable over the long term," says Hübel. This also
+      requires developing lots of electronics and control software. This work is
+      taking place, among other things, as part of the major European Quantum Flagship
+      program, which was launched in 2018 with a time frame of ten years and a funding
+      volume of one billion euros. <br><br>Of four flagship projects in the field
+      of quantum communication, AIT is leading one project and is a partner in
+      another. The Viennese researchers are leading the UNIQORN project (Affordable
+      Quantum Communication for Everyone: Revolutionizing the Quantum Ecosystem from
+      Fabrication to Application). Together with 17 partners from Europe, photonic
+      technologies are being used to advance the miniaturization of quantum
+      applications in the direction of system-on-chip solutions. The "CiViQ"
+      (Continuous Variable Quantum Communications) project focuses on the
+      cost-effective integration of quantum communications into emerging optical
+      telecommunications networks. 21 partners, including leading telecoms,
+      integrators and developers of QKD, are working on flexible and cost-effective
+      systems for quantum key distribution. AIT is developing QKD prototypes and
+      specialized software for field deployment in this project.<br><br>
+      <h2>Testbeds and secure networks</h2>
+      Another thrust to make quantum communication suitable for everyday use is the
+      establishment of networks and testbeds in Europe. Already in September 2019, the
+      EU launched the Horizon 2020 project "OPENQKD" (Open European Quantum Key
+      Distribution Testbed), which is scheduled for three years and funded with 15
+      million euros. The consortium, led by AIT, comprises 38 partners from 13
+      countries and brings together manufacturers, network operators, system
+      integrators, SMEs, research institutions, universities, certification and
+      standardization bodies, and end users. With the goal of establishing a secure
+      network for quantum communications in Europe and thus launching a European
+      ecosystem for quantum technology providers and application developers, the
+      consortium is pushing ahead with the development of various demonstrators (some
+      of them in Austria) and future applications. This includes e.g. storage in cloud
+      infrastructures, protection of sensitive medical information (testbed in Graz)
+      or government communication data (testbed in Vienna).<br><br>
+
+  - title: Alpbach Technology Symposium 2022
+    author: shannonc
+    category: Innovation
+    date: "2022-09-26 12:41:13"
+    content: |
+      <em>
+      We currently have to cope with a multitude of crisis phenomena - from global
+      political tensions to the climate and energy crises to the consequences of the
+      pandemic. Many of these current problem areas were discussed at the Alpbach
+      Technology Symposium 2022. "If we reflect on what the experts have told us
+      over the past two days, they agree in that we have a certain chance of coping
+      with the challenges," summed up Wolfgang Knoll, scientific director of the AIT
+      Austrian Institute of Technology. "The consensus is that to do this we need a
+      deeper scientific understanding that is translated into new technologies and
+      into innovations," said Knoll at the end of the talks, which have been
+      organized by AIT and ORF Radio Ö1 in a tried and tested manner for more than
+      30 years.
+      </em>
+      <br><br>
+      <h2>Need for personal exchange</h2>
+      The more than 20 Plenary and Content Partner Sessions, which took place from
+      August 25 to 27 in the Tyrolean "Village of Thinkers", met with great interest
+      from the technology community. The discussions then took place in well-filled
+      rooms - almost like before the Corona crisis, which forced a virtual or hybrid
+      execution in the past two years. "There is an urgent need for face-to-face
+      exchange. The Alpbach Technology Symposium brings innovators together, promotes
+      the exchange of ideas and stimulates dialogue between science, society and
+      politics," says Knoll. <br><br>With the active participation of scientific
+      partners - the Helmholtz Association of German Research Centers and the
+      Complexity Science Hub Vienna - a broad panorama of challenges that urgently
+      need to be solved was covered in high-profile plenary sessions. For example, the
+      session "Energy Transition: How to reduce Energy Dependency" discussed, among
+      other things, the plans of major companies such as BASF, Infineon and
+      voestalpine to increase efficiency and reduce emissions. Under the title
+      "RNA-based Medicine of the Future," the heads of leading research institutes
+      outlined their expectations of how new molecular biology methods could radically
+      improve the treatment of cancer or autoimmune diseases. The Ukraine war was the
+      focus of the session "Battleground Internet: Between Cyberwar and Infowar,"
+      which clearly elaborated that today"s wars are no longer won or lost exclusively
+      on the battlefield, but increasingly in the virtual world and in our minds. The
+      session "Complexity of Supply Chains: Ways into a More Resilient Future"
+      concluded that greater transparency is essential to make supply chains less
+      prone to disruption in the future. An "International Talk" addressed the fact
+      that technology is now a significant geopolitical force. In other highly
+      exciting content sessions, pressing issues such as artificial intelligence,
+      bioeconomy, climate-neutral mobility, fake news and data sovereignty were
+      discussed in detail. <br><br>
+      <h2>A "mindset" for radical change</h2>
+      The importance of science, research, technology and innovation for crisis
+      management was also emphasized by politicians. RTI is not an element for acute
+      crisis management, said Climate Protection and Technology Minister Leonore
+      Gewessler. But: "RTI is an instrument for overcoming future crises. It is good
+      that we invested in renewable energy research ten years ago. Therefore, we now
+      have solutions that we can roll out in mass programs." <br><br>In the "Café
+      Exchange" (in Alpbach"s Altes Schulhäusl, which was occupied for the first time
+      this year), artists demonstrated how to change the "mindset" for living with
+      uncertainties and for radical change. The Alpbach Technology Symposium was once
+      again the place where numerous innovations were presented to the public. For
+      example, the future plans of "Silicon Austria Labs" were discussed and new
+      funding programs for radical innovations and for data research were presented.
+      In addition, numerous social events, such as the AIT Garden Party or the
+      "Forschung Austria" reception, served to encourage personal discussions.
+      <br><br>
+      <h2>Reason for optimism</h2>
+      Young people were also back in Alpbach this year: the fellows from all over the
+      world participated actively in the high-level debates. The positive spirit of
+      the young participants was visible not only in the lively discussions inside and
+      outside the conference center, but also in the qualification for the "Falling
+      Walls Lab" in Berlin (in the form of three-minute pitches) and the 24-hour
+      innovation marathon, in which eight international student teams developed
+      solutions for concrete problems of partner companies. "Listening to the young
+      people in Alpbach, one has good reason to be optimistic about the future,"
+      commented Wolfgang Knoll.
+
+  - title: Forum Alpbach TEC
+    author: shannonc
+    category: Innovation
+    date: "2022-09-19 12:41:13"
+    content: |
+      <em>
+      A recent report by the Stockholm Peace Research Institute (SIPRI) details that
+      we are living in a new era of complex and often unpredictable risks. Multiple
+      crises overlap and reinforce each other: coronapandemic, climate change,
+      biodiversity loss, energy crisis, inflation, the war in Ukraine, and many
+      other geopolitical tensions are increasingly affecting the lives of more and
+      more people. The multiple crises have massive economic and social impacts:
+      These range from a shift in the "terms of trade" and thus prosperity in
+      different regions to social tensions that can pose a serious threat to
+      democracy.
+      </em>
+      <br><br>
+      <h2>Presence meeting in the Tyrolean mountains</h2>
+      Technologies offer an important key to overcoming these crisis phenomena, is the
+      firm conviction of Hannes Androsch, doyen of the Alpbach Technology Talks from
+      the very beginning. The traditional meeting of the technology community in
+      Alpbach, curated by the AIT Austrian Institute of Technology and ORF Radio Ö1 in
+      cooperation with the European Forum Alpbach, will take place this year from
+      Thursday, August 25, (2 p.m.) to Saturday, August 27 (2 p.m.) - and after two
+      years of virtual or hybrid implementation, this year it will once again be a
+      face-to-face event. Participants can look forward to 40 hours of high-level
+      debates in more than 20 plenary sessions, workshops and partner sessions, there
+      will also be plenty of opportunities for networking. <br><br>The program
+      will focus on solutions to the many problems we currently face. The general
+      theme is "The New Europe" and follows the four thematic tracks of the European
+      Forum Alpbach 2022: Securing Europe"s Future in a Globalised World, The Climate
+      Opportunity, The Financing of Europe"s Future, and The Future of Democracy and
+      the Rule of Law in Europe. <br><br>
+      <h2>
+      How our energy system is becoming more resilient, sustainable and secure
+      </h2>
+      The energy crisis is coming to a head more and more. Starting with the Corona
+      crisis and now massively intensified by the war in Ukraine, energy security has
+      become a top issue of our days. A comprehensive transformation of our energy
+      system is necessary - towards a system that simultaneously ensures security of
+      supply and climate protection. A panel of top international researchers and
+      industry representatives - including Bernd Rech (Helmholtz-Zentrum Berlin),
+      Carla Seidel (BASF), Peter Schwab (voestalpine) and Sabine Herlitschka
+      (Infineon) - will look for ways to completely rethink our energy system. The
+      panel will discuss fundamental requirements for the future energy supply and
+      ways to make our use of resources more resilient, sustainable and secure.
+      <br><br>
+      <h2>When global supply chains get out of sync</h2>
+      The energy crisis is embedded in the turmoil in which the international supply
+      chains are caught up. These lifelines of the global economy have been running
+      anything but smoothly since the outbreak of the pandemic: closed ports and
+      slaughterhouses, shortages of containers, lack of truck drivers, etc. mean that
+      supply routes for industry, but also for the global food supply, have become
+      uncertain. High-profile experts from academia and practice, including Gabriel
+      Felbermayr (WIFO), Stefan Thurner (Complexity Science Hub Vienna), Charles
+      Godfray (Oxford University), and Andreas Gerstenmayer (AT&S), will analyze the
+      underlying common mechanisms for seemingly unrelated developments from the
+      perspective of complexity research and practice. The debate will lay a solid
+      foundation for conceptualizing a more resilient and climate-friendly global
+      economic system and provide answers to questions such as: What pathways might
+      lead to a more resilient future? Is local production desirable, and to what
+      extent is global production inevitable? Can transparency in supply networks be a
+      game changer? What should policymakers do? <br><br>
+      <h2>RNA-based vaccines: What"s next for research?</h2>
+      Just how crucial technology can be in shaping the future has recently become
+      clear, particularly in biotechnology: innovative RNA-based vaccines have proved
+      to be rapidly available and effective weapons in the fight against the Covid 19
+      pandemic. That this technology can do much more has become clear in laboratories
+      around the world in recent years: numerous areas of medicine, especially the
+      treatment of cancer, but also, for example, the regeneration of damaged tissue,
+      can benefit greatly from RNA-based therapeutics. In cooperation with the
+      Helmholtz Association of German Research Centers, the opportunities of this
+      medical field of hope will be discussed as well as the risks and hurdles - among
+      others with Ormar Wiestler (Helmholtz), Helga Nowotny (Research Council), Klaus
+      Cichutek (Paul Ehrlich Institute) and Christoph Huber (BioNTech). <br><br>
+      <h2>Infowar and cyberwar</h2>
+      Of course, technology is always a coin with two sides: Knives or automobiles are
+      very useful things, but they can also be misused as lethal weapons. The same
+      applies to information and communication technologies. Not least in the war in
+      Ukraine, the Internet has become a war zone - an infowar and a cyberwar are
+      raging: On the one hand, the real fighting on social networks is accompanied by
+      videos of fighting, fleeing people and bombed buildings. In the battle for
+      narratives, heroic stories line up seamlessly with disinformation. On the other
+      side, hacktivists are engaged in an exchange of blows, using all digital means
+      at their disposal: From the shadows of the Internet, warring hacker groups
+      attempt to damage the other side and, for example, cripple infrastructures. In
+      the high-profile plenary session "Battlerground Internet: Between Cyberwar and
+      Infowar", leading scientists and military experts such as Markus Reisner
+      (Military Academy Wr. Neustadt), Susanne Spahn (journalist) and Volker Kozok
+      (German Armed Forces) will trace current developments, outline patterns in the
+      cyber world and connections with the real world. <br><br>
+      <h2>International Talk: Technology as a geopolitical force</h2>
+      The current multiple crisis also threatens our concept of freedom, prosperity
+      and security. This requires not only geopolitical efforts, but also new
+      technological responses. Innovations help us to overcome the crises, but they
+      are also increasingly becoming an important instrument of power politics.
+      Whoever is ahead in the development of future technologies today can leave its
+      mark on the world. Wedged between the power blocs of the USA and East Asia, the
+      New Europe needs a powerful boost to catch up - with research & development,
+      education and a spirit of innovation. <br><br>
+      <h2>Integrative power of the arts</h2>
+      The meeting of the technology community in Alpbach will also address the role of
+      the arts in the necessary transformations that our social and economic system is
+      undergoing. An interdisciplinary debate in cooperation with the University of
+      Applied Arts Vienna will outline new ways to encourage people to rethink and
+      act, and to creatively prepare society for future upheavals. <br><br>"New
+      Europe" is facing great challenges and it is urgent that new answers are given
+      from Europe. In an RTI opening talk that has become a valued tradition, top
+      representatives from politics and industry will be on hand to answer questions.

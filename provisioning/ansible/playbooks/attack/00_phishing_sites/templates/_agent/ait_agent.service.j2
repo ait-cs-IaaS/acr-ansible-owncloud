@@ -1,0 +1,9 @@
+[Unit]
+Description=AIT exercise logger
+
+[Service]
+Type=simple
+ExecStart=/opt/ait_agent.py
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,23 @@
+# Ignore roles and collections directories containing our dependent roles and collections
+roles/*
+!roles/.gitkeep
+collections/*
+!collections/.gitkeep
+# Ignore infos directory content used for storing local copies of rendered game infos
+infos/*
+!infos/.gitkeep
+playbooks/deploy/gamemaker/files/ssh_keys/*
+!playbooks/deploy/webservers/files/*
+
+xxx_*
+
+# ignore the vault copy of the ca cert
+data/certs/sites/vault/ca.crt
+
+# Allow add of Gamemaker DB
+!data/gamemaker/db.sqlite3
+
+data/backup
+
+facts_cache
+logs

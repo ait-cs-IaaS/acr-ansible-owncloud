@@ -1,0 +1,12 @@
+[Unit]
+Description=Metasploit Auto Attacker
+
+[Service]
+Restart=always
+RestartSec=10s
+ExecStart=/opt/metasploit-framework/bin/msfconsole -r /opt/app_attack/msf-loader
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target

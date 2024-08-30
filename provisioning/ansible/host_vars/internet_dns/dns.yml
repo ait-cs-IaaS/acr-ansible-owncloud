@@ -1,0 +1,103 @@
+---
+dns_hostname: dns
+dns_domain: cyberrange.at
+
+create_cert: true
+
+dns_server_name: cyberrange
+dns_server_admin: admin@{{ dns_domain }}
+dns_upstream_server: 8.8.8.8
+dns_auth_server: "{{ dns_hostname }}.{{ dns_domain }}"
+
+cc_servers:
+  - domain: facebock.com # austricom
+    ip: "{{ hostvars['attack_mate_0'].ip_addresses['internet'] | default('') }}"
+  - domain: fakebook.com # puresynth
+    ip: "{{ hostvars['attack_mate_1'].ip_addresses['internet'] | default('') }}"
+  - domain: fcaebook.com # transgut
+    ip: "{{ hostvars['attack_mate_2'].ip_addresses['internet'] | default('') }}"
+  - domain: fakebock.com # wertvoll
+    ip: "{{ hostvars['attack_mate_3'].ip_addresses['internet'] | default('') }}"
+
+# dns_domains:
+#   - domain: cyberrange
+#     hostname: dns
+
+_dns_extra_servers:
+  - domain: "{{ hostvars['attacker_3'].dnsteal_domain }}"
+    ip: "{{ hostvars['attacker_3'].ip_addresses['internet'] }}"
+
+dns_extra_servers:
+  '{{ (_dns_extra_servers | default([])) + (_phishing_domain | default([])) }}'
+
+_dnsmasq_authorative_config:
+  - name: authorative
+    prio: 10
+    content: |
+      auth-server="{{ dns_hostname }}.{{ dns_domain }}"
+
+      auth-zone={{ dns_domain }}
+        host-record={{ dns_hostname }}.{{ dns_domain }}, {{ hostvars["internet_dns"].ip_addresses["internet"] }}
+        host-record=mail.{{ dns_domain }}, {{ hostvars["global_mail"].ip_addresses["internet"] }}
+        host-record=mailserver.{{ dns_domain }}, {{ hostvars["global_mail"].ip_addresses["internet"] }}
+
+      # COMPANIES
+      {% for company in companies %}
+      auth-zone={{ hostvars[company + "_firewall_external"].company_domain }}
+        host-record={{ hostvars[company + "_firewall_external"].company_domain }}, {{ hostvars[company + "_firewall_external"].ip_addresses["internet"] }}
+        host-record=mail.{{ hostvars[company + "_firewall_external"].company_domain }}, {{ hostvars[company + "_firewall_external"].ip_addresses["internet"] }}
+      {% endfor %}
+
+      {% for email_domain in ((users | select_users(filter={'company': ''}, returns=['domain'], unique=true)) | reject('equalto', '{{ dns_domain }}')) %}
+      auth-zone={{ email_domain }}
+      {% endfor %}
+
+
+_dnsmasq_email_config:
+  - name: mail
+    prio: 25
+    content: |
+      # COMPANY MAILS
+      {% for domain in (users | select_users(filter={'company': 'defined'}, returns=['domain'], unique=true)) %}
+      mx-host={{ domain }},mail.{{ domain }}, 10
+      {% endfor %}
+
+      # GLOBAL MAILS
+      {% for domain in (users | select_users(filter={'company': ''}, returns=['domain'], unique=true)) %}
+      mx-host={{ domain }},mail.{{ dns_domain }}, 10
+      {% endfor %}
+
+_phishing_config:
+  - name: phishing
+    prio: 30
+    content: |
+      {%- for phishing_site in (phishing_sites | default([])) %}
+      auth-zone={{ phishing_site.phishing_domain }}
+      host-record={{ phishing_site.phishing_url }},{{ hostvars['attacker_4'].ip_addresses['internet'] }}
+      {% endfor -%}
+
+_cc_config:
+  - name: cc
+    prio: 35
+    content: |
+      {%- for cc_server in (cc_servers | default([])) %}
+      {%- if cc_server.ip | length > 1 %}
+      address=/{{ cc_server.domain }}/{{ cc_server.ip }}
+      {% endif -%}
+      {% endfor -%}
+
+_companies_config:
+  - name: companies
+    prio: 1
+    content: |
+      # COMPANIES
+      {% for company in companies.values() %}
+      # {{ company.domain | upper }}
+        address=/{{ company.domain }}/{{ hostvars[company.name + "_firewall_external"].ip_addresses['internet'] }}
+      {% endfor %}
+
+dnsmasq_config:
+  '{{ _dnsmasq_config + (_companies_config | default([])) +
+  (_dnsmasq_authorative_config | default([])) + (_dnsmasq_email_config |
+  default([])) + (_phishing_config | default([])) + (_cc_config | default([]))
+  }}'

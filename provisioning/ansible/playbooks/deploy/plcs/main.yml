@@ -1,0 +1,47 @@
+---
+
+- name: Installs and configure PLCs
+  hosts: plc
+  become: true
+  pre_tasks:
+    - debug:
+        msg: "{{ openplc_users }}"
+    - debug:
+        msg: "{{ breaker }}"
+  roles:
+    - role: openplc
+
+  tasks:
+    - name: Ensure destination directory exists
+      become: true
+      ansible.builtin.file:
+        path: '{{ modbus_converter_basepath }}'
+        owner: '{{ modbus_converter_user }}'
+        group: '{{ modbus_converter_group }}'
+        mode: '0755'
+        state: directory
+        recurse: true
+
+    - name: Copy files to remote host
+      become: true
+      ansible.builtin.copy:
+        src: "{{ local_ansible_dir }}/data/files/plcs/modbus_to_iec104/"
+        dest: '{{ modbus_converter_basepath }}/'
+        mode: '0644'
+
+    - name: Install required packages
+      become: true
+      ansible.builtin.apt:
+        name: [python3, python3-pip, python3-venv]
+        state: present
+
+    - name: Install pip requirements
+      become: true
+      ansible.builtin.pip:
+        requirements: '{{ modbus_converter_basepath }}/requirements.txt'
+        virtualenv: '{{ modbus_converter_virtualenv }}'
+        virtualenv_command: 'python3 -m venv'
+
+    - name: Serve via systemd service
+      ansible.builtin.include_role:
+        role: simple-systemd-service

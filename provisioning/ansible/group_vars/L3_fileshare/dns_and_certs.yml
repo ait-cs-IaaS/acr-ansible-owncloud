@@ -1,0 +1,3 @@
+---
+dns_hostname: share
+create_cert: true

@@ -1,0 +1,59 @@
+---
+suricata_use_ppa: true
+suricata_interface: "{{ ansible_default_ipv4.interface }}"
+suricata_listenmode: af-packet
+suricata_pcap_log_limit: 1000mb
+suricata_pcap_log_max_files: 5
+
+suricata_bpf_filter_mgmthost: "{{ hostvars['mgmthost'].ip_addresses['soc'] }}"
+
+# extra rule files (to be copied to the host)
+# note that these files are not automatically activated to actually use them
+# they also must be added to the respective suricata_rule_files_<*> list.
+
+suricata_extra_rule_files_all: []
+# suricata_extra_rule_files_all: "{{ lookup('filetree', 'suricata/rules') | map(attribute='src') | list }}"
+suricata_extra_rule_files_group: []
+suricata_extra_rule_files_host: []
+suricata_extra_rule_files: "{{ suricata_extra_rule_files_all + suricata_extra_rule_files_group + suricata_extra_rule_files_host }}"
+
+# rules to be configured
+suricata_rule_files_default:
+  - http-events.rules # available in suricata sources under rules dir
+  - smtp-events.rules # available in suricata sources under rules dir
+  - dns-events.rules # available in suricata sources under rules dir
+  - tls-events.rules # available in suricata sources under rules dir
+suricata_rule_files_all: "{{ suricata_extra_rule_files_all | map('basename') | list + suricata_rule_files_default }}"
+suricata_rule_files_group: []
+suricata_rule_files_host: []
+# uncomment to use custom rule files list instead of default
+suricata_rule_files: "{{ suricata_rule_files_all + suricata_rule_files_group + suricata_rule_files_host }}"
+
+_suricata_bpf_filter: |
+  {% if suricata_bpf_filter_mgmthost is defined %}
+  not host {{ suricata_bpf_filter_mgmthost }} and
+  {% endif %}
+  not host {{ hostvars[company_name + '_elk'].ip_addresses['soc'] }}
+suricata_bpf_filter: "{{ _suricata_bpf_filter | replace('\n', ' ') }}"
+_suricata_httpservers:
+  - mail
+  - cloud
+  - proxy
+  - webserver
+  - application_server
+suricata_httpservers: |
+  [
+    {%- for host in _suricata_httpservers %}
+      {% if hostvars[company_name + '_' + host].ip_addresses['dmz'] is defined %}
+        "{{ hostvars[company_name + '_' + host].ip_addresses['dmz'] }}",
+      {% endif %}
+    {% endfor -%}
+  ]
+
+suricata_address_groups:
+  DNS_SERVERS: "[{{ hostvars[company_name + '_firewall_external'].ip_addresses['dmz'] }}]"
+  HTTP_SERVERS: "[{{ suricata_httpservers | join(',') }}]"
+  SMTP_SERVERS: "[{{ hostvars[company_name + '_mail'].ip_addresses['dmz'] }}]"
+
+suricata_port_groups:
+  HTTP_PORTS: "[80,443,8080,5601,8200]"

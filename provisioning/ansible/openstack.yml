@@ -1,0 +1,41 @@
+---
+
+# openstack inventory
+plugin: openstack.cloud.openstack
+
+fail_on_errors: true
+private: true
+
+compose:
+  company_info: |
+    openstack.metadata.company_info | from_json
+    if "companies" in openstack.metadata.groups
+
+  host_index: |
+    "%d" | format(openstack.name | regex_replace('.*_(\d*)', '\1') | int)
+
+  floating_ip: openstack.addresses | extract_floating_ip
+
+  ip_addresses: openstack.addresses | extract_ip_dict
+
+  ansible_ssh_host: |
+    openstack.addresses | extract_floating_ip
+    if openstack.addresses | extract_floating_ip
+    else (openstack.addresses.values()|list)[0][0].addr
+
+  # dns_domain_id: |
+  #   openstack.addresses.keys() | reject('in', ['internet']) | first | default('')
+  #   if openstack.addresses.keys() | length == 1
+
+# Add layered group names
+keyed_groups:
+  - key: openstack.metadata.groups.split(', ')
+    prefix: L1
+  - key: openstack.metadata.groups.split(', ')
+    prefix: L2
+  - key: openstack.metadata.groups.split(', ')
+    prefix: L3
+  - key: openstack.metadata.groups.split(', ')
+    prefix: L4
+  - key: openstack.metadata.groups.split(', ')
+    prefix: L5

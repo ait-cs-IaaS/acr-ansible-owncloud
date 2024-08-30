@@ -1,0 +1,16 @@
+---
+- name: Kill all user processes
+  hosts: employees
+  gather_facts: false
+  tasks:
+    - name: Show ps
+      shell: ps aux | grep -E "^{{ kyoushi_user_name[:7] }}"
+      register: out
+      become: true
+    - debug:
+        var: out
+    - name: Kill SM
+      shell: kill $(ps aux | grep -E "^{{ kyoushi_user_name[:7] }}" | tr -s ' ' | cut -d" " -f2)
+      args:
+        executable: /bin/bash
+      become: true

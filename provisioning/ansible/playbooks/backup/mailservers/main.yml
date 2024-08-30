@@ -1,0 +1,43 @@
+---
+- name: Configure mailservers
+  hosts: mailservers
+  become: true
+  vars:
+    backup_path: /opt/backup/{{ ansible_nodename }}
+  tasks:
+    - name: Create backup directory
+      ansible.builtin.file:
+        path: "{{ backup_path }}"
+        state: directory
+
+    - name: Get mail directories
+      ansible.builtin.command:
+        cmd: find /home/ -path '*/.mail' -type d
+      changed_when: false
+      register: mail_dirs
+
+    - name: Copy logs to backup
+      ansible.builtin.copy:
+        src: /var/log/mail.log
+        dest: "{{ backup_path }}/mail.log"
+        remote_src: true
+
+    - name: Copy docs to backup
+      ansible.builtin.copy:
+        src: "{{ item }}"
+        dest: "{{ backup_path }}/{{ item.split('/')[2] }}"
+        remote_src: true
+      loop: "{{ mail_dirs.stdout_lines }}"
+
+    - name: Compress directory /opt/backup into /opt/mail-backup.tar.gz
+      community.general.archive:
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        path: /opt/backup
+        dest: /opt/mail-backup.tar.gz
+
+    - name: Store file into /data/backup/<hostname>/opt/backup
+      ansible.builtin.fetch:
+        become: false
+        src: /opt/mail-backup.tar.gz
+        dest: "{{ mail_backup_dir }}"

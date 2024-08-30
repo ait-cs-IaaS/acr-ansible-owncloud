@@ -1,0 +1,46 @@
+wp_themes:
+  - { name: food-hub, activate: true }
+  - { name: exs-personal, activate: false }
+  - { name: neve, activate: false }
+  - { name: hestia, activate: false }
+
+wp_categories:
+  - { name: Unternehmensnachrichten, description: Aktuelle Nachrichten von WertVoll }
+  - { name: Nachhaltiges Einkaufen, description: Tipps für nachhaltiges Einkaufen }
+  - { name: Gesunde Ernährung, description: Informationen zu gesunder Ernährung }
+
+wp_posts:
+  - title: WertVoll erweitert sein Sortiment an Bio-Produkten
+    author: kaoc
+    category: Unternehmensnachrichten
+    date: "2023-09-20 09:00:00"
+    content: |
+      <p>WertVoll ist stolz darauf, sein Sortiment an hochwertigen Bio-Produkten zu erweitern. Wir setzen uns weiterhin für gesunde und nachhaltige Ernährung ein und bieten unseren Kunden eine breite Auswahl an biologisch angebauten Lebensmitteln. Erfahren Sie mehr über unsere neuen Bio-Produkte und wie Sie zu einer gesunden Ernährung beitragen können.</p>
+
+  - title: Nachhaltiges Einkaufen leicht gemacht
+    author: kaoc
+    category: Nachhaltiges Einkaufen
+    date: "2023-09-18 14:30:00"
+    content: |
+      <p>WertVoll möchte Sie dabei unterstützen, nachhaltiger einzukaufen. In diesem Artikel finden Sie praktische Tipps, wie Sie umweltfreundliche Entscheidungen beim Einkaufen treffen können. Wir zeigen Ihnen, wie Sie Lebensmittelabfälle reduzieren, saisonale Produkte wählen und nachhaltige Verpackungen bevorzugen können. Gemeinsam können wir einen positiven Beitrag zur Umwelt leisten.</p>
+
+  - title: Gesundes Essen für Ihre Familie
+    author: jonesk
+    category: Gesunde Ernährung
+    date: "2023-09-16 13:45:00"
+    content: |
+      <p>Die Ernährung Ihrer Familie liegt uns am Herzen. Entdecken Sie in diesem Artikel eine Vielzahl von Rezepten und Ratschlägen für eine gesunde und ausgewogene Ernährung. Wir informieren Sie über frische Zutaten, Kochtipps und gesunde Essgewohnheiten, die Ihrer Familie helfen können, sich gesund zu ernähren und wohlfühlen.</p>
+
+  - title: "Engagement für Nachhaltigkeit"
+    author: kaoc
+    category: Nachhaltiges Einkaufen
+    date: "2023-09-14 11:20:00"
+    content: |
+      <p>WertVoll ist bestrebt, nachhaltige Praktiken zu fördern. Erfahren Sie mehr über unsere Bemühungen, Plastik zu reduzieren, erneuerbare Energiequellen zu nutzen und lokale Lieferanten zu unterstützen. Wir glauben, dass jeder Einkauf eine Gelegenheit ist, die Umwelt zu schützen und die Lebensqualität zu verbessern. Machen Sie mit bei unserem Engagement für eine bessere Zukunft.</p>
+
+  - title: "Tipps für frische Lebensmittel"
+    author: jonesk
+    category: Gesunde Ernährung
+    date: "2023-09-12 10:15:00"
+    content: |
+      <p>WertVoll legt großen Wert auf die Qualität und Frische unserer Lebensmittel. In diesem Artikel teilen wir Tipps, wie Sie frische Lebensmittel erkennen und länger haltbar machen können. Erfahren Sie, wie Sie Obst und Gemüse am besten lagern, Fleisch und Fisch auswählen und gesunde Mahlzeiten zubereiten können. Bei WertVoll steht Ihre Gesundheit an erster Stelle.</p>

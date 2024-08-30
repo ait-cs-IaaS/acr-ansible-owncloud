@@ -1,0 +1,34 @@
+---
+
+dns_hostname: learners
+dns_domain: 'cyberrange.at'
+_dns_aliases:
+  - novnc
+  - mattermost
+create_cert: true
+
+site_certificate:
+  cert_type: sites
+  common_name: "{{ auth_url }}"
+  host: "{{ ansible_hostname }}"
+  subject_alt_name: |
+    [
+      {% for alias in dns_aliases %}
+        "DNS:{{ alias }}.{{ dns_domain }}",
+      {% endfor %}
+      {% for alias in dns_aliases %}
+        "DNS:{{ alias }}.{{ auth_url }}",
+      {% endfor %}
+    ]
+  country: "{{ dns_country | default('AT') }}"
+  state: "{{ dns_state | default('Vienna') }}"
+  locality: "{{ dns_locality | default('Vienna') }}"
+  organization: "{{ dns_organization | default('Cyber Range') }}"
+
+# certbot_domains: |
+#     [
+#       "{{ auth_url }}",
+#       {% for alias in dns_aliases %}
+#         "{{ alias }}.{{ public_domain }}",
+#       {% endfor %}
+#     ]

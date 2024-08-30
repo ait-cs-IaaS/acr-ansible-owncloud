@@ -1,0 +1,43 @@
+- src: git@github.com:ait-cs-IaaS/ansible-mate-desktop.git
+  scm: git
+  version: v1.2.1
+  name: mate-desktop
+
+- src: git@github.com:ait-cs-IaaS/ansible-manage_unattended_upgrades.git
+  scm: git
+  version: v1.0.0
+
+- src: git@github.com:ait-cs-IaaS/ansible-vnc-server.git
+  scm: git
+  version: v1.4.3
+  name: vnc-server
+
+- src: git@github.com:ait-cs-IaaS/acr-ansible-install-mozilla-apps.git
+  scm: git
+  version: v1.1
+  name: install-mozilla-apps
+
+- src: https://github.com/ait-cs-IaaS/acr-ansible-mattermost-client.git
+  scm: git
+  version: v1.0
+  name: mattermost-client
+
+- src: git@github.com:ait-cs-IaaS/acr-ansible-mate-autostart.git
+  scm: git
+  version: v1.0
+  name: mate-autostart
+
+- src: git@github.com:ait-cs-IaaS/acr-ansible-mate-desktop-background.git
+  scm: git
+  version: v1.0
+  name: mate-desktop-background
+
+- src: git@github.com:ait-cs-IaaS/acr-ansible-mate-dconf-settings.git
+  scm: git
+  version: v1.0
+  name: mate-dconf-settings
+
+- src: git@github.com:ait-cs-IaaS/acr-ansible-mate-panel-list.git
+  scm: git
+  version: v1.0
+  name: mate-panel-list

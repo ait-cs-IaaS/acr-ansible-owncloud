@@ -1,0 +1,12 @@
+# disable int so we can skip script parts
+trap ' ' INT
+
+TARGET_DOMAIN="https://supplypro.{{ companies[company].domain }}"
+PAYLOAD_DOMAIN={{ hostvars['attacker_4'].ansible_default_ipv4.address }}
+
+function attack_wait {
+    echo "Sleeping for $1"
+    sleep $1
+}
+
+set -x

@@ -1,0 +1,3 @@
+---
+dns_hostname: field-gateway
+create_cert: true

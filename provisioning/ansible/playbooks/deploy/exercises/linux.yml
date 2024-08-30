@@ -1,0 +1,329 @@
+---
+# - name: Debug variables
+#   hosts: firewall_field #firewalls
+#   tasks:
+#     - debug:
+#         msg: "{{ company_networks }}"
+#     - debug:
+#         msg: "{{ shorewall_params }}"
+#     - debug:
+#         msg: "{{ breaker }}"
+
+- name: Create Planets directory structure on Desktop
+  hosts: clients
+  become: yes
+  tasks:
+    - name: Ensure Desktop exists
+      ansible.builtin.file:
+        path: '/home/{{ client_user.username }}/Desktop'
+        state: directory
+        owner: '{{ client_user.username }}'
+        group: '{{ client_user.username }}'
+
+    - name: Create Planets folder on Desktop
+      ansible.builtin.file:
+        path: '/home/{{ client_user.username }}/Desktop/Planets'
+        state: directory
+      become_user: '{{ client_user.username }}'
+
+    - name: Create planet folders
+      ansible.builtin.file:
+        path: '/home/{{ client_user.username }}/Desktop/Planets/{{ item }}'
+        state: directory
+      loop:
+        - Mercury
+        - Venus
+        - Earth
+        - Mars
+        - Jupiter
+        - Saturn
+        - Uranus
+        - Neptune
+      become_user: '{{ client_user.username }}'
+
+    - name: Create files inside planet folders
+      ansible.builtin.copy:
+        dest:
+          '/home/{{ client_user.username }}/Desktop/Planets/{{ item.planet }}/{{
+          item.file }}'
+        content: '{{ item.content }}'
+      loop:
+        - {
+            planet: 'Mercury',
+            file: 'info.txt',
+            content: 'Mercury is the closest planet to the Sun.',
+          }
+        - {
+            planet: 'Mercury',
+            file: 'data.log',
+            content:
+              "Diameter: 4880 km\nSurface Conditions: Rocky with many craters,
+              extreme temperature variations (-173°C to 427°C)\nDistance to Sun:
+              57.9 million km\nIP to remote server: {{
+              hostvars[company_name+'_webserver'].ansible_default_ipv4.address
+              | default('') }}",
+          }
+        - {
+            planet: 'Venus',
+            file: 'info.txt',
+            content: 'Venus is the second planet from the Sun.',
+          }
+        - {
+            planet: 'Venus',
+            file: 'data.log',
+            content:
+              "Diameter: 12104 km\nSurface Conditions: Thick, toxic atmosphere
+              with clouds of sulfuric acid, extremely hot surface
+              (~462°C)\nDistance to Sun: 108.2 million km\n",
+          }
+        - {
+            planet: 'Earth',
+            file: 'info.txt',
+            content: 'Earth is our home planet.',
+          }
+        - {
+            planet: 'Earth',
+            file: 'data.log',
+            content:
+              "Diameter: 12742 km\nSurface Conditions: Diverse, with liquid
+              water, atmosphere rich in nitrogen and oxygen, moderate
+              temperatures (-88°C to 58°C)\nDistance to Sun: 149.6 million km\n",
+          }
+        - {
+            planet: 'Mars',
+            file: 'info.txt',
+            content: 'Mars is known as the Red Planet.',
+          }
+        - {
+            planet: 'Mars',
+            file: 'data.log',
+            content:
+              "Diameter: 6779 km\nSurface Conditions: Rocky, with a thin
+              atmosphere, surface temperatures range from -125°C to
+              20°C\nDistance to Sun: 227.9 million km\n",
+          }
+        - {
+            planet: 'Jupiter',
+            file: 'info.txt',
+            content: 'Jupiter is the largest planet in our solar system.',
+          }
+        - {
+            planet: 'Jupiter',
+            file: 'data.log',
+            content:
+              "Diameter: 139820 km\nSurface Conditions: Gas giant with no solid
+              surface, mostly hydrogen and helium, very cold at cloud tops
+              (~-145°C)\nDistance to Sun: 778.5 million km\n",
+          }
+        - {
+            planet: 'Saturn',
+            file: 'info.txt',
+            content:
+              'Saturn is famous for its rings and the port for flag 1 is 7268.',
+          }
+        - {
+            planet: 'Saturn',
+            file: 'data.log',
+            content:
+              "Diameter: 116460 km\nSurface Conditions: Gas giant with no solid
+              surface, mostly hydrogen and helium, very cold at cloud tops
+              (~-178°C)\nDistance to Sun: 1.43 billion km\n",
+          }
+        - {
+            planet: 'Uranus',
+            file: 'info.txt',
+            content: 'Uranus rotates on its side.',
+          }
+        - {
+            planet: 'Uranus',
+            file: 'data.log',
+            content:
+              "Diameter: 50724 km\nSurface Conditions: Ice giant with a cold,
+              gaseous atmosphere, mainly hydrogen, helium, and methane,
+              extremely cold (~-224°C)\nDistance to Sun: 2.87 billion km\n",
+          }
+        - {
+            planet: 'Neptune',
+            file: 'info.txt',
+            content:
+              'Neptune is the farthest planet from the Sun. Therefore it
+              contains the key, to other universes',
+          }
+        - {
+            planet: 'Neptune',
+            file: 'data.log',
+            content:
+              "Diameter: 49244 km\nSurface Conditions: Ice giant with a cold,
+              gaseous atmosphere, mainly hydrogen, helium, and methane,
+              extremely cold (~-218°C)\nDistance to Sun: 4.5 billion km\n",
+          }
+
+      become_user: '{{ client_user.username }}'
+
+- name: Create Questions
+  hosts: webserver
+  become: yes
+  tasks:
+    - name: Create Questions Folder on Client Directory
+      ansible.builtin.file:
+        path: '/opt/Questions'
+        state: directory
+      loop:
+
+    - name: Create files inside planet folders
+      ansible.builtin.copy:
+        dest: '/opt/Questions/{{ item.file }}'
+        content: '{{ item.content }}'
+      loop:
+        - {
+            file: 'question1',
+            content:
+              "What is the practice of trying to obtain sensitive information by
+              pretending to be a trustworthy entity?\n",
+          }
+        - {
+            file: 'question2',
+            content:
+              "What is the term for a harmful program that self-replicates and
+              spreads without human intervention?\n",
+          }
+        - { file: 'question3', content: "A bit can be either a 1 or a __?\n" }
+        - {
+            file: 'question4',
+            content:
+              "How many different numbers can be represented with 6 bits?\n",
+          }
+        - {
+            file: 'question5',
+            content:
+              "What do you call an extra layer of security beyond a password,
+              often involving a code sent to your phone?\n",
+          }
+        - {
+            file: 'question6',
+            content:
+              "What is the term for unauthorized access to systems or data?\n",
+          }
+        - { file: 'question7', content: "How many bits are in 30 bytes?\n" }
+        - {
+            file: 'question8',
+            content:
+              "What do you call a weak point that can be exploited in a system
+              or network?\n",
+          }
+        - {
+            file: 'question9',
+            content: "What is the decimal number for 11100110?\n",
+          }
+        - {
+            file: '.question10',
+            content:
+              "Congrats. You've found the hidden file. If you answered all
+              questions, you should have noticed, that 4 of them could be
+              answered with decimal numbers. Use these 4 numbers to build an IP
+              (by trying different arrangements of the numbers) and call it in
+              your webbrowser to get your first flag.\n",
+          } #TODO:
+
+- name: Set up Apache2 to serve a simple HTML page on port 7268
+  hosts: venjix
+  become: yes
+  tasks:
+    - name: Ensure Apache2 is installed
+      apt:
+        name: apache2
+        state: present
+        update_cache: yes
+
+    - name: Create the document root directory
+      file:
+        path: /var/www/page1
+        state: directory
+        owner: www-data
+        group: www-data
+        mode: '0755'
+
+    - name: Create the simple HTML file
+      copy:
+        dest: /var/www/page1/index.html
+        content: |
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <title>My Website</title>
+          </head>
+          <body>
+              <h1>Flag{QXZhaWxhYmlsaXR5}</h1>
+          </body>
+          </html>
+        owner: www-data
+        group: www-data
+        mode: '0644'
+
+    - name: Create the Apache virtual host configuration file for port 7268
+      copy:
+        dest: /etc/apache2/sites-available/page1.conf
+        content: |
+          <VirtualHost *:7268>
+              ServerAdmin webmaster@localhost
+              DocumentRoot /var/www/page1
+              ErrorLog ${APACHE_LOG_DIR}/error.log
+              CustomLog ${APACHE_LOG_DIR}/access.log combined
+          </VirtualHost>
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Enable the new virtual host
+      command: a2ensite page1.conf
+      notify: Restart Apache
+
+    - name: Add Listen directive to ports.conf
+      lineinfile:
+        path: /etc/apache2/ports.conf
+        insertafter: EOF
+        line: 'Listen 7268'
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Restart Apache
+
+    - name: Allow traffic on port 7268
+      ufw:
+        rule: allow
+        port: 7268
+        proto: tcp
+
+    - name: Backup the current index.html
+      copy:
+        src: /var/www/html/index.html
+        dest: /var/www/html/index.html.bak
+        backup: yes
+        remote_src: yes
+
+    - name: Replace index.html with new content
+      copy:
+        content: |
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>New Index</title>
+          </head>
+          <body>
+              <h1>Seems like you're on the right IP-Address to find a flag.</h1>
+              <p>Try to use another port - Probably you can find it somewhere in the Plantes folder ;-)!</p>
+          </body>
+          </html>
+        dest: /var/www/html/index.html
+        owner: www-data
+        group: www-data
+        mode: '0644'
+        #remote_src: yes
+
+  handlers:
+    - name: Restart Apache
+      service:
+        name: apache2
+        state: restarted

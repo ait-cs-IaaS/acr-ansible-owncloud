@@ -1,0 +1,13 @@
+---
+dns_hostname: siem
+_dns_aliases:
+  - elk
+  - kibana
+
+create_cert: true
+
+ssl_cert_src: "{{ certs_base_path }}/sites/{{ site_certificate.host }}/{{ site_certificate.common_name }}/{{ site_certificate.common_name
+  }}.crt"
+
+ssl_key_src: "{{ certs_base_path }}/sites/{{ site_certificate.host }}/{{ site_certificate.common_name }}/{{ site_certificate.common_name
+  }}.key"

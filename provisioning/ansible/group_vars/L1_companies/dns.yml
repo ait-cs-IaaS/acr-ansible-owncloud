@@ -1,0 +1,58 @@
+---
+
+dns_domain: "{{ company_domain }}"
+
+dns_certificate_info:
+  country: AT
+  state: Vienna
+  locality: Vienna
+  organization: '{{ company_info.display_name }}'
+  subject_alt_name: '{{ dns_certificate_subject_alt_names | default([]) }}'
+
+mail_user_domains:
+  "{{ users | select_users(filter={'company': 'defined'}, returns=['domain'],
+  unique=true) }}"
+
+_dnsmasq_email_config:
+  - name: mail
+    prio: 25
+    content: |
+      mx-host={{ company_domain }},mail.{{ company_domain }}, 10
+
+_dnsmasq_authorative_config:
+  - name: authorative
+    prio: 10
+    content: |
+      auth-server={{ hostvars[company_name + "_firewall_external"].dns_hostname + '.' + company_domain }}
+
+      # EXTERNAL AUTH ZONE 
+      auth-zone={{ company_domain }}
+
+      {% for host in groups[company_name] | intersect(groups["dmz"]) %}
+      {% for alias in hostvars[host].dns_aliases %}
+      {% if alias not in hostvars[company_name + '_proxy'].dns_aliases or host == company_name + '_proxy' %}
+      {% set prefix = '' if alias == company_domain else alias + '.' %}
+        host-record={{ prefix }}{{ company_domain }},{{ hostvars[host].ip_addresses['dmz'] }}
+      {% endif %}
+      {% endfor %}
+      {% endfor %}
+
+      {% for network in company_networks %}
+      # {{ network | upper }} AUTH ZONE
+      auth-zone={{ network }}.{{ company_domain }}
+
+      {% for firewall in groups[company_name] | intersect(groups["firewalls"]) %}
+      {% if hostvars[firewall].ip_addresses[network] is defined %}
+        host-record={{ hostvars[firewall].dns_hostname }}.{{ network }}.{{ company_domain }},{{ hostvars[firewall].ip_addresses[network] }}
+      {% endif %}
+      {% endfor %}
+
+      {% for host in groups[company_name] | intersect(groups[network]) %}
+      {% if hostvars[host].use_dns | default(true) %}
+      {% for alias in hostvars[host].dns_aliases %}
+        host-record={{ alias }}.{{ network }}.{{ company_domain }},{{ hostvars[host].ip_addresses[network] }}
+      {% endfor %}
+      {% endif %}
+      {% endfor %}
+
+      {% endfor %}

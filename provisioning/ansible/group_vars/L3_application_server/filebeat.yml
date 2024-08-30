@@ -1,0 +1,15 @@
+---
+filebeat_modules_host:
+  - module: nginx
+
+filebeat_beat_conf_host:
+  filebeat:
+    inputs:
+      - type: log
+        enabled: true
+        paths:
+          - "{{ supplypro_logfile_location }}/app.log*"
+        tags: [application]
+        fields:
+          event.module: "{{ supplypro_app_name | lower }}"
+        fields_under_root: true

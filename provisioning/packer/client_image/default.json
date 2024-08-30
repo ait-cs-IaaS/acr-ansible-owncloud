@@ -1,0 +1,9 @@
+{
+    "base_image" : "ubuntu-2004",
+    "image_name" : "cr-client-ubuntu-2004",
+    "security_group": "All-Open",
+    "network_discovery_cidrs": ["192.168.66.0/24"],
+    "floating_ip_pool": "provider-cyberrange-207",
+    "timestamp_image": false
+}
+

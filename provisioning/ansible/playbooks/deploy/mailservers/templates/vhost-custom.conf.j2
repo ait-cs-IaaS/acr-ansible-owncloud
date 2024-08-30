@@ -1,0 +1,24 @@
+<VirtualHost *:80>
+
+        ServerName {{ horde_vhost_server_name }}
+        Redirect / https://{{ horde_vhost_server_name }}
+        RemoteIPHeader X-Forwarded-For
+        RemoteIPInternalProxy {{ horde_reverse_proxy }}
+
+</VirtualHost>
+
+<VirtualHost *:443>
+        
+        ServerName {{ horde_vhost_server_name }}
+        DocumentRoot /usr/share/horde
+
+        CustomLog {{ horde_log_path }}/horde-access.log "%v %a %l %u %t \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\""
+        ErrorLog {{ horde_log_path }}/horde-error.log
+
+        SSLEngine on
+        SSLCertificateFile {{ horde_cert.dest }}
+        SSLCertificateKeyFile {{ horde_cert_key.dest }}
+        RemoteIPHeader X-Forwarded-For
+        RemoteIPInternalProxy {{ horde_reverse_proxy }}
+
+</VirtualHost>

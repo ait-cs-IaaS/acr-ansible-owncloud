@@ -1,0 +1,16 @@
+---
+module_version: "1.0"
+
+var:
+  - name: paths
+    default:
+      - /var/log/grafana/grafana.log*
+  - name: tags
+    default: [grafana]
+
+ingest_pipeline: ingest/pipeline.yml
+input: config/input.yml
+
+requires.processors:
+  - name: geoip
+    plugin: ingest-geoip

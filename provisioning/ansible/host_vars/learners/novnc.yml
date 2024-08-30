@@ -1,0 +1,22 @@
+---
+novnc_upstreams: |
+  [
+    {% for user, details in learners_users.items() %}
+      {% for user, vnc_client in details['vnc_clients'].items() %}
+        {% if hostvars[vnc_client.target] is defined %}
+          {
+            "name": "{{ vnc_client.target }}",
+            "address": "{{ hostvars[vnc_client.target].ansible_ssh_host }}",
+            "port": "7000",
+            "username": "{{ vnc_client.username }}"
+          },
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
+  ]
+
+novnc_server_name: novnc.{{ auth_url }}
+novnc_ssl_cert: "{{ ssl_cert }}"
+novnc_ssl_key: "{{ ssl_key }}"
+
+fabric_version: "1.3.5"

@@ -1,0 +1,104 @@
+---
+- name: Gather facts abouts other hosts
+  hosts: webserver,firewall,attacker_0
+  gather_facts: true
+
+- name: Deploy attack scripts
+  hosts: attacker_2
+  tasks:
+    - name: Ensure python python3-pip and git is installed
+      become: true
+      ansible.builtin.apt:
+        name:
+          - python3-pip
+          - git
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Create attack directory
+      become: true
+      ansible.builtin.file:
+        path: "{{ attack_dir }}/"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+    - name: Deploy attacker scripts
+      become: true
+      ansible.builtin.copy:
+        dest: "{{ attack_dir }}/"
+        src: wordpress_chain/
+        mode: "0755"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+    - name: Install util script requirements
+      become: true
+      ansible.builtin.pip:
+        requirements: "{{ attack_dir }}/util/requirements.txt"
+        executable: pip3
+
+    - name: Create attack configs directory
+      become: true
+      ansible.builtin.file:
+        path: "{{ attack_dir }}/configs"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+    - name: Deploy attack target configs
+      become: true
+      ansible.builtin.template:
+        dest: "{{ attack_dir }}/configs/{{ company }}"
+        src: config.j2
+        mode: "0644"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+      loop: "{{ company_names }}"
+      loop_control:
+        loop_var: company
+
+- name: Provide Defacement page on remote server
+  hosts: attacker_0
+  become: true
+
+  tasks:
+    - name: Install Nginx
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+
+    - name: Ensure dirs are present
+      ansible.builtin.file:
+        path: /var/www/html/payloads
+        state: directory
+
+    - name: Copy defacement index.php
+      ansible.builtin.copy:
+        src: wordpress_chain/content/{{ website_defacement_content }}.html
+        dest: /var/www/html/payloads/index.html
+
+    - name: Remove nginx default
+      ansible.builtin.file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+
+    - name: Configure nginx
+      ansible.builtin.template:
+        src: nginx_payloads.conf.j2
+        dest: /etc/nginx/sites-enabled/payloads.conf
+        mode: "0644"
+      notify:
+        - Restart nginx
+
+    - name: Enable Nginx
+      ansible.builtin.systemd:
+        name: nginx
+        enabled: true
+        state: started
+
+  handlers:
+    - name: Restart nginx
+      ansible.builtin.systemd:
+        name: nginx
+        state: restarted

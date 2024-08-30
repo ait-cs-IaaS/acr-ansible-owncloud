@@ -1,0 +1,102 @@
+---
+- name: Install supplypro
+  hosts: application_server
+  gather_subset: [min]
+  become: true
+
+  pre_tasks:
+    - name: Create user supplypro
+      become: true
+      ansible.builtin.user:
+        name: supplypro
+        home: '{{ supplypro_basepath }}'
+        shell: /usr/sbin/nologin
+        create_home: false
+
+  roles:
+    - role: get-git-repo
+      vars:
+        repo_user: supplypro
+        repo_basepath: '{{ supplypro_basepath }}'
+        repo_url:
+          https://{{ supplypro_github_pat
+          }}@github.com/ait-cs-IaaS/supply_pro.git
+
+    - role: nodejs
+      vars:
+        nodejs_version: 20.x
+
+    - role: build-npm-project
+      vars:
+        project_user: '{{ supplypro_user }}'
+        project_path: '{{ supplypro_basepath }}/frontend'
+        project_env: '{{ supplypro_env }}'
+        project_dest: /var/www/html/supplypro
+
+    - role: install-flask-app
+      vars:
+        app_user: supplypro
+        app_basepath: '{{ supplypro_basepath }}'
+        app_use_setuptools: true
+
+    - role: serve-flask-via-gunicorn
+      vars:
+        app_name: supplypro
+        app_user: supplypro
+        app_basepath: '{{ supplypro_basepath }}'
+        app_service_execstart: '{{ supplypro_service_execstart }}'
+
+    - role: nginx-simple-webserver
+      vars:
+        nginx_conf_src: nginx_supplypro.conf.j2
+        nginx_conf_dest: default.conf
+
+  tasks:
+    - name: Create {{ supplypro_logfile_location }}
+      become: true
+      ansible.builtin.file:
+        path: '{{ supplypro_logfile_location }}'
+        owner: '{{ supplypro_user }}'
+        group: '{{ supplypro_user }}'
+        mode: '0755'
+        state: directory
+        recurse: true
+
+    - name: Write config
+      become: true
+      ansible.builtin.template:
+        owner: '{{ supplypro_user }}'
+        group: '{{ supplypro_user }}'
+        src: templates/config.yml.j2
+        dest: '{{ supplypro_basepath }}/config.yml'
+        mode: preserve
+
+    - name: Install generator dependencies
+      become: true
+      become_user: '{{ supplypro_user }}'
+      ansible.builtin.pip:
+        requirements: '{{ supplypro_basepath }}/generate_data/requirements.txt'
+        virtualenv: '{{ supplypro_basepath }}/venv'
+        virtualenv_command: python3.9 -m venv
+
+    - name: Generate Data
+      become: true
+      become_user: '{{ supplypro_user }}'
+      ansible.builtin.command:
+        cmd:
+          "{{ supplypro_basepath }}/venv/bin/python3 generate_data.py -b {{
+          supplypro_basepath }} -c '{{ company_info.display_name }}' -n 100"
+        chdir: '{{ supplypro_basepath }}/generate_data'
+      changed_when: false
+
+    - name: Ensure database is absent
+      become: true
+      ansible.builtin.file:
+        path: '{{ supplypro_basepath }}/instance/data.db'
+        state: absent
+
+    - name: Restart service
+      become: true
+      ansible.builtin.service:
+        name: supplypro
+        state: restarted

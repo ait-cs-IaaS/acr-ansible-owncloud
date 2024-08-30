@@ -1,0 +1,40 @@
+---
+filebeat_beat_conf_host:
+  filebeat:
+    inputs:
+      - type: log
+        enabled: true
+        paths:
+          - /var/log/mail.log*
+        exclude_files: [\.gz$]
+        tags: [mail, postfix, dovecot]
+        fields:
+          event.module: mail
+        fields_under_root: true
+
+filebeat_modules_host:
+  - module: mysql
+  - module: apache
+    docs: https://www.elastic.co/guide/en/beats/filebeat/7.9/filebeat-module-apache.html
+    config:
+      # Access logs
+      access:
+        enabled: true
+
+        # Set custom paths for the log files. If left empty,
+        # Filebeat will choose the paths depending on your OS.
+        var.paths:
+          # need to add leading * due to our vhost log file format
+          - /var/log/apache2/*access.log*
+          - /var/log/apache2/other_vhosts_access.log*
+          - /var/log/horde/horde-access.log*
+      # Error logs
+      error:
+        enabled: true
+
+        # Set custom paths for the log files. If left empty,
+        # Filebeat will choose the paths depending on your OS.
+        var.paths:
+          # need to add leading * due to our vhost log file format
+          - /var/log/apache2/*error.log*
+          - /var/log/horde/horde-error.log*

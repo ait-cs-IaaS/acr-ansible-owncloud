@@ -1,0 +1,5 @@
+---
+# output config for all beats
+
+beats_username: "{{ siem_user.username }}"
+beats_password: "{{ siem_user.password }}"

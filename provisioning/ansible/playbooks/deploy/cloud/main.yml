@@ -1,0 +1,58 @@
+# code: language=yaml
+---
+- name: Install smbclient
+  hosts: cloud
+  gather_facts: false
+  pre_tasks:
+    - ansible.builtin.debug:
+        msg: "{{ cloud_trusted_domains }}"
+    # - ansible.builtin.debug:
+    #     msg: "{{ breaker }}"
+  tasks:
+    - name: Install smbclient
+      become: true
+      ansible.builtin.apt:
+        name: smbclient
+        state: present
+
+- name: Install owncloud and required services
+  hosts: cloud
+  become: true
+  gather_subset: [min]
+  # pre_tasks:
+  # curl -O http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_amd64.deb
+  # sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2_amd64.deb
+  roles:
+    - role: nextcry
+
+  tasks:
+    # FIXME: Currently this role is only working on GitLab projects, not on GitHub projects (like RTC)
+    - name: Loop through shares
+      tags: [skip_ansible_lint]
+      ansible.builtin.include_role:
+        name: async_git_download
+      vars:
+        agd_absolute_project_path: "{{ local_ansible_dir }}"
+        agd_relative_src_path: /data/files/cloud/{{ owncloud_data_dir.src }}
+        agd_git_token: "{{ gitlab_pat }}"
+        agd_data_dest: "{{ owncloud_data_dir.dest }}"
+        agd_owner: www-data
+        agd_group: www-data
+        agd_mode: 774
+      loop: "{{ owncloud_data_dirs }}"
+      loop_control:
+        loop_var: owncloud_data_dir
+
+- name: Update owncloud database
+  hosts: cloud
+  become: true
+  tasks:
+    - name: Update owncloud database
+      become: true
+      become_user: www-data
+      ansible.builtin.command:
+        cmd: php occ files:scan --all
+        chdir: "{{ deploy_path }}"
+      register: cmd_output
+      changed_when: >
+        "Scanning files" in cmd_output.stdout

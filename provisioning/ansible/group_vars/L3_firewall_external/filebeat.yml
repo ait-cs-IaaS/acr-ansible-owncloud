@@ -1,0 +1,9 @@
+---
+filebeat_modules_host:
+  - module: dnsmasq
+    docs: custom module
+    src: filebeat_modules/dnsmasq
+    config:
+      log:
+        enabled: true
+        var.paths: [/var/log/dnsmasq.log*]

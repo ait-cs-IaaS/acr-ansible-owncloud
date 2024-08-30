@@ -1,0 +1,45 @@
+wp_themes:
+  - { name: exs-personal, activate: true }
+  - { name: neve, activate: false }
+  - { name: hestia, activate: false }
+
+wp_categories:
+  - { name: Unternehmensnachrichten, description: Aktuelle Nachrichten von Puresynth }
+  - { name: Technologie, description: Technologische Entwicklungen in der Chemiebranche }
+  - { name: Nachhaltigkeit, description: Nachhaltige Praktiken in der Chemieindustrie }
+
+wp_posts:
+  - title: Puresynth stellt umweltfreundliche Chemikalien vor
+    author: hansenj
+    category: Unternehmensnachrichten
+    date: "2023-09-20 09:00:00"
+    content: |
+      <p>Puresynth ist stolz darauf, eine neue Palette umweltfreundlicher Chemikalien vorzustellen, die unserer Verpflichtung zur Nachhaltigkeit gerecht werden. Diese Produkte wurden entwickelt, um die Umweltauswirkungen unserer Branche zu minimieren. Erfahren Sie mehr über unsere Bemühungen, die Chemieindustrie grüner zu gestalten und wie diese Chemikalien in verschiedenen Anwendungen eingesetzt werden können.</p>
+
+  - title: Innovationen in der chemischen Produktion
+    author: hansenj
+    category: Technologie
+    date: "2023-09-18 14:30:00"
+    content: |
+      <p>Puresynth ist führend in der Integration modernster Technologien in unsere Produktionsprozesse. In diesem Artikel erfahren Sie, wie wir Innovationen wie KI, Automatisierung und Prozessoptimierung nutzen, um unsere Produktionseffizienz zu steigern und hochwertige Chemikalien zu liefern. Entdecken Sie die Zukunft der chemischen Produktion mit Puresynth.</p>
+
+  - title: Nachhaltigkeit in der Chemieindustrie
+    author: jonesk
+    category: Nachhaltigkeit
+    date: "2023-09-16 13:45:00"
+    content: |
+      <p>Puresynth setzt sich aktiv für nachhaltige Praktiken in der Chemieindustrie ein. Wir teilen unsere Bemühungen zur Reduzierung des ökologischen Fußabdrucks und zur Förderung erneuerbarer Ressourcen. Lesen Sie, wie wir unsere Produktionsprozesse optimieren, um Abfall zu minimieren und umweltfreundliche Verpackungen einzusetzen. Unsere Vision ist eine nachhaltige Zukunft für die Chemieindustrie.</p>
+
+  - title: Neue Lösungen für die Pharma- und Lebensmittelindustrie
+    author: hansenj
+    category: Technologie
+    date: "2023-09-14 11:20:00"
+    content: |
+      <p>Puresynth hat innovative Chemikalien entwickelt, die speziell für die Pharma- und Lebensmittelindustrie geeignet sind. Diese Lösungen erfüllen strenge Qualitätsstandards und tragen dazu bei, die Sicherheit und Qualität von Medikamenten und Lebensmitteln zu gewährleisten. Erfahren Sie mehr über unsere neuesten Entwicklungen und deren Beitrag zur Gesundheit und zum Wohlstand der Gesellschaft.</p>
+
+  - title: Chemische Sicherheit - Unsere Priorität
+    author: jonesk
+    category: Nachhaltigkeit
+    date: "2023-09-12 10:15:00"
+    content: |
+      <p>Bei Puresynth hat die Sicherheit unserer Produkte und unserer Mitarbeiter oberste Priorität. In diesem Artikel erfahren Sie mehr über unsere strengen Sicherheitsstandards, Schulungsprogramme und Maßnahmen zur Risikominimierung. Wir arbeiten kontinuierlich daran, unsere Anlagen und Prozesse sicherer zu machen und unseren Beitrag zur sicheren Chemieindustrie zu leisten.</p>

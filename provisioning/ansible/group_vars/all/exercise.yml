@@ -1,0 +1,109 @@
+---
+# GENERAL
+
+auth_url: login.cyberrange.rocks
+
+# USERS
+
+company_soc_users:
+  - username: csirt
+    gen_enumerate: 4
+
+company_regular_users:
+  - first_name: Daniel
+    last_name: Gaul
+  - username: client
+    gen_enumerate: 3
+
+company_simulated_users:
+  - first_name: Robert
+    last_name: Macher
+    password: '{{ control_password }}'
+    ssh_admin: true
+    ssh_key: true
+    wp_role: administrator
+    host_group: ''
+  - first_name: Charles
+    last_name: Kao
+    ssh_key: true
+    wp_role: administrator
+  - first_name: Barbara
+    last_name: Liskov
+    supplypro_admin: true
+  - first_name: Karen
+    last_name: Jones
+    supplypro_admin: true
+    ssh_key: true
+  - first_name: Claude
+    last_name: Shannon
+  - first_name: Jacob
+    last_name: Hansen
+  - first_name: Lisa
+    last_name: Fischer
+    owncloud_groups: [admin]
+    samba_groups: [admin]
+    ssh_key: true
+    control_mail: true
+  - first_name: Herbert
+    last_name: Simon
+    owncloud_groups: []
+    samba_groups: []
+    ssh_key: true
+    host: 'workstation'
+
+company_extra_users:
+  - role: service_hmi
+    username: hmi
+    host: hmi
+    novnc: true
+  - role: service_siem
+    username: siem
+    password: yPLwKdN38qtY
+    roles:
+      - superuser
+  - role: service_siem
+    username: logstash
+    password: 4QUeGSdX6ujk
+    roles:
+      - superuser
+  - role: service_siem
+    username: beats
+    password: A7spAumKNX4Z
+    roles:
+      - beat_writers
+  - role: service_cloud
+    username: owncloud
+    password: ePVFmeYh6y7Z
+    password_salt: 37f889a2cee54e15
+    samba_groups: [admin]
+
+gov_users:
+  - username: cert
+
+attacker_users:
+  - username: jack
+    domain: toxicjackal.at
+
+global_users:
+  - first_name: Alex Pinto
+    last_name: Dias
+    username: apdias
+    ot_admin: true
+    domain: breakpoint.at
+    email: apdias@cyberrange.at
+
+control_users:
+  - first_name: Game
+    last_name: Control
+    email: control@cyberrange.at
+    username: control
+    mattermost_admin: true
+    mattermost_channels: all
+    password: '{{ control_password }}'
+    host_group: control_client    
+    contact_groups:
+      - gov
+      - control
+      - companies
+  - username: ait.venjix
+    password: mozart.rocks!

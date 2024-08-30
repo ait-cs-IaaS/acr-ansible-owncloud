@@ -1,0 +1,9 @@
+{
+  "base_image": "ubuntu 24.04",
+  "image_name": "cr-client-ubuntu-2404",
+  "security_group": "all",
+  "network_discovery_cidrs": ["10.111.0.0/24"],
+  "floating_ip_pool": "CBT-DEV-provider-network",
+  "timestamp_image": false,
+  "flavor": "d2-8"
+}

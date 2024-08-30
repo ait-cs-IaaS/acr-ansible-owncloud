@@ -1,0 +1,47 @@
+---
+# this is needed for some of the SM configs
+
+- name: Install and configure simulation state machines
+  hosts: employees
+  gather_subset: [min]
+  pre_tasks:
+    - name: Install employee packages
+      become: true
+      ansible.builtin.apt:
+        name: [firefox]
+        state: present
+        
+    - name: Import GPG key # FIXME: 
+      become: true
+      ansible.builtin.apt_key:
+        keyserver: keyserver.ubuntu.com
+        id: E88979FB9B30ACF2
+      ignore_errors: true
+  
+  roles:
+    - role: kyoushi-simulation
+    - role: async_git_download
+      vars:
+        agd_absolute_project_path: "{{ local_ansible_dir }}"
+        agd_relative_src_path: data/files/kyoushi/
+        agd_git_token: "{{ gitlab_pat }}"
+        agd_data_dest: "{{ kyoushi_files_dir }}"
+        agd_owner: "{{ kyoushi_files_owner }}"
+        agd_group: "{{ kyoushi_files_group }}"
+        agd_mode: "0755"
+
+  post_tasks:
+
+    # Deinstall Chrome to allow kyoushi to run
+
+    - name: Deinstall chromium apt package
+      become: true
+      ansible.builtin.apt:
+        name: chromium-browser
+        state: absent
+
+    - name: Deinstall chromium snap packages
+      become: true
+      community.general.snap:
+        name: chromium
+        state: absent

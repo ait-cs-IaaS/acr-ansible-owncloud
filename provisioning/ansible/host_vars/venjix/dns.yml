@@ -1,0 +1,8 @@
+---
+
+dns_hostname: venjix
+dns_domain: cyberrange.at
+
+create_cert: true
+
+venjix_fqdn: "{{ dns_hostname }}.{{ dns_domain }}"

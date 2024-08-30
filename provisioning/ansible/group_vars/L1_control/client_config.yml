@@ -1,0 +1,6 @@
+---
+
+dns_domain_id: cyberrange
+dns_hostname: "{{ ansible_nodename }}"
+
+client_user_sudo: true

@@ -1,0 +1,136 @@
+---
+- name: Remove Jumphost from kibana logs
+  hosts: elk
+
+  tasks:
+    - name: Reset filebeat kibana logs (source)
+      ansible.builtin.uri:
+        method: POST
+        url: https://localhost:9200/filebeat-*/_delete_by_query
+        url_username: "{{ elk_users.kibana.username }}"
+        url_password: "{{ elk_users.kibana.password }}"
+        force_basic_auth: true
+        timeout: 600
+        validate_certs: false
+        body_format: json
+        body: |
+          {
+            "query": {
+              "match": {
+                "source.ip": "{{ mgmt_ip }}"
+              }
+            }
+          }
+      loop: "{{ mgmt_ip_list }}"
+      loop_control:
+        loop_var: mgmt_ip
+
+    - name: Reset filebeat kibana logs (destination)
+      ansible.builtin.uri:
+        method: POST
+        url: https://localhost:9200/filebeat-*/_delete_by_query
+        url_username: "{{ elk_users.kibana.username }}"
+        url_password: "{{ elk_users.kibana.password }}"
+        force_basic_auth: true
+        timeout: 600
+        validate_certs: false
+        body_format: json
+        body: |
+          {
+            "query": {
+              "match": {
+                "destination.ip": "{{ mgmt_ip }}"
+              }
+            }
+          }
+      loop: "{{ mgmt_ip_list }}"
+      loop_control:
+        loop_var: mgmt_ip
+
+    - name: Reset metricbeat kibana logs (source)
+      ansible.builtin.uri:
+        method: POST
+        url: https://localhost:9200/metricbeat-*/_delete_by_query
+        url_username: "{{ elk_users.kibana.username }}"
+        url_password: "{{ elk_users.kibana.password }}"
+        force_basic_auth: true
+        timeout: 600
+        validate_certs: false
+        body_format: json
+        body: |
+          {
+            "query": {
+              "match": {
+                "source.ip": "{{ mgmt_ip }}"
+              }
+            }
+          }
+      loop: "{{ mgmt_ip_list }}"
+      loop_control:
+        loop_var: mgmt_ip
+
+    - name: Reset metricbeat kibana logs (destination)
+      ansible.builtin.uri:
+        method: POST
+        url: https://localhost:9200/metricbeat-*/_delete_by_query
+        url_username: "{{ elk_users.kibana.username }}"
+        url_password: "{{ elk_users.kibana.password }}"
+        force_basic_auth: true
+        timeout: 600
+        validate_certs: false
+        body_format: json
+        body: |
+          {
+            "query": {
+              "match": {
+                "destination.ip": "{{ mgmt_ip }}"
+              }
+            }
+          }
+      loop: "{{ mgmt_ip_list }}"
+      loop_control:
+        loop_var: mgmt_ip
+
+    - name: Reset auditbeat kibana logs (source)
+      ansible.builtin.uri:
+        method: POST
+        url: https://localhost:9200/auditbeat-*/_delete_by_query
+        url_username: "{{ elk_users.kibana.username }}"
+        url_password: "{{ elk_users.kibana.password }}"
+        force_basic_auth: true
+        timeout: 600
+        validate_certs: false
+        body_format: json
+        body: |
+          {
+            "query": {
+              "match": {
+                "source.ip": "{{ mgmt_ip }}"
+              }
+            }
+          }
+      loop: "{{ mgmt_ip_list }}"
+      loop_control:
+        loop_var: mgmt_ip
+
+    - name: Reset auditbeat kibana logs (destination)
+      ansible.builtin.uri:
+        method: POST
+        url: https://localhost:9200/auditbeat-*/_delete_by_query
+        url_username: "{{ elk_users.kibana.username }}"
+        url_password: "{{ elk_users.kibana.password }}"
+        force_basic_auth: true
+        timeout: 600
+        validate_certs: false
+        body_format: json
+        body: |
+          {
+            "query": {
+              "match": {
+                "destination.ip": "{{ mgmt_ip }}"
+              }
+            }
+          }
+      loop: "{{ mgmt_ip_list }}"
+      loop_control:
+        loop_var: mgmt_ip

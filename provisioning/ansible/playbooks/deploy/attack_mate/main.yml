@@ -1,0 +1,29 @@
+---
+- name: Install Attack_mate
+  hosts: attack_mate
+  gather_subset: [min]
+  roles:
+    - role: metasploit
+      become: true
+
+  tasks:
+    - name: Python pip
+      become: true
+      ansible.builtin.apt:
+        name: [python3, python3-pip, python3-venv, libmagic1]
+        state: present
+
+    - name: Copy attackmate dir
+      ansible.builtin.unarchive:
+        src: files/attackmate.tar.gz
+        dest: /home/ait/
+        owner: ait
+        group: ait
+
+    - name: Install dependencies in virtualenv
+      become: true
+      become_user: ait
+      ansible.builtin.pip:
+        name: /home/ait/attackmate
+        virtualenv: /home/ait/attackmate/venv
+        virtualenv_command: python3 -m venv

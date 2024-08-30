@@ -1,0 +1,20 @@
+---
+
+site_certificate:
+  cert_type: sites
+  common_name: "{{ dns_hostname }}.{{ company_domain }}"
+  host: "{{ ansible_hostname }}"
+  subject_alt_name: |
+    [
+      {% for alias in cert_aliases %}
+        "DNS:{{ alias }}",
+      {% endfor %}
+      {% for ip_address in ip_addresses.values() %}
+        "IP:{{ ip_address }}",
+      {% endfor %}
+    ]
+  country: AT
+  state: Vienna
+  locality: Vienna
+  organization: '{{ company_name }}'
+  

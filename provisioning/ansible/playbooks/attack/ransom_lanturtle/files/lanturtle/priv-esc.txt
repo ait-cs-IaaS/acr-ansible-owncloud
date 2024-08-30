@@ -1,0 +1,25 @@
+ls -al
+pwd
+uname -a
+lsusb
+ls -al /home
+ls -al /home/mrg/
+ls -al /home/mrg/Development
+id
+cat /etc/passwd
+cat /etc/shadow
+ip -a
+arp -a
+ifconfig
+netstat -plutn
+cat /etc/lsb-release
+dmesg | grep Linux
+ls /boot
+env
+ps -ef
+ls -la /opt/scadalts/conf
+cat /opt/scadalts/conf/tomcat-users.xml
+mount
+ls -al /app/config/
+ls -al /app/config/.ssh
+cat /app/config/.ssh/id_rsa

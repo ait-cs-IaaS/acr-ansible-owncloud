@@ -1,0 +1,12 @@
+---
+filebeat_modules_group:
+  - module: shorewall
+    docs: https://www.elastic.co/guide/en/beats/filebeat/7.9/filebeat-module-iptables.html
+    src: filebeat_modules/shorewall
+    config:
+      log:
+        enabled: true
+        var.paths: [/var/log/kern.log*]
+        var.input: file
+        var.include_lines:
+          - "^.* \\d+:\\d+:\\d+ .* kernel: \\[\\d*\\.?\\d*\\] FW .*$"

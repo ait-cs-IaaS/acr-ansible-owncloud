@@ -1,0 +1,6 @@
+---
+mailgin_github_pat: "{{ lookup('env', 'GITHUB_PAT') }}"
+mailgin_basepath: /opt/mailgin
+mailgin_service_execstart: >
+  {{ mailgin_basepath }}/venv/bin/gunicorn mailgin:app --bind 0.0.0.0:5000
+  --pythonpath={{ mailgin_basepath }}/venv/lib/python3.9

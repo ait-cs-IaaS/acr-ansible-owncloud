@@ -1,0 +1,12 @@
+---
+- name: Gather facts abouts other hosts
+  hosts: all
+  gather_facts: true
+
+- name: Bootstrap attacker machines
+  become: true
+  hosts: attacker
+  tasks:
+    - name: Install metasploit
+      ansible.builtin.apt:
+        deb: https://apt.metasploit.com/pool/main/m/metasploit-framework/metasploit-framework_6.3.41%2B20231029102625~1rapid7-1_amd64.deb

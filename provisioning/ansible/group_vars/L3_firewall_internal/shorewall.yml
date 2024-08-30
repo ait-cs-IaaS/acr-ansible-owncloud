@@ -1,0 +1,91 @@
+---
+shorewall_zones:
+  - name: internal
+    type: ipv4
+    interface: { name: $LANIF, broadcast: detect, options: routeback }
+  - name: external
+    type: ipv4
+    interface: { name: $DMZIF, broadcast: detect, options: routeback }
+  - name: soc
+    type: ipv4
+    interface: { name: $SOCIF, broadcast: detect, options: routeback }
+  - name: dmz
+    type: ipv4
+  - name: access
+    type: ipv4
+  - name: superv
+    type: ipv4
+  - name: field
+    type: ipv4
+
+shorewall_policy:
+  - { source: fw, dest: all, policy: ACCEPT }
+  - { source: internal, dest: external, policy: ACCEPT }
+  - { source: superv, dest: external, policy: ACCEPT }
+  # SOC gets full access to everything
+  - { source: soc, dest: all, policy: ACCEPT }
+  - THIS POLICY HAS TO BE THE LAST
+  - { source: all, dest: all, policy: REJECT, log: info }
+
+#SHOREWALL RULES
+shorewall_rules: "{{ rules_ssh + rules_ping + (rules_cloud if (company_info.cloud | default(false)) else []) + rules_siem + rules_specialclient }}"
+
+rules_ssh:
+  - Permit Access to SSH
+  - action: SSH/ACCEPT
+    source: all
+    dest: fw
+
+rules_ping:
+  - Ping Rules
+  - { action: Ping/ACCEPT, source: all, dest: all }
+
+rules_cloud:
+  - Cloud SAMBA Access rules
+  - { action: ACCEPT, source: external:$cloud, dest: internal:$share, proto: udp, dest_port: "137,138,139,445" }
+  - { action: ACCEPT, source: external:$cloud, dest: internal:$share, proto: tcp, dest_port: "139,445" }
+
+rules_siem:
+  - SIEM connection
+  - { action: ACCEPT, source: "internal,external,superv", dest: soc:$siem, proto: tcp, dest_port: "5044,9200" }
+
+rules_specialclient:
+  - Special permissions for OT-Manager
+  - { action: ACCEPT, source: internal:$otmanager, dest: superv }
+
+shorewall_snat: []
+
+shorewall_params: "{{ params_interfaces + params_hosts + params_specialclient_hosts + (params_hosts_cloud if (company_info.cloud | default(false)) else []) + params_networks }}"
+
+params_interfaces:
+  - Interfaces
+  - { name: DMZIF, value: "{{ firewall_interfaces.dmz.device }}" }
+  - { name: LANIF, value: "{{ firewall_interfaces.access.device }}" }
+  - { name: SOCIF, value: "{{ firewall_interfaces.soc.device }}" }
+
+params_hosts:
+  - Hosts
+  - { name: siem, value: "{{ hostvars[company_name + '_elk'].ip_addresses['soc'] }}" }
+  - { name: hmi, value: "{{ hostvars[company_name + '_hmi'].ip_addresses['supervisory'] }}" }
+  #- { name: data, value: "{{ hostvars[company_name + '_data_server'].ip_addresses['supervisory'] }}" }
+  - { name: share, value: "{{ hostvars[company_name + '_fileshare'].ip_addresses['access'] }}" }
+
+params_hosts_cloud:
+  - { name: cloud, value: "{{ hostvars[company_name + '_cloud'].ip_addresses['dmz'] }}" }
+
+params_networks:
+  - Networks
+  - { name: DMZNET, value: "{{ firewall_cidrs.dmz }}" }
+  - { name: ACCESSNET, value: "{{ firewall_cidrs.access }}" }
+  - { name: SUPERVNET, value: "{{ hostvars[company_name + '_firewall_ot'].firewall_cidrs.supervisory }}" }
+  - { name: FIELDNET, value: "{{ hostvars[company_name + '_firewall_field'].firewall_cidrs.field }}" }
+
+params_specialclient_hosts:
+  - name: otmanager
+    value: "{{ hostvars[company_name + '_participant_client_1'].ip_addresses['access'] }}"
+
+shorewall_hosts:
+  - { zone: dmz, host: $DMZIF:$DMZNET, options: routeback }
+  - { zone: access, host: $LANIF:$ACCESSNET, options: routeback }
+  - { zone: superv, host: $LANIF:$SUPERVNET, options: routeback }
+  - { zone: field, host: $LANIF:$FIELDNET, options: routeback }

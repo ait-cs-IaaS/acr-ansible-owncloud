@@ -1,0 +1,15 @@
+---
+_suricata_bpf_filter: |
+  {% if suricata_bpf_filter_mgmthost is defined %}
+  not host {{ suricata_bpf_filter_mgmthost }} and
+  {% endif %}
+  not dst port 5601
+  and not dst port 9200
+  and not dst port 9300
+  and not dst port 5044
+  and not dst port 55000
+  and not dst port 1514
+  and not dst port 1515
+  and not host {{ ip_addresses['soc'] }}
+
+suricata_bpf_filter: "{{ _suricata_bpf_filter | replace('\n', ' ') }}"

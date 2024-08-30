@@ -1,0 +1,129 @@
+---
+# - name: Debug
+#   hosts: global_mail
+#   gather_facts: false
+#   # gather_subset: [min]
+#   # gather_subset:
+#   #   filter: hostname
+#   tasks:
+#     - ansible.builtin.setup:
+#         filter: ansible_*
+
+- name: Debug
+  hosts: cbt_csirt_client_1, cbt_cloud
+  gather_facts: true
+  tasks:
+    - ansible.builtin.debug:
+        msg: '{{ testvar }}'
+    - ansible.builtin.debug:
+        msg: '{{ breaker }}'
+#     - name: User debug
+#       ansible.builtin.debug:
+#         var: client_user
+
+#     - name: host_user_list
+#       ansible.builtin.debug:
+#         var: host_user_list
+
+#     - name: host_user_list_new
+#       ansible.builtin.debug:
+#         var: host_user_list_new
+
+#     - name: Breaker
+#       ansible.builtin.debug:
+#         msg: "{{ breaker }}"
+
+# - name: Debug
+#   hosts: localhost
+#   tasks:
+#     - name: User debug
+#       ansible.builtin.debug:
+#         var: mail_user_domains
+#     - name: User debug
+#       ansible.builtin.debug:
+#         var: mail_domains
+#     # - name: User debug
+#     #   ansible.builtin.debug:
+#     #     msg: "{{ companies }}"
+#     # - name: User debug
+#     #   ansible.builtin.debug:
+#     #     msg: "{{ _users }}"
+
+#     # - name: User debug
+#     #   ansible.builtin.debug:
+#     #     msg: "{{ users | length }}"
+
+#     # - name: User debug
+#     #   ansible.builtin.debug:
+#     #     msg: "{{ users | select_users(filter={'role': 'group_email'}, returns=['email_user', 'email'], unique=true) }}"
+
+#     # - name: User debug
+#     #   ansible.builtin.debug:
+#     #     msg: "{{ users | select_users(filter={'company': ''}, returns=['email'], unique=true) }}"
+
+#     # - name: User debug
+#     #   ansible.builtin.set_fact:
+#     #     group_emails: "{{ users | create_group_emails() }}"
+
+#     # - name: User debug
+#     #   ansible.builtin.debug:
+#     #     var: group_emails
+
+#     # - name: User debug
+#     #   ansible.builtin.debug:
+#     #     msg: "{{ group_emails | type_debug }}"
+
+#     # - name: User debug
+#     #   ansible.builtin.debug:
+#     #     msg: "{{ group_emails | length }}"
+
+#     # - name: User debug
+#     #   ansible.builtin.debug:
+#     #     msg: "{{ item }}"
+#     #   loop: "{{ group_emails }}"
+
+#     # - name: User debug
+#     #   ansible.builtin.set_fact:
+#     #     group_email_users: >-
+#     #       {{ group_email_users | default([]) +
+#     #         ([{'email': item}] | create_users(role='group_emails')) }}
+#     #   loop: "{{ group_emails }}"
+
+#     # - name: User debug
+#     #   ansible.builtin.debug:
+#     #     var: group_email_users
+#     #     # msg: "{{ users | select_users(return=['group_emails'], unique=true) }}"
+
+#     #       # - ansible.builtin.debug:
+#     #       #     msg: "{{ users | select_users(filter={'owncloud_groups': 'software'}) }}"
+#     #       # - ansible.builtin.debug:
+#     #       #     msg: "{{ users | select_users(filter={'company': 'austricom', 'ot_admin': false}, return=['username']) }}"
+#     #       # - ansible.builtin.debug:
+#     #       #     msg: "{{ users | select_users(filter={'company': '!austricom'}, returns=['username']) }}"
+#     #       - ansible.builtin.debug:
+#     #             msg: "{{ users | select_users(return=['username'], unique=true) }}"
+#     #       # - ansible.builtin.debug:
+#     #       #     msg: "{{ users | select_users(return=['group_emails'], unique=true) }}"
+#     #       # - ansible.builtin.debug:
+#     #       #     msg: "{{ users | select_users(return=['group_emails', 'username'], unique=true) }}"
+#     #       - ansible.builtin.debug:
+#     #             msg:
+#     #                 "{{ users | select_users(filter={'company': 'austricom',
+#     #                 'username': '!csirt1'}) }}"
+
+#     - name: Breaker
+#       ansible.builtin.debug:
+#         msg: "{{ breaker }}"
+
+# - name: Clear ansible cache
+#   tags: [bootstrap, clear_cache]
+#   hosts: localhost
+#   tasks:
+#     - name: Remove cache directory
+#       ansible.builtin.file:
+#         path: "{{ local_ansible_dir }}/facts_cache/*"
+#         state: absent
+
+# - name: Gather all initial facts
+#   hosts: all
+#   gather_facts: true

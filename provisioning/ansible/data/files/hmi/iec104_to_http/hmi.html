@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en" style="width:100%;height:100%;">
+<head>
+    <meta charset="UTF-8">
+    <!--    fix 404 favicon -->
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="ie=edge" http-equiv="X-UA-Compatible">
+    <title>SHIFT HMI</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.js@3.0/dist/svg.min.js"></script>
+    <style>
+        * {
+            font-family: sans-serif;
+        }
+
+        body, html {
+            height: 100%;
+        }
+
+        li {
+            list-style-type: none;
+        }
+
+        ul {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            width: 99%
+        }
+
+        #svg-container {
+            width: auto;
+            display: block;
+            max-height: 90%;
+            aspect-ratio: 1150/780;
+            position: relative;
+        }
+
+        #svgimage {
+            height: 100%;
+            width: 100%;
+        }
+        #debug_outer_container {
+            float:left;
+            height: 20%;
+            width: 90%;
+            border-bottom: #eee 1px solid;
+            margin-bottom: 1em;
+        }
+        #debug_container {
+            height: 100%;
+            overflow-y: scroll;
+        }
+
+        table#debug {
+            border-collapse: collapse;
+        }
+
+        table#debug tr.new_frame{
+            border-top: black 1px solid
+        }
+
+        table#debug col {
+            font-family: monospace;
+        }
+
+        table#debug td {
+            border-left: black 1px solid;
+            border-right: black 1px solid;
+            font-family: monospace;
+            line-height: 1em;
+            padding-left: 1em;
+            padding-right: 0.5em;
+        }
+
+        .hmi-element {
+            line-height: 16pt;
+            position: absolute;
+            text-align: center;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+        }
+        .hmi-element-group {
+            transform: none;
+        }
+
+        .hmi-value {
+            display: inline-block;
+            font-family: monospace;
+            text-align: right;
+            width: 42px;
+        }
+
+        .hmi-display {
+            background-color: #a4b99d;
+            border: black solid 1px;
+            font-family: monospace;
+            padding: 2pt;
+        }
+
+        .indicator {
+            background-image: url(sprite.png);
+            background-repeat: no-repeat;
+            display: inline-block;
+            height: 36px;
+            width: 36px;
+        }
+
+        .indicator_red {
+            background-position-y: 0;
+        }
+        .indicator_yellow {
+            background-position-y: -72px;
+        }
+        .indicator_green {
+            background-position-y: -36px;
+        }
+        .indicator_off {
+            background-position-x: -36px;
+        }
+        .indicator_on {
+            background-position-x: 0;
+        }
+
+        .horizontal {
+            transform: none;
+            text-align: left;
+        }
+
+        .horizontal > * {
+            vertical-align: middle;
+            line-height: 36px;
+        }
+
+        sup {
+            font-size: 60%;
+        }
+
+        button {
+            font-size: 80%;
+            padding: 0;
+        }
+        h4 {
+            padding: 0.5em;
+        }
+        input:invalid {
+            border: red 1px solid;
+        }
+    </style>
+</head>
+<body>
+
+<div id="debug_outer_container">
+    <div id="debug_container">
+        <table id="debug">
+            <colgroup>
+               <col style="min-width: 6em;">
+                <col style="min-width: 7em;">
+                <col style="min-width: 7em;">
+                <col style="min-width: 7em;">
+                <col style="min-width: 5em;">
+                <col style="min-width: 7em;">
+                <col style="min-width: 17em;">
+               <col>
+            </colgroup>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+<div>
+    <div>
+        <input type="checkbox" id="debug_autoscroll" checked>
+        <label for="debug_autoscroll">autoscroll</label>
+    </div>
+    <div>
+        <input type="number" id="debug_max_rows" value="5400" min="1" pattern="\d+" size="8" required>
+        <label for="debug_max_rows">max rows</label>
+    </div>
+</div>
+<div style="clear: both"></div>
+
+<div id="svg-container">
+    <div class="hmi-element hmi-element-group" style="top: 1%; left: 25%;">
+        <strong>Errors</strong>
+        <div id="hmi-modbus_read_error" class="horizontal">
+            <div class="indicator indicator_off indicator_red"></div>
+            <span>modbus</span>
+        </div>
+
+        <div id="hmi-iec104_read_error" class="horizontal">
+            <div class="indicator indicator_off indicator_red"></div>
+            <span>IEC104</span>
+        </div>
+
+        <div id="hmi-http_read_error" class="horizontal">
+            <div class="indicator indicator_off indicator_red"></div>
+            <span>HTTP</span>
+        </div>
+    </div>
+
+    <div class="hmi-element hmi-element-group" style="top: 1%; left: 35%;">
+        <strong>Control</strong>
+        <div id="hmi-control_mode_automatic" class="horizontal">
+            <div class="indicator indicator_off indicator_green"></div>
+            <span>automatic</span>
+        </div>
+
+        <div id="hmi-control_mode_manual" class="horizontal">
+            <div class="indicator indicator_on indicator_green"></div>
+            <span>manual</span>
+        </div>
+
+        <div id="hmi-control_mode_shutdown" class="horizontal">
+            <div class="indicator indicator_off indicator_red"></div>
+            <span>shutdown</span>
+        </div>
+    </div>
+
+    <div class="hmi-element hmi-element-group" style="top: 1%; left: 45%;">
+        <strong>Power</strong>
+        <div id="hmi-power_off" class="horizontal">
+            <div class="indicator indicator_off indicator_green"></div>
+            <span>off</span>
+        </div>
+
+        <div id="hmi-power_normal" class="horizontal">
+            <div class="indicator indicator_off indicator_green"></div>
+            <span>normal</span>
+        </div>
+
+        <div id="hmi-power_warning" class="horizontal">
+            <div class="indicator indicator_off indicator_yellow"></div>
+            <span>warning</span>
+        </div>
+
+        <div id="hmi-power_danger" class="horizontal">
+            <div class="indicator indicator_off indicator_red"></div>
+            <span>danger</span>
+        </div>
+    </div>
+
+    <div id="hmi-target_power" class="hmi-element" style="top: 26%; left: 80%;">
+        target power<br>
+        <span class="hmi-display"><span class="hmi-value">?</span>&nbsp;kW</span>
+    </div>
+
+    <div id="hmi-power" class="hmi-element" style="top: 32%; left: 80%;">
+        power<br>
+        <span class="hmi-display"><span class="hmi-value">?</span>&nbsp;kW</span>
+    </div>
+
+    <div id="hmi-field_current" class="hmi-element" style="top: 42%; left: 80%;">
+        current<br>
+        <span class="hmi-display"><span class="hmi-value">?</span>&nbsp;A</span>
+    </div>
+
+    <div id="hmi-generator_velocity" class="hmi-element" style="top: 42%; left: 54.5%;">
+        velocity<br>
+        <span class="hmi-display"><span class="hmi-value">?</span>&nbsp;rpm</span>
+    </div>
+
+    <div id="hmi-grid_frequency" class="hmi-element" style="top: 32%; left: 90%;">
+        grid frequency<br>
+        <span class="hmi-display"><span class="hmi-value">?</span>&nbsp;Hz</span>
+    </div>
+
+    <div id="hmi-grid_voltage" class="hmi-element" style="top: 26%; left: 90%;">
+        grid voltage<br>
+        <span class="hmi-display"><span class="hmi-value">?</span>&nbsp;kV</span>
+    </div>
+
+    <div id="hmi-flow_rate" class="hmi-element"
+         style="top: 61%; left: 38%; transform: rotate(11deg) translate(-50%, -50%);">
+        flow rate:&nbsp;
+        <span class="hmi-display"><span class="hmi-value">?</span>&nbsp;m<sup>3</sup>/s</span>
+    </div>
+
+    <div id="hmi-target_power_command" class="hmi-element" style="top: 20%; left: 80%;">
+        <button type="button" style="margin-bottom: 2px;">set target power</button><br>
+        <input id="hmi-target_power_command-input" style="font-family: monospace; padding-right: 22px; width: 33pt"
+            min="1" max="9000" pattern="\d+">
+        <span style="font-family: monospace; right: 16px; position: absolute; bottom: 0px">kW</span><br>
+    </div>
+
+    <div id="hmi-shutdown_command" class="hmi-element" style="top: 20%; left: 90%;">
+        <button type="button" style="margin-bottom: 2px;">shutdown</button><br>
+    </div>
+
+    <svg id="svgimage" viewbox="0 0 1150 780"></svg>
+</div>
+
+<div id="about">
+    <h3>Sources</h3>
+    <ul>
+        <li>
+            <a href="https://en.wikipedia.org/wiki/Hydroelectricity#/media/File:Hydroelectric_dam.svg" target="_blank">Hydroelectric_dam.svg</a> |
+            Licenced GFDL and CC-BY-2.5 |
+            Tennessee Valley Authority |
+            SVG version by <a href="https://commons.wikimedia.org/wiki/User:Tomia" target="_blank">Tomia</a>
+        </li>
+    </ul>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var image = SVG("#svgimage");
+
+        $.get('hmi.svg', function (contents) {
+            var $tmp = $('svg', contents);
+            image.svg($tmp.html());
+        }, 'xml');
+
+        function update_debug(raw_rows) {
+            if(raw_rows.length === 0) {
+                return
+            }
+
+            let columns = []
+            let rows = []
+
+            function process_column(column) {
+                columns.push($("<td></td>").text(column))
+            }
+            function process_row(row) {
+                row.forEach((column) => process_column(column));
+                rows.push($("<tr></tr>").append(columns))
+                columns = []
+            }
+
+            raw_rows.forEach((row) => process_row(row));
+
+            rows[0] = rows[0].addClass("new_frame");
+
+            $("#debug tbody").append(rows);
+
+            let rows_total = $("#debug tr").length;
+            let max_log_rows = $("#debug_max_rows").val() || 5400;
+            if (rows_total > max_log_rows) {
+                $("#debug tr:nth-child(-n+" + (rows_total - max_log_rows) + ")").remove();
+            }
+
+            if($("#debug_autoscroll").is(":checked")) {
+                $("#debug tbody tr").last()[0].scrollIntoView({behavior: 'instant', block: 'end'});
+            }
+        }
+
+        function switch_indicator(element, status) {
+            if (status === true) {
+                element.addClass("indicator_on").removeClass("indicator_off")
+            } else {
+                element.addClass("indicator_off").removeClass("indicator_on")
+            }
+        }
+
+        function switch_power_indicator(level_on) {
+            let elements = {
+                "off": $("#hmi-power_off .indicator"),
+                "normal": $("#hmi-power_normal .indicator"),
+                "warning": $("#hmi-power_warning .indicator"),
+                "danger": $("#hmi-power_danger .indicator")
+            }
+
+            for (const [name, element] of Object.entries(elements)) {
+                if(name === level_on) {
+                    switch_indicator(element, true)
+                } else {
+                    switch_indicator(element, false)
+                }
+            }
+        }
+
+        function update_hmi(values) {
+            let power = "power" in values ? (parseFloat(values["power"]) / 1000).toFixed(1) : "?";
+            $("#hmi-power .hmi-value").html(power);
+
+            let target_power = "target_power" in values ? (parseFloat(values["target_power"]) / 1000).toFixed(0) : "?";
+            $("#hmi-target_power .hmi-value").html(target_power);
+
+            let flow_rate = "flow_rate" in values ? values["flow_rate"].toFixed(2) : "?";
+            $("#hmi-flow_rate .hmi-value").html(flow_rate);
+
+            let field_current = "field_current" in values ? values["field_current"].toFixed(2) : "?";
+            $("#hmi-field_current .hmi-value").html(field_current);
+
+            let generator_velocity = "generator_velocity" in values ? values["generator_velocity"].toFixed(0) : "?";
+            $("#hmi-generator_velocity .hmi-value").html(generator_velocity);
+
+            let grid_voltage = "grid_voltage" in values ? (parseFloat(values["grid_voltage"]) / 1000).toFixed(2) : "?";
+            $("#hmi-grid_voltage .hmi-value").html(grid_voltage);
+
+            let grid_frequency = "grid_frequency" in values ? values["grid_frequency"].toFixed(2) : "?";
+            $("#hmi-grid_frequency .hmi-value").html(grid_frequency);
+
+            let modbus_read_error = false
+            if ("modbus_read_error" in values && parseInt(values["modbus_read_error"]) === 1) {
+                modbus_read_error = true;
+            }
+            switch_indicator($("#hmi-modbus_read_error .indicator"), modbus_read_error)
+
+            let iec104_read_error = false
+            if ("iec104_read_error" in values && parseInt(values["iec104_read_error"]) === 1) {
+                iec104_read_error = true;
+            }
+            switch_indicator($("#hmi-iec104_read_error .indicator"), iec104_read_error)
+
+            let http_read_error = false
+            if ("http_read_error" in values && parseInt(values["http_read_error"]) === 1) {
+                http_read_error = true;
+            }
+            switch_indicator($("#hmi-http_read_error .indicator"), http_read_error)
+
+            let any_error = modbus_read_error || iec104_read_error || http_read_error
+
+            let shutdown_indicator = $("#hmi-control_mode_shutdown .indicator");
+            let shutdown = "shutdown" in values ? parseInt(values["shutdown"]) : 0;
+            if (shutdown === 0) {
+                switch_indicator($("#hmi-control_mode_manual .indicator"), true)
+                switch_indicator(shutdown_indicator, false)
+                shutdown_indicator.removeClass("indicator_yellow").addClass("indicator_red");
+                if (!any_error) {
+                    $("[id^=transformer_indicator]").css("stroke", "#ffe784")
+                }
+            }
+            if (shutdown === 1 && !any_error) {
+                if (generator_velocity > 0) {
+                    shutdown_indicator.removeClass("indicator_red").addClass("indicator_yellow");
+                } else {
+                    shutdown_indicator.removeClass("indicator_yellow").addClass("indicator_red");
+                }
+                switch_indicator($("#hmi-control_mode_manual .indicator"), false)
+                switch_indicator(shutdown_indicator, true)
+
+                $("[id^=transformer_indicator]").css("stroke", "#e8e8e8")
+            }
+
+            if (power === "?") {
+                switch_indicator($("#hmi-power_off .indicator"), false)
+                switch_indicator($("#hmi-power_normal .indicator"), false)
+                switch_indicator($("#hmi-power_warning .indicator"), false)
+                switch_indicator($("#hmi-power_danger .indicator"), false)
+            } else if (power === "0.0") {
+                switch_power_indicator("off");
+            } else if (power < 5000) {
+                switch_power_indicator("normal");
+            } else if (power < 6500) {
+                switch_power_indicator("warning");
+            } else if (power < 8000) {
+                switch_power_indicator("danger");
+            }
+        }
+
+        function json_success(data, textStatus, jqXHR) {
+            update_hmi(data["human"])
+            update_debug(data["raw"])
+        }
+
+        function json_error(jqXHR, status, errorThrown) {
+            update_hmi({"http_read_error": 1})
+            update_debug([])
+        }
+
+        setInterval(function () {
+            $.ajax({
+                url: "http://192.168.56.106:8888/iec104",
+                dataType: 'json',
+                success: json_success,
+                error: json_error,
+                timeout: 800
+            });
+        }, 1000);
+
+        $("#shutdown").click(function (e) {
+            $.ajax({
+                method: "POST",
+                url: "http://192.168.56.106:8888/shutdown",
+                dataType: 'text',
+                timeout: 800
+            });
+        });
+
+        $("#hmi-target_power_command button").click(function (e) {
+            let target_power_input = $("#hmi-target_power_command input").val()
+            target_power_input = parseInt(target_power_input) * 1000
+            // TODO frontend sanity check
+
+            $.ajax({
+                method: "POST",
+                headers: {'Content-Type': 'application/json'},
+                url: "http://192.168.56.106:8888/target_power",
+                dataType: 'json',
+                data: JSON.stringify({"target_power_command": target_power_input}),
+                timeout: 800
+            });
+        });
+
+        $("#hmi-shutdown_command button").click(function (e) {
+            $.ajax({
+                method: "POST",
+                headers: {'Content-Type': 'application/json'},
+                url: "http://192.168.56.106:8888/shutdown",
+                timeout: 800
+            });
+        });
+
+    });
+</script>
+</body>
+</html>
+<!-- TODO implement debug log + filter -->

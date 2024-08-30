@@ -1,0 +1,28 @@
+- src: git@github.com:ait-cs-IaaS/ansible-mate-desktop.git
+  scm: git
+  version: v1.2.1
+  name: mate-desktop
+
+# - src: git@github.com:ait-cs-IaaS/ansible-manage_unattended_upgrades.git
+#   scm: git
+#   version: v1.0.0
+
+# - src: git@github.com:ait-cs-IaaS/ansible-ubuntu-mate-desktop-customization.git
+#   scm: git
+#   version: v1.3.2
+#   name: ubuntu-mate-desktop-customization
+
+- src: https://github.com/ait-cs-IaaS/acr-ansible-mate-customization.git
+  scm: git
+  version: v1.0
+  name: mate-customization
+
+- src: git@github.com:ait-cs-IaaS/ansible-vnc-server.git
+  scm: git
+  version: v1.4.3
+  name: vnc-server
+
+- src: git@github.com:ait-cs-IaaS/acr-ansible-install-thunderbird.git
+  scm: git
+  version: v1.0
+  name: install-thunderbird

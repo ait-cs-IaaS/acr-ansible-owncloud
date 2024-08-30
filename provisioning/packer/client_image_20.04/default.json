@@ -1,0 +1,9 @@
+{
+  "base_image": "ubuntu 20.04",
+  "image_name": "cr-client-ubuntu-2004",
+  "security_group": "all",
+  "network_discovery_cidrs": ["10.111.0.0/24"],
+  "floating_ip_pool": "CBT-DEV-provider-network",
+  "timestamp_image": false,
+  "flavor": "d2-8"
+}

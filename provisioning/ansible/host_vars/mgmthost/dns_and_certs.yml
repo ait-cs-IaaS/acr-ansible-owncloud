@@ -1,0 +1,7 @@
+---
+dns_hostname: mgmthost
+dns_domain: cyberrange.at
+_dns_aliases:
+  - mgmt
+
+create_cert: true

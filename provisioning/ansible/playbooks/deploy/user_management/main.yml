@@ -1,0 +1,48 @@
+---
+
+- name: Generate all ssh-keys on localhost
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - role: generate-ssh-keys
+      vars:
+        ssh_users: "{{ users | select_users(filter={'ssh_key': true}, returns=['username', 'ssh_key_path']) }}"
+
+- name: Manage users for all hosts
+  hosts: all
+  gather_subset: [min]
+  become: true
+  tasks:
+
+    # Get all host users
+  
+    - name: Create users
+      ansible.builtin.include_role:
+        role: grog.user
+      vars:
+        user_shell: /bin/bash
+        user_list: "{{ host_user_list }}"
+
+    # Manage sudoers 
+
+    - name: Create users
+      ansible.builtin.include_role:
+        role: grog.sudo
+      vars:
+        sudo_list: "{{ host_user_list }}"
+
+    # Authorized keys 
+
+    - name: Create users
+      ansible.builtin.include_role:
+        role: grog.authorized-key
+      vars:
+        authorized_key_list: "{{ host_user_list }}"
+
+    # SSH keys
+
+    - name: Create users
+      ansible.builtin.include_role:
+        role: distribute-ssh-keys
+      vars:
+        key_list: "{{ host_user_list }}"

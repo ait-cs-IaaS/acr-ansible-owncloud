@@ -1,0 +1,18 @@
+type: log
+paths:
+{{ range $i, $path := .paths }}
+ - {{$path}}
+{{ end }}
+exclude_files: [".gz$"]
+
+fields_under_root: true
+fields:
+    observer:
+        product: "DNSMASQ"
+        type: "DNS"
+
+processors:
+  - add_fields:
+      target: ''
+      fields:
+        ecs.version: 1.5.0

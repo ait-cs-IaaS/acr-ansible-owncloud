@@ -1,0 +1,18 @@
+---
+logrotate_applications:
+  - name: suricata
+    definitions:
+      - logs:
+          - /var/log/suricata/*.log
+          - /var/log/suricata/*.json
+        options:
+          - rotate 8
+          - missingok
+          - size 1G
+          - compress
+          - delaycompress
+          - create
+          - sharedscripts
+        postrotate:
+          - /bin/kill -HUP `cat /var/run/suricata.pid 2>/dev/null` 2>/dev/null || true
+#

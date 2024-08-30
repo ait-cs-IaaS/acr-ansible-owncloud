@@ -1,0 +1,7 @@
+---
+
+dns_hostname: cloud
+_dns_aliases:
+  - owncloud
+
+create_cert: true

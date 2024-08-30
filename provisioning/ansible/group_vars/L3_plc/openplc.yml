@@ -1,0 +1,25 @@
+openplc_active_program: 124677.st
+
+openplc_st_files:
+  - src: "{{ local_ansible_dir }}/data/files/plcs/openplc/ladder_logic.st"
+    dest: '{{ openplc_active_program }}'
+
+openplc_config_files:
+  - src: "{{ local_ansible_dir }}/data/files/plcs/openplc/mbconfig.cfg"
+    dest: webserver/mbconfig.cfg
+  - src: "{{ local_ansible_dir }}/data/files/plcs/openplc/openplc.db"
+    dest: webserver/openplc.db
+  - src: "{{ local_ansible_dir }}/data/files/plcs/openplc/psm_app.py"
+    dest: webserver/core/psm/main.py
+
+
+_openplc_users: "{{ users | select_users(filter={'company': company_name + '| undefined', 'ot_admin': true}) }}"
+openplc_users: |
+  [
+  {% for _user in _openplc_users %}
+    {% if _user.name is not defined %}
+      {% do _user.update({"name": _user.first_name + " " + _user.last_name}) %}
+    {% endif %}
+    {{ _user }},
+  {% endfor %}
+  ]

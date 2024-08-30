@@ -1,0 +1,27 @@
+---
+- name: Gather proxy facts
+  hosts: proxy
+  gather_subset: [min]
+
+- name: Setup and configure the wordpress server
+  hosts: webserver
+  gather_subset: [min]
+  become: true
+
+  pre_tasks:
+    # Loads posts and settings based on the company name
+    - name: Load config
+      ansible.builtin.include_vars:
+        dir: "{{ local_ansible_dir }}/group_vars/webserver/{{ company_info.name | lower }}"
+      failed_when: false
+
+  roles:
+    # installs and configures wordpress
+    - role: wordpress
+
+    # Add exploitable 404 page that allows rce
+    - role: vulnerable-404-wp-page
+      vars:
+        wp_service_user: "{{ wp_sys_user }}"
+        wp_themes_path: "{{ wp_path }}/wp-content/themes/{{ (wp_themes | selectattr('activate', 'true') | first).name }}"
+        wp_domain: "{{ company_domain }}"

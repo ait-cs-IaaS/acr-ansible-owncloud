@@ -1,0 +1,3 @@
+hostname:
+  "{{ ansible_facts['nodename'] | regex_replace('^' + (company_name |
+  default('')) + '-', '') }}"

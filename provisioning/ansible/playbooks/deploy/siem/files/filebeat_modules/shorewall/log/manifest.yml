@@ -1,0 +1,27 @@
+module_version: "1.0"
+
+var:
+  - name: paths
+    default:
+      - /var/log/iptables.log
+  - name: tags
+    default: [iptables, shorewall]
+  - name: syslog_host
+    default: localhost
+  - name: syslog_port
+    default: 9001
+  - name: input
+    default: syslog
+  - name: community_id
+    default: true
+  - name: include_lines
+    default: []
+  - name: exclude_lines
+    default: []
+
+ingest_pipeline: ingest/pipeline.yml
+input: config/input.yml
+
+requires.processors:
+  - name: geoip
+    plugin: ingest-geoip

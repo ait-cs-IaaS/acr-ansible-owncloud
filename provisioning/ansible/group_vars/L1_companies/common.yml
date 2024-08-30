@@ -1,0 +1,12 @@
+---
+
+company_name: '{{ company_info.name }}'
+company_domain: '{{ company_info.domain }}'
+company_networks:
+  "{{ hostvars['mgmthost'].ip_addresses.keys() | reject('equalto', 'internet') |
+  list  }}"
+
+elk_users: "{{ users | select_users(filter={'company': company_name, 'role': 'service_siem'}) }}"
+siem_user: "{{ elk_users | select_users(filter={'username': 'siem'}, single=true) }}"
+logstash_user: "{{ elk_users | select_users(filter={'username': 'logstash'}, single=true) }}"
+beats_user: "{{ elk_users | select_users(filter={'username': 'beats'}, single=true) }}"

@@ -1,0 +1,30 @@
+# disable int so we can skip script parts
+trap ' ' INT
+
+TARGET="{{ hostvars[company+'_firewall_external'].ansible_default_ipv4.address }}"
+OPEN_PORTS=25,80,110,143,443,465,993,995,5000
+
+
+TARGET_DOMAIN="{{ companies[company].domain }}"
+
+TARGET_CLOUD_DOMAIN="cloud.{{ companies[company].domain }}"
+TARGET_WORDPRESS_DOMAIN="{{ companies[company].domain }}"
+TARGET_MAIL_DOMAIN="mail.{{ companies[company].domain }}"
+TARGET_APP_DOMAIN="supplypro.{{ companies[company].domain }}"
+
+read -d '' CHECK_VHOSTS << EOF 
+$TARGET_CLOUD_DOMAIN
+$TARGET_WORDPRESS_DOMAIN
+$TARGET_MAIL_DOMAIN
+$TARGET_APP_DOMAIN
+EOF
+
+WEBSHELL_NAME=chron_sync.php
+
+
+function attack_wait {
+    echo "Sleeping for $1"
+    sleep $1
+}
+
+set -x

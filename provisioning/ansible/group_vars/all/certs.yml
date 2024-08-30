@@ -1,0 +1,24 @@
+---
+testvar: all
+
+certs_base_path: '{{ local_ansible_dir }}/data/certs'
+
+ca_info:
+  country: AT
+  state: Vienna
+  locality: Vienna
+  organization: Cyberrange Certificate Authority GmbH
+  email: control@cyberrange.at
+  common_name: Cyberrange-CA
+  password: '{{ ca_pw }}'
+  cert_type: ca
+
+ca_cert: '{{ certs_base_path }}/ca.crt'
+ca_csr: '{{ certs_base_path }}/ca.csr'
+ca_key: '{{ certs_base_path }}/ca.key'
+ca_pw: 6^PcDXfVrs~y4n3V
+
+ca_certs_pip_executables: []
+
+ssl_cert: /etc/ssl/{{ site_certificate.common_name }}.crt
+ssl_key: /etc/ssl/{{ site_certificate.common_name }}.key

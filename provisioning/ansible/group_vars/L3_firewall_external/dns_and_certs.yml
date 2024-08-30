@@ -1,0 +1,17 @@
+---
+dns_hostname: gateway
+_dns_aliases:
+  - www
+  - proxy
+  - cloud
+  - mail
+  - mailserver
+  - supplypro
+
+create_cert: true
+
+dns_server_name: '{{ company_name }}'
+dns_server_admin: admin@{{ company_domain }}
+dns_upstream_server: "{{ hostvars['internet_dns'].ip_addresses['internet'] }}"
+
+dnat_aliases: "{{ _dns_aliases }}"

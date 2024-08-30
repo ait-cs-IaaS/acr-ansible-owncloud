@@ -1,0 +1,85 @@
+---
+- name: Install and Customize Ubuntu Mate Desktop
+  hosts: all
+  become: true
+  vars:
+    client_basic_software:
+      # basic utilities
+      - openssh-server
+      - iputils-ping
+      - dnsutils
+      - net-tools
+      - curl
+      - git
+      - unzip
+      - netcat
+      - vim
+      - nano
+      - sudo
+      - bash-completion
+      - firefox
+      - thunderbird
+      # office tools
+      - libreoffice
+      - evince
+      - file-roller
+      - pluma
+    launcher_objects:
+      caja-filebrowser:
+        launcher-location: /usr/share/applications/caja.desktop
+        position: 15
+      libreoffice-base:
+        launcher-location: /usr/share/applications/libreoffice-base.desktop
+        position: 20
+      libreoffice-calc:
+        launcher-location: /usr/share/applications/libreoffice-calc.desktop
+        position: 20
+      libreoffice-writer:
+        launcher-location: /usr/share/applications/libreoffice-writer.desktop
+        position: 20
+      libreoffice-impress:
+        launcher-location: /usr/share/applications/libreoffice-impress.desktop
+        position: 20
+      firefox:
+        launcher-location: /usr/share/applications/firefox.desktop
+        position: 25
+      thunderbird:
+        launcher-location: /usr/share/applications/thunderbird.desktop
+        position: 30
+      mate-terminal:
+        launcher-location: /usr/share/applications/mate-terminal.desktop
+        position: 35
+    # desktop_bg_src: files/wallpaper.jpg
+    customize_user: placeholder
+
+  tasks:
+    - name: Update repositories cache
+      become: true
+      ansible.builtin.apt:
+        update_cache: true
+
+    - name: Install mate desktop
+      ansible.builtin.include_role:
+        name: mate-desktop
+
+    - name: Install basic software
+      become: true
+      ansible.builtin.apt:
+        name: "{{ client_basic_software }}"
+        state: present
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Create placeholder user
+      ansible.builtin.user:
+        name: "{{ customize_user }}"
+        shell: /bin/bash
+        state: present
+
+    - name: Customize user desktop
+      ansible.builtin.include_role:
+        name: mate-customization
+
+    - name: Install vncserver
+      ansible.builtin.include_role:
+        name: vnc-server

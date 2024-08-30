@@ -1,0 +1,13 @@
+server {
+  listen 80;
+  listen [::]:80;
+
+  root /var/www/html/{{ item.company_name }}/{{ item.phishing_site }};
+  
+  index index.html;
+
+  server_name {{ item.phishing_url }};
+  location / {
+          try_files $uri $uri/ =404;
+  }
+}
