@@ -10,6 +10,7 @@ playbooks/deploy/gamemaker/files/ssh_keys/*
 !playbooks/deploy/webservers/files/*
 
 xxx_*
+.ansible-retry/*
 
 # ignore the vault copy of the ca cert
 data/certs/sites/vault/ca.crt
