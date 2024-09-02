@@ -430,3 +430,8 @@ roles:
     scm: git
     version: v1.1.6
     name: suricata
+
+  - src: git@github.com:ait-cs-IaaS/acr-ansible-keepassxc.git
+    scm: git
+    version: v1.0
+    name: keepassxc

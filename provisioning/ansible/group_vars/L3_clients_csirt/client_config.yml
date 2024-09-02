@@ -1,9 +1,38 @@
 ---
 
 hostname: CS-{{ (ansible_facts['nodename'] | hash('sha256'))[:4] | upper }}{{ host_index }}
-
 client_user_sudo: true
 
+# Saved passwords
+keepass_user: "{{ client_user.username }}"
+keepass_password: "{{ client_user.password }}"
+keepass_entries:
+
+  - entry_name: webmail
+    username: "{{ client_user.username }}"
+    password: "{{ client_user.password }}"
+    notes: Login credentials for webmail
+    url: https://mail.{{ company_domain }}
+
+  - entry_name: siem
+    username: "{{ client_user.username }}"
+    password: "{{ client_user.password }}"
+    notes: Login credentials for SIEM
+    url: https://siem.soc.{{ company_domain }}
+
+  - entry_name: webserver
+    username: "{{ client_user.username }}"
+    password: "{{ client_user.password }}"
+    notes: Login credentials for webserver
+    url: https://{{ company_domain }}
+
+  - entry_name: supplypro
+    username: "{{ client_user.username }}"
+    password: "{{ client_user.password }}"
+    notes: Login credentials for supplypro
+    url: https://supplypro.{{ company_domain }}
+
+# MATE panel list
 client_launcher_objects:
   caja-filebrowser:
     launcher-location: /usr/share/applications/caja.desktop
@@ -20,3 +49,5 @@ client_launcher_objects:
   mate-terminal:
     launcher-location: /usr/share/applications/mate-terminal.desktop
     position: 35
+
+desktop_files: "{{ client_user.desktop_files }}"

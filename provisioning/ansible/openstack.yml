@@ -23,10 +23,6 @@ compose:
     if openstack.addresses | extract_floating_ip
     else (openstack.addresses.values()|list)[0][0].addr
 
-  # dns_domain_id: |
-  #   openstack.addresses.keys() | reject('in', ['internet']) | first | default('')
-  #   if openstack.addresses.keys() | length == 1
-
 # Add layered group names
 keyed_groups:
   - key: openstack.metadata.groups.split(', ')
