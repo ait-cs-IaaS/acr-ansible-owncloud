@@ -11,6 +11,18 @@ module "global_mail" {
     #userdata = file("${path.module}/scripts/firewall_init.yml") # default
 }
 
+module "mastodon" {
+    source = "git@github.com:ait-cs-IaaS/terraform-openstack-srv_noportsec.git"
+    name = "mastodon"
+    metadata_groups = "internet, mastodon"
+    cidr = var.internet_cidr
+    host_index = 2890050 # 
+    network_id = var.internet_network_id
+    subnet_id = var.internet_subnet_id
+    image = var.images.server
+    flavor = var.flavors.server
+}
+
 module "internet_clients" {
     source        = "git@github.com:ait-cs-IaaS/terraform-openstack-srv_noportsec.git"
     count = 1

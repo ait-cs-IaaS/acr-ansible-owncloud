@@ -1,0 +1,9 @@
+---
+
+- name: Install mastodon
+  hosts: mastodon
+  gather_subset: [min]
+  become: true
+  roles:
+    - role: docker-compose
+    - role: mastodon

@@ -70,11 +70,6 @@ roles:
     version: v1.0.0
     name: mariadb
 
-  - src: git@github.com:ait-cs-IaaS/ansible-docker-compose.git
-    scm: git
-    version: master
-    name: docker-compose
-
   - src: git@github.com:ait-cs-IaaS/ansible-linux-rename-user.git
     scm: git
     version: v1.0
@@ -430,3 +425,18 @@ roles:
     scm: git
     version: v1.1.6
     name: suricata
+
+  - src: git@github.com:ait-cs-IaaS/acr-ansible-keepassxc.git
+    scm: git
+    version: v1.0
+    name: keepassxc
+    
+  - src: git@github.com:ait-cs-IaaS/acr-ansible-docker-compose.git
+    scm: git
+    version: v1.0
+    name: docker-compose
+
+  - src: git@github.com:ait-cs-IaaS/ansible-containerized-mastodon.git
+    scm: git
+    version: v1.3.4
+    name: mastodon

@@ -13,9 +13,6 @@
     # - role: install-mozilla-apps
     - role: mate-panel-list
     - role: firefox-autoconfig
-      vars:
-        firefox_user: '{{ client_user.username }}'
-        firefox_distribution: '{{ firefox_bookmarks | default({}) }}'
     - role: thunderbird-autoconfig
     - role: libreoffice-macro-security
       vars:
@@ -27,20 +24,21 @@
         mattermost_url: "{{ hostvars['learners'].mattermost_url }}"
 
   tasks:
-    - name: Check if source directories exist
-      ansible.builtin.stat:
-        path: '{{ local_ansible_dir }}/data/desktop_files/{{ item }}'
-      loop: '{{ client_user.desktop_files }}'
-      delegate_to: localhost
-      register: dir_stats
+    - name: Copy desktop files
+      ansible.builtin.include_role:
+        name: async_git_download
+      vars:
+        agd_absolute_project_path: "{{ local_ansible_dir }}"
+        agd_relative_src_path: "/data/desktop_files/{{ item }}"
+        agd_git_token: "{{ gitlab_pat }}"
+        agd_data_dest: "/home/{{ client_user.username }}/Desktop/"
+        agd_owner: "{{ client_user.username }}"
+        agd_group: "{{ client_user.username }}"
+        agd_download_mode: content
+        agd_mode: "0755"
+      with_items: "{{ client_user.desktop_files }}"
 
-    - name: Deploy Desktop Files
-      become: true
-      ansible.builtin.copy:
-        src: '{{ local_ansible_dir }}/data/desktop_files/{{ item.item }}'
-        dest: /home/{{ client_user.username }}/Desktop/
-        owner: '{{ client_user.username }}'
-        group: '{{ client_user.username }}'
-        mode: preserve
-      loop: '{{ dir_stats.results }}'
-      when: item.stat.exists
+- name: Customize clients
+  hosts: clients_csirts,clients_regular
+  roles:
+    - role: keepassxc
