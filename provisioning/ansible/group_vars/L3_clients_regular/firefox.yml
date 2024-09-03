@@ -1,0 +1,18 @@
+---
+
+firefox_bookmarks:
+  BookmarksToolbar:
+
+    item.1.title: website
+    item.1.link: https://www.{{ company_domain }}
+    
+    item.2.title: webmail
+    item.2.link: https://mail.{{ company_domain }}
+
+    item.3.title: supplypro
+    item.3.link: https://supplypro.{{ company_domain }}
+
+    item.4.title: cloud share
+    item.4.link: https://cloud.{{ company_domain }}
+
+

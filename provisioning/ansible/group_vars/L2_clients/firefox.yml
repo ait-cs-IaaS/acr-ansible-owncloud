@@ -1,8 +1,17 @@
 ---
 
+firefox_user: '{{ client_user.username }}'
 firefox_trusted_certs:
   - '{{ ca_cert }}'
 
-firefox_default_lang: "en-GB, en"
-firefox_default_region: "GB"
-firefox_default_locale: "en-GB"
+# firefox_startpage: www.example.com
+# firefox_bookmarks:
+#   BookmarksToolbar:
+#     item.1.title: title I
+#     item.1.type: folder
+#     item.1.folderId: 1
+#     item.2.title: title II
+#     item.2.link: url
+#   BookmarksFolder-1:
+#     item.1.title: title of subelement
+#     item.1.link: url

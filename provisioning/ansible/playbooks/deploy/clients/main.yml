@@ -7,12 +7,16 @@
 - name: Customize clients
   hosts: clients
   roles:
+    
+    # Optional roles
     # - role: mate-dconf-settings
     # - role: mate-autostart
     # - role: mate-desktop-background
     # - role: install-mozilla-apps
+
     - role: mate-panel-list
     - role: firefox-autoconfig
+    - role: keepassxc
     - role: thunderbird-autoconfig
     - role: libreoffice-macro-security
       vars:

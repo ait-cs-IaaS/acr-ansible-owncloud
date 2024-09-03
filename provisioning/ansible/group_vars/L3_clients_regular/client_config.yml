@@ -1,7 +1,32 @@
 ---
 
 hostname: RC-{{ (ansible_facts['nodename'] | hash('sha256'))[:4] | upper }}{{ host_index }}
+client_user_sudo: false
 
+# Saved passwords
+keepass_user: "{{ client_user.username }}"
+keepass_password: "{{ client_user.password }}"
+keepass_entries:
+
+  - entry_name: webmail
+    username: "{{ client_user.username }}"
+    password: "{{ client_user.password }}"
+    notes: Login credentials for webmail
+    url: https://mail.{{ company_domain }}
+
+  - entry_name: webserver
+    username: "{{ client_user.username }}"
+    password: "{{ client_user.password }}"
+    notes: Login credentials for webserver
+    url: https://{{ company_domain }}
+
+  - entry_name: supplypro
+    username: "{{ client_user.username }}"
+    password: "{{ client_user.password }}"
+    notes: Login credentials for supplypro
+    url: https://supplypro.{{ company_domain }}
+
+# MATE panel list
 launcher_objects:
   caja-filebrowser:
     launcher-location: /usr/share/applications/caja.desktop

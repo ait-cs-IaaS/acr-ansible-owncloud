@@ -16,7 +16,7 @@
       ansible.builtin.copy:
         dest:
           /home/{{ client_user.username
-          }}/Desktop/Planets/Neptune/the_key_file_to_other_universes
+          }}/Desktop/the_key_file_to_other_universes
         src: files/password_db_key_file
       become_user: '{{ client_user.username }}'
 
@@ -31,7 +31,7 @@
         cmd:
           keepassxc-cli db-create ~/password_db --set-key-file /home/{{
           client_user.username
-          }}/Desktop/Planets/Neptune/the_key_file_to_other_universes
+          }}/Desktop/the_key_file_to_other_universes
       become_user: '{{ client_user.username }}'
 
     - name: Create Entries
@@ -41,7 +41,7 @@
           echo {{ item.password }} | keepassxc-cli add ~/password_db {{
           item.name }} -u {{ item.username }} -p -k /home/{{
           client_user.username
-          }}/Desktop/Planets/Neptune/the_key_file_to_other_universes
+          }}/Desktop/the_key_file_to_other_universes
           --no-password --notes "{{ item.notes | default('') }}"
       #failed_when: false
       become_user: '{{ client_user.username }}'

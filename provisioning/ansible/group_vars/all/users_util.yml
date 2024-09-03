@@ -49,7 +49,7 @@ company_soc_users_defaults:
     - admin
   desktop_files:
     - all
-    - clients_csirt
+    - soc
   contact_groups:
     - companies
     - control

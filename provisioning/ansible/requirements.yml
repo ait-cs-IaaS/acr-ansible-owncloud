@@ -128,7 +128,7 @@ roles:
 
   - src: https://github.com/ait-cs-IaaS/ansible-firefox-autoconfig.git
     scm: git
-    version: v1.3
+    version: v1.4
     name: firefox-autoconfig
 
   - src: git@github.com:ait-cs-IaaS/acr-ansible-install-mozilla-apps.git
@@ -290,7 +290,7 @@ roles:
 
   - src: https://github.com/ait-cs-IaaS/acr-ansible-async_git_download.git
     scm: git
-    version: v1.0
+    version: v1.1
     name: async_git_download
 
   - src: https://github.com/ait-cs-IaaS/acr-ansible-shorewall.git
