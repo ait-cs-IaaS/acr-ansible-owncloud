@@ -35,6 +35,7 @@ variable "flavors" {
     server = "d2-2"
     client = "d2-8"
     elk    = "d2-8"
+    social    = "d2-8"
   }
 }
 

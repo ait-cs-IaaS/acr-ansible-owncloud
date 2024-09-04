@@ -14,13 +14,13 @@ module "global_mail" {
 module "mastodon" {
     source = "git@github.com:ait-cs-IaaS/terraform-openstack-srv_noportsec.git"
     name = "mastodon"
-    metadata_groups = "internet, mastodon"
+    metadata_groups = "internet, socialmedia"
     cidr = var.internet_cidr
     host_index = 2890050 # 
     network_id = var.internet_network_id
     subnet_id = var.internet_subnet_id
     image = var.images.server
-    flavor = var.flavors.server
+    flavor = var.flavors.social
 }
 
 module "internet_clients" {
