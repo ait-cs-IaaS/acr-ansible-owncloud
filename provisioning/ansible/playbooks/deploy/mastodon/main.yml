@@ -1,9 +1,13 @@
 ---
 
+- name: Get mailserver facts
+  hosts: global_mail
+  gather_facts: true
+  gather_subset: [network]
+
 - name: Install mastodon
   hosts: mastodon
   gather_subset: [min]
   become: true
   roles:
-    - role: docker-compose
-    - role: mastodon
+    - role: mastodon-install

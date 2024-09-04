@@ -1,0 +1,77 @@
+---
+
+mastodon_user_dict: "{{ users | select_users(filter={'role': 'service_mastodon'}, single=true) }}"
+mastodon_user: "{{ mastodon_user_dict.username }}"
+mastodon_db_password: iKas78%gha!
+mastodon_version: main
+mastodon_basepath: /var/www/mastodon
+mastodon_fqdn: "{{ dns_hostname }}.{{ dns_domain }}"
+
+mastodon_admin_user: admin
+mastodon_admin_email: admin@cyberrange.at
+
+mastodon_email_user: "{{ mastodon_user_dict.email }}"
+mastodon_email_user_password: "{{ mastodon_user_dict.password }}"
+mastodon_smtp_auth: STARTTLS
+mastodon_smtp_port: 25
+mastodon_email_server: "mail.cyberrange.at"
+
+setup_responses:
+      # Domain name:
+      -  "{{ mastodon_fqdn }}"
+      # Do you want to enable single user mode?
+      -  "n"
+      # Are you using Docker to run Mastodon?
+      -  "n"
+      # PostgreSQL host:
+      -  "127.0.0.1"
+      # PostgreSQL port:
+      -  "5432"
+      # Name of PostgreSQL database:
+      -  "{{ mastodon_db }}"
+      # Name of PostgreSQL user:
+      -  "{{ mastodon_db_user }}"
+      # Password of PostgreSQL user:
+      -  "{{ mastodon_db_password }}"
+      # Redis host:
+      -  "127.0.0.1"
+      # Redis port:
+      -  "6379"
+      # Redis password:
+      -  ""
+      # Do you want to store uploaded files on the cloud?
+      -  "n"
+      # Do you want to send e-mails from localhost?
+      -  "n"
+      # SMTP server:
+      -  "{{ mastodon_email_server }}"
+      # SMTP port:
+      -  "{{ mastodon_smtp_port }}"
+      # SMTP username:
+      -  "{{ mastodon_email_user }}"
+      # SMTP password:
+      -  "{{ mastodon_email_user_password }}"
+      # SMTP authentication:
+      -  "{{ mastodon_smtp_auth }}"
+      # SMTP OpenSSL verify mode:
+      -  "none"
+      # Enable STARTTLS:
+      -  "auto"
+      # E-mail address to send e-mails "from":
+      -  "Mastodon <{{ mastodon_email_user }}>"
+      # Send a test e-mail with this configuration right now?
+      -  "n"
+      # Check periodically for important updates?
+      -  "n"
+      # Save configuration?
+      -  "y"
+      # Prepare the database now?
+      -  "y"
+      # Compile the assets now?
+      -  "y"
+      # Do you want to create an admin user straight away?
+      -  "y"
+      # Username (admin):
+      -  "{{ mastodon_admin_user }}"
+      # E-mail (admin): 
+      -  "{{ mastodon_admin_email }}"
