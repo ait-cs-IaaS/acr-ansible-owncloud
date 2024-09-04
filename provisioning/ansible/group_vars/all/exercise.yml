@@ -74,8 +74,10 @@ company_extra_users:
   - role: service_cloud
     username: owncloud
     password: ePVFmeYh6y7Z
-    password_salt: 37f889a2cee54e15
     samba_groups: [admin]
+  - role: service_mastodon
+    username: mastodon
+    password: PkftFmeYh6y7Z
 
 gov_users:
   - username: cert
