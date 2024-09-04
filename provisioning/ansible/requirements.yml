@@ -436,7 +436,7 @@ roles:
     version: v1.0
     name: docker-compose
 
-  - src: git@github.com:ait-cs-IaaS/ansible-containerized-mastodon.git
+  - src: git@github.com:ait-cs-IaaS/acr-ansible-mastodon-install.git
     scm: git
-    version: v1.3.4
-    name: mastodon
+    version: v1.0
+    name: mastodon-install
