@@ -1,0 +1,10 @@
+---
+
+use_dns: true
+
+dns_hostname: mastodon
+dns_domain: cyberrange.at
+_dns_aliases:
+  - social
+
+create_cert: true

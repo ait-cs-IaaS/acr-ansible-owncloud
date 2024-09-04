@@ -37,9 +37,13 @@ _dnsmasq_authorative_config:
       auth-server="{{ dns_hostname }}.{{ dns_domain }}"
 
       auth-zone={{ dns_domain }}
-        host-record={{ dns_hostname }}.{{ dns_domain }}, {{ hostvars["internet_dns"].ip_addresses["internet"] }}
-        host-record=mail.{{ dns_domain }}, {{ hostvars["global_mail"].ip_addresses["internet"] }}
-        host-record=mailserver.{{ dns_domain }}, {{ hostvars["global_mail"].ip_addresses["internet"] }}
+      {% for host in groups["internet"] %}
+      {% for alias in hostvars[host].dns_aliases | default([]) %}
+      {% if hostvars[host].use_dns | default(true) %}
+        host-record={{ alias }}.{{ hostvars[host].dns_domain | default(dns_domain) }},{{ hostvars[host].ip_addresses['internet'] }}
+      {% endif %}
+      {% endfor %}
+      {% endfor %}
 
       # COMPANIES
       {% for company in companies %}
