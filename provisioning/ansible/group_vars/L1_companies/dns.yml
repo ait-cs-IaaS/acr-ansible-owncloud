@@ -49,7 +49,8 @@ _dnsmasq_authorative_config:
 
       {% for host in groups[company_name] | intersect(groups[network]) %}
       {% if hostvars[host].use_dns | default(true) %}
-      {% for alias in hostvars[host].dns_aliases %}
+      {% set host_aliases = [ hostvars[host].dns_hostname ] if host == company_name + '_proxy' else hostvars[host].dns_aliases %}
+      {% for alias in host_aliases %}
         host-record={{ alias }}.{{ network }}.{{ company_domain }},{{ hostvars[host].ip_addresses[network] }}
       {% endfor %}
       {% endif %}
