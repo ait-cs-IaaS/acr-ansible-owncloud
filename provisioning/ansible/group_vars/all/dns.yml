@@ -18,11 +18,16 @@ dns_aliases: |
   {% endfor %}
   ]
 
+host_networks: "{{ ip_addresses.keys() | reject('equalto', 'internet') | list  }}"
+
 cert_aliases: |
   [ 
   {% for _dns_alias in dns_aliases | default([]) %}
     {% if _dns_alias != dns_domain %}
       "{{ _dns_alias + '.' + dns_domain }}",
+      {% for host_network in host_networks | default([]) %}
+      "{{ _dns_alias + '.' + host_network + '.' + dns_domain }}",
+      {% endfor %}
     {% else %}
       "{{ _dns_alias }}",
     {% endif %}
