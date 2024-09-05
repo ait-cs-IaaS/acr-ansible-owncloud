@@ -5,3 +5,4 @@ _dns_aliases:
   - owncloud
 
 create_cert: true
+proxied: true

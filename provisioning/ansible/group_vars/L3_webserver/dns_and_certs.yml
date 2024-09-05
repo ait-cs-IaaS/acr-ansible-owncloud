@@ -4,3 +4,4 @@ _dns_aliases:
   - www
 
 create_cert: true
+proxied: true

@@ -4,3 +4,4 @@ _dns_aliases:
   - application-server
 
 create_cert: true
+proxied: true

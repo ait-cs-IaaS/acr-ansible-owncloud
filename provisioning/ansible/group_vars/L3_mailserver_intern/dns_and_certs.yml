@@ -4,4 +4,4 @@ _dns_aliases:
   - mail
 
 create_cert: true
-dns_proxied: false
+proxied: true
