@@ -1,0 +1,247 @@
+# KSÖ 2021
+
+# mastodon_users:
+#   - login: "VaxxiStop38"
+#     email: "vaxxistop38@protonmail.com"
+#     password: "SaveTheChildren69420"
+#     initial_toots:
+#       - text: "Stop #PumpingThePoison #STOPTHEPUMP"
+#       - text: "YOU CANNOT SILENCE US. WE WILL NOT LET YOU WIN."
+#       - text: "Full Scope Inc., more like Bull Scope Inc., because they're a bunch of animal abusers. #DYK their vaccines are made with bull semen? In my arm? NO THANK YOU."
+#     account:
+#       display_name: "VaxxiStop38"
+#       bio: "If you believe in freedom and want to see an end to the mass-poisoning of the DACH region then follow this feed."
+#       avatar: "vs38.png"
+#       header: "vs38.png"
+
+#   - login: "FullScopeInc"
+#     email: "office@fullscope.eu"
+#     password: "fullscope2019"
+#     initial_toots:
+#       - text: "Welcome to our official mastodon account!"
+#       - text: "Unser Full Scope Science Day 2019 war so erfolgreich, dass wir das alles im Jahr 2022 wiederholen wollen! Hoffentlich haben wir bis dahin die Bevölkerung geimpft und COVID-19 ein für alle Mal besiegt!"
+#       - text: "Willkommen in der #FullScopeFamily, @BreakpointDACH! Wir können es kaum erwarten, die Welt zu impfen!"
+#     account:
+#       display_name: "Full Scope Inc. Official"
+#       bio: "The official page for updates from the DACH region’s largest research and innovation network. Providing updates on vaccine production and more! Join the fight against COVID-19 and get vaccinated today! #FullScopeFamily"
+#       header: "FULL_SCOPE_HEADER.png"
+#       avatar: "FS_Transparent.png"
+
+#   - login: "BreakpointDACH"
+#     email: "social@breakpoint.at"
+#     password: "breakpointdach123"
+#     initial_toots:
+#       - text: "Welcome to our official mastodon account!"
+#       - text: "Hast du die Nachrichten gehört? Wir arbeiten mit @FullScopeInc zusammen, um Impfstoffe für den weltweiten Vertrieb herzustellen! Wir sind jetzt ein Teil der #FullScopeFamily!"
+#       - text: "Was ist das Wesen dieser Zusammenarbeit? Wir stellen @FullScopeInc operative Technologielösungen zur Verfügung, einschließlich unserer neuesten SPS - der IOX-80."
+#         media: "BREAKPOINT_PLC_2.png"
+#         schedule: 10
+#       - text: "Wir bieten auch HMI-Technologie, die auf dem äußerst robusten ScadaBR/ScadaLTS basiert!"
+#     account:
+#       display_name: "Breakpoint Automation"
+#       bio: "For industry leading automation technology, Breakpoint Automation has everything you need. Proud supplier of @FullScopeInc, helping vaccinate the world."
+#       header: "Breakpoint_Logo.png"
+#       avatar: "Breakpoint_Logo.png"
+
+#   - login: "EUCSA"
+#     email: "info@eucsa.eu"
+#     password: "eurosecure2021"
+#     initial_toots:
+#       - text: "#DYK about the history of ransomware?!"
+#         media: "EUCSA_Ransomware_History.png"
+#     account:
+#       display_name: "EU Cyber Security Authority"
+#       bio: "The European Union Cyber Security Authority is dedicated to achieving a high common level of cyber security across Europe."
+#       header: "EUCSA.png"
+#       avatar: "EUCSA.png"
+
+#   - login: "PolizEU"
+#     email: "info@polizeu.org"
+#     password: "donuts"
+#     initial_toots:
+#       - text: "Successfully dismantled the Slainte ransoware gang and siezed items including laptops, hard disks, usb drives, MFA keys, and other removable media. There are other threats out there, but this gang is no longer one of them."
+#         media: "bust.png"
+#     account:
+#       display_name: "Polizei der EU"
+#       bio: "Headquartered in The Hague, the Netherlands, we support the 27 EU Member States in their fight against terrorism, cybercrime and other serious and organised forms of crime."
+#       header: "PolizEU.png"
+#       avatar: "PolizEU.png"
+
+#   - login: "PUSHTHREAT"
+#     email: "info@pushthreat.com"
+#     password: "threathunters2021"
+#     initial_toots:
+#       - text: "Police in the EU have taken down the Slainte ransomware gang based on intel we published earlier this month. Photo courtesy of @PolizEU #threatintel"
+#         media: "bust.png"
+#       - text: "Ransomware-as-a-service is game-changing. Threat actors are getting bolder, stakes are getting higher, and ransom costs and extortions are growing exponentially. Save your seat for our webcast and learn how, together, we can stop them in their tracks."
+#       - text: "Investing in expert threat hunting and using threat intelligence to get ahead of attackers are two key recommendations from the @PUSHTHREAT 2021 Global Threat Report."
+#       - text: "NEW THREAT GROUP: TOXIC JACKAL - Ransomware, Information Theft, IT, OT, - the works. One of the worst groups we've seen in a while. Wide range of tactics employed to hit highly specifc targets. No single point of operation. Blog/Report to follow."
+#     account:
+#       display_name: "PUSHTHREAT"
+#       bio: "PUSHTHREAT blends innovative security technology, nation-state grade #threatintel, and world-renowned consulting."
+#       header: "PUSHTHREAT.png"
+#       avatar: "PUSHTHREAT.png"
+
+#   - login: "RadiumSec"
+#     email: "info@radium-sec.com"
+#     password: "securitynow"
+#     initial_toots:
+#       - text: "Always happy to see @PolizEU take down an organisation causing harm online."
+#       - text: "identified a North Korean APT known as InkySquid exploiting users using recent exploits for IE and Edge via Strategic Web Compromises. More on our blog!"
+#     account:
+#       display_name: "Radium Security Consulting"
+#       bio: "We provide cloud workload and endpoint security, threat intelligence, and cyberattack response services."
+#       header: "RADIUM.png"
+#       avatar: "RADIUM.png"
+
+#   - login: "CERT_at"
+#     email: "cert@cyberrange.at"
+#     password: "StopHacksAT"
+#     initial_toots:
+#       - text: "PrintNightmare: Kritische Sicherheitslücke in Microsoft Windows (Print Spooler Service) - ausstehende Patches bzw. Workarounds nachgereicht"
+#       - text: "Online-Arbeit erhöht die Cyber-Sicherheitsrisiken: Ohne die Sicherheitsvorkehrungen, die uns Bürosysteme bieten – wie Firewalls und auf die schwarze Liste gesetzte IP-Adressen – und die zunehmende Abhängigkeit von Technologie sind wir viel anfälliger für Cyber-Angriffe. Details auf unserem Blog --> cert.at"
+#       - text: "ProxyShell in Österreich: Microsoft Exchange kommt 2021 nicht zur Ruhe: Im März nutzten Kriminelle die unter der Bezeichnung ProxyLogon bekannt gewordenen Schwachstellen großflächig aus. Details in unserem Blog --> cert.at"
+#       - text: "We are aware of the group that @PUSHTHREAT have named TOXIC JACKAL, we are monitoring the situation, as are many other states in the EU."
+#       - text: "Wie von @PUSHTHREAT berichtet und von mehrere Quellen bestätigt, beobachten wir, ebenso wie unsere Kollegen in der anderen EU Staaten, die Gruppe TOXIC JACKAL."
+#     account:
+#       display_name: "Computer Emergency Response Team Austria"
+#       bio: "CERT.at ist das österreichische nationale CERT (Computer Emergency Response Team). Website: cert.at"
+#       header: "cert-at.png"
+#       avatar: "cert-at.png"
+
+#   - login: "IKDOK"
+#     email: "ikdok@cyberrange.at"
+#     password: "CooperationWins!"
+#     account:
+#       display_name: "IKDOK Österreich"
+#       bio: "Wir erstellen periodische und anlassbezogene operative Lagebilder zur staatlichen Cybersicherheit. Der IKDOK umfasst das Cyber Security Center des Bundesministeriums für Inneres und das Cyber Verteidigungszentrum des Bundesministeriums für Landesverteidigung sowie weitere staatliche Akteure und Einrichtungen."
+#       # header: "" TODO: Find profile pic and header image for OpKoord
+#       # avatar: ""
+
+#   - login: "OpKoord"
+#     email: "opkoord@cyberrange.at"
+#     password: "CooperationWins!"
+#     #initial_toots:
+#     #  - text: ""
+#     account:
+#       display_name: "OpKoord Österreich"
+#       bio: "Wir erstellen periodische und anlassbezogene operative Lagebilder zur staatlichen Cybersicherheit. Der IKDOK umfasst das Cyber Security Center des Bundesministeriums für Inneres und das Cyber Verteidigungszentrum des Bundesministeriums für Landesverteidigung sowie weitere staatliche Akteure und Einrichtungen."
+#       # header: "" TODO: Find profile pic and header image for OpKoord
+#       # avatar: "" 
+
+#   - login: "BSI_de"
+#     email: "bsi@cyberrange.at"
+#     password: "BSI_IS_SECURE"
+#     initial_toots:
+#       - text: "We are aware of the group that @PUSHTHREAT have named TOXIC JACKAL, we are monitoring the situation, as are many other states in the EU."
+#       - text: "Wie von @PUSHTHREAT berichtet und von mehrere Quellen bestätigt, beobachten wir, ebenso wie unsere Kollegen in der anderen EU Staaten, die Gruppe TOXIC JACKAL."
+#     account:
+#       display_name: "BSI - Bundesamt für Sicherheit in der Informationstechnik"
+#       bio: "Das Bundesamt für Sicherheit in der Informationstechnik (BSI) ist eine deutsche Bundesoberbehörde im Geschäftsbereich des Bundesministeriums des Innern, für Bau und Heimat mit Sitz in Bonn, die für Fragen der IT-Sicherheit zuständig ist."
+#       header: "bsi.png"
+#       avatar: "bsi.png"
+
+#   - login: "NCSC_ch"
+#     email: "ncsc@cyberrange.at"
+#     password: "SecureSwissSociety"
+#     initial_toots: 
+#       - text: "We are aware of the group that @PUSHTHREAT have named TOXIC JACKAL, we are monitoring the situation, as are many other states in the EU."
+#       - text: "Wie von @PUSHTHREAT berichtet und von mehrere Quellen bestätigt, beobachten wir, ebenso wie unsere Kollegen in der anderen EU Staaten, die Gruppe TOXIC JACKAL."
+#     account: 
+#       display_name: "Swiss National Cyber Security Center (NCSC)"
+#       bio: "Das Nationale Zentrum für Cybersicherheit - Das Kompetenzzentrum des Bundes für Cybersicherheit."
+#       header: "ncsc.jpg"
+#       avatar: "ncsc.jpg"
+
+#   - login: "DACH24NEWS"
+#     email: "media@dach24news.org"
+#     password: "DACH24NEWS"
+#     initial_toots:
+#       - text: "Deutschland: Ausschuss unterstützt Coronavirus-Impfstoff für alle Teenager – Deutschlands unabhängiger Impfausschuss hat am Montag seine Empfehlung erweitert, alle Kinder im Alter von 12 bis 17 Jahren gegen COVID-19 zu impfen, nachdem die neuesten Daten überprüft wurden."
+#       - text: "Österreich: Im Vereinigten Königreich ausgestellte Impfbescheinigungen sind nur 9 Monate gültig."
+#       - text: "Schweiz: Covid-Infektionen explodieren. 3.291 neue bestätigte Covid-Infektionen – fast doppelt so viele wie letzte Woche. Damit erreichen die Coronavirus-Fälle nun ähnliche Werte wie bei der zweiten Welle im Herbst 2020."
+#       - text: "Deutschland: Krankenschwester in Deutschland steht im Verdacht, Covid-Impfstoffe durch Kochsalzlösung zu ersetzen."
+#       - text: "DACH: Neue Veröffentlichung legt nahe, dass die Reaktion der DACH-Region auf die COVID-Pandemie 'flexibel' und 'effektiv' war, am besten in Europa."
+#         media: "dach-paper.png"
+#     account:
+#       display_name: "DACH24 NEWS"
+#       bio: "The latest news and information from around the DACH region. Deutschland, Oesterreich, Schweiz, all in one place. Media enquiries: media@dach24news.org"
+#       header: "DACH24.png"
+#       avatar: "DACH24.png"
+
+#   - login: "slt_security"
+#     email: "slt@geemail.com"
+#     password: "estonian nomad"
+#     initial_toots:
+#       - text: "PowerToys from Microsoft comes built-in with Windows 11, great tool all round, glad to see it become a default."
+#       - text: "TikTok keep removing my security videos because they're scared of *LITERALLY ANYTHING CYBER*!"
+#       - text: "Being a researcher is hard because there is only so much you can talk about..."
+#       - text: "Yes, the US is a threat actor. All 'cyber-capable' states and non-states are threat actors. But, it may not be a risk depending on your threat model."
+#       - text: "In the wake of a breach affecting > 40M people, T-Mobile is resetting the personal identification numbers (PINs) for some mobile accounts. This came from a Tmobile short code. I guess SMS'd PINs make sense since the PINs seem to be stored in plain text anyway."
+#       - text: "T-Mobile now says a 'highly sophisticated' attack led to the theft of data on > 40 million customers. I think we all know it was probably something basic... SMBv1? Simple admin password? I'm taking bets..."
+#     account: 
+#       display_name: "Shane le Tissier"
+#       bio: "All things security – ransomware, rootkits, SRE… you get the picture… All views my own.  "
+#       header: "Shane_le_Tissier.png"
+#       avatar: "Shane_le_Tissier.png"
+
+#   - login: "philgreenesec"
+#     email: "phil@greenesec.com"
+#     password: "'DROP TABLES *;"
+#     initial_toots:
+#       - text: "I got vulnerabilities coming out of my wazoo over here, good lord!"
+#       - text: "Mass scanning activity detected from 122[.]116[.]63[.]222 (Taiwan) checking for Microsoft Exchange servers vulnerable to #ProxyShell (CVE-2021-34473). #threatintel"
+#       - text: |
+#                     File Upload Tricks
+#                     -Use double extensions: .jpg.php
+#                     -Use reverse double extension: .php.jpg
+#                     -Mix uppercase and lowercase: .pHp, .pHP5, .PhAr
+#                     -Null byte: .php%00.png, .php\\x00.png
+#                     -Multiple dots: file.php......
+#                     -Whitespace characters: file.php%20
+
+#                     #BugBounty #bugbountytips"
+#       - text: "Recently Ubuntu 20.10 was released. Feel free to read my post on how I fuzzed eBPF, as well as a vulnerability breakdown of CVE-2020-27194 which is exploitable on the new Ubuntu release."
+#       - text: "CVE-2020-15157 (aka ContainerDrip): TL;DR: containerd v1.2.x can be coerced into leaking credentials during image pull"
+#     account:
+#       display_name: "Phil Greene"
+#       bio: "I break things and write about it. There is 0% chance that I’ll be able to fix it though… that’s your problem."
+#       header: "Phil_Greene.png"
+#       avatar: "Phil_Greene.png"
+
+#   - login: "HuberSophie"
+#     email: "huber.sophie@bleakfuture.net"
+#     password: "deepexhale"
+#     initial_toots:
+#       - text: "Apple's CSAM scanning tool has a major flaw - hashing collisions..."
+#       - text: "Apple has since responded to reports of trivial NeuralHash collisions. TL;DR: A second, blackbox server-side image scanning algo (possibly PhotoDNA) would also have to be triggered as well before flagging for human review."
+#       - text: "Tractor-hacking farmers are fighting for the right to repair their own equipment."
+#       - text: "Reminder that 'smart' means 'vulnerable'"
+#     account:
+#       display_name: "Sophie Huber"
+#       bio: "Security consultant. 20+ years in the industry. Author of “Bleak Future: Malware on the Rise”. #WomenInTech"
+#       header: "Sophie_Huber.png"
+#       avatar: "Sophie_Huber.png"
+
+#   - login: "Weber_schreibt"
+#     email: "stefan.weber@dach24news.org"
+#     password: "dachnewsislife"
+#     initial_toots:
+#       - text: "Impfstoffe für Jugendliche in Deutschland, interessant zu sehen, wie die Anti-Vaxxer darauf reagieren."
+#       - text: "Lesen Sie meinen @DACH24NEWS Bericht über die verrückte Geschichte mit der Krankenschwester, die Impfstoffe durch Salzlösung ersetzt hat!"
+#     account:
+#       display_name: "Stefan Weber"
+#       bio: "I cover cyber and national security for @DACH24NEWS. Be it a hack, a bomb, or intelligence matter, I’ve got you covered. Media enquiries: stefan.weber@dach24news.org"
+#       header: "Stefan_Weber.png"
+#       avatar: "Stefan_Weber.png"
+
+#   - login: "Clara_Papadopoulos"
+#     email: "clara@popsecurity.at"
+#     password: "bellingcat_shill"
+#     initial_toots:
+#       - text: "Bellingcat have released a nice report on how to identify the latest missiles from the US: https://bit.ly/2YFU6vV"
+#     account:
+#       display_name: "Clara Papadopoulos"
+#       bio: "Independent Journalist – Cyber Security (founder of PopSecurity)– retoots != endorsements – DMs open for tips, otherwise clara@popsecurity.at"
+#       header: "Clara_Papadopoulos.png"
+#       avatar: "Clara_Papadopoulos.png"

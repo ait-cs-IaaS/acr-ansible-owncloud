@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Default hardcoded list of playbooks
-DEFAULT_PLAYBOOKS=("bootstrap" "dns" "certs" "user_management" "clients" "firewall" "proxy" "mailservers" "fileshares" "opensearch" "learners")
+DEFAULT_PLAYBOOKS=("bootstrap" "dns" "certs" "user_management" "clients" "firewall" "proxy" "mailservers" "fileshares" "opensearch" "mastodon" "learners")
 PLAYBOOKS=()
 MAX_ATTEMPTS=3
 

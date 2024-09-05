@@ -11,3 +11,38 @@
   become: true
   roles:
     - role: mastodon-install
+
+
+
+
+# KSÖ 2021
+# - name: Deploy mastodon certificates
+#   hosts: mastodon
+#   tasks:
+#     - name: Deploy mastodon certs
+#       become: true
+#       copy:
+#         src: "{{ ssl_cert_src }}"
+#         dest: "{{ ssl_cert }}"
+#         mode: "0644"
+#     - name: Deploy mastodon keys
+#       become: true
+#       copy:
+#         src: "{{ ssl_key_src }}"
+#         dest: "{{ ssl_key }}"
+#         mode: "0600"
+
+# - name: Configure mastodon
+#   hosts: mastodon
+#   roles: 
+#     - mastodon
+#   tasks:
+#     - name: Deploy mastodon media
+#       become: true
+#       copy:
+#         src: mastodon_media/
+#         dest: "{{ mastodon_deploy_dir }}/media/"
+
+# - name: Configure tootcontroller
+#   import_playbook: tootcontrol.yml
+
