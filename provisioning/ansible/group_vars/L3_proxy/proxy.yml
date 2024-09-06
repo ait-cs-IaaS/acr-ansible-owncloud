@@ -1,4 +1,21 @@
 ---
+
+apache2_proxy_vhosts: |
+  [
+    {% for host in groups[company_name] | intersect(groups['servers']) %}
+      {% if (hostvars[host].proxied | default(false)) == true %}        
+          {{ hostvars[host].proxy_info }},
+      {% endif %}
+    {% endfor %}
+  ]
+
+apache2_catch_all_vhosts:
+  # catch all vhost
+  - name: "000-catch-all"
+    server_name: "{{ proxy_catch_all_domain }}"
+    vhost_dir: false
+    vhost_template: templates/catch_all_vhost.conf.j2
+
 apache2_additional_packages:
   - libxml2-dev
 
@@ -19,32 +36,6 @@ apache2_modules:
 apache2_ssl_cert_path: /etc/ssl/
 apache2_ssl_key_path: /etc/ssl/
 
-apache2_proxy_vhosts: |
-  [
-    {% for host in groups[company_name] | intersect(groups['servers']) %}
-    {% if (hostvars[host].proxied | default(false)) == true %}
-      {
-        "name": "{{ hostvars[host].dns_hostname }}.{{ hostvars[host].dns_domain | default(company_domain) }}",
-        "proxy_target": "{{ hostvars[host].dns_hostname }}.{{ hostvars[host].ip_addresses.keys() | first }}.{{ hostvars[host].dns_domain | default(company_domain) }}",
-        "vhost_template": "{{ hostvars[host].proxy_template | default('templates/reverse_vhost.conf.j2') }}",
-        "redirect_ssl": true,
-        "enabled": true,
-        "aliases": [
-          {% for dns_alias in hostvars[host]._dns_aliases | default([]) %}
-            "{{ dns_alias }}.{{ hostvars[host].dns_domain | default(company_domain) }}"
-          {% endfor %}
-        ],
-      },
-    {% endif %}
-    {% endfor %}
-  ]
-
 proxy_catch_all_domain: proxy.{{ company_domain }}
-apache2_webserver_vhosts:
-  # catch all vhost
-  - name: "000-catch-all"
-    server_name: "{{ proxy_catch_all_domain }}"
-    vhost_dir: false
-    vhost_template: templates/catch_all_vhost.conf.j2
 
-apache2_vhosts: "{{ apache2_proxy_vhosts + apache2_webserver_vhosts }}"
+apache2_vhosts: "{{ apache2_proxy_vhosts + apache2_catch_all_vhosts }}"
