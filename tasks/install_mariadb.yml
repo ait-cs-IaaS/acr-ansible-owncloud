@@ -1,0 +1,13 @@
+---
+- name: Install MariaDB
+  tags: [install]
+  ansible.builtin.include_role:
+    name: mariadb
+  vars:
+    mariadb_databases:
+      - name: "{{ owncloud_mysqldb_dbname }}"
+    mariadb_users:
+      - name: "{{ owncloud_mysqldb_user }}"
+        host: "{{ owncloud_mysqldb_host }}"
+        password: "{{ owncloud_mysqldb_password }}"
+        privileges: "{{ owncloud_mysqldb_dbname }}.*:ALL,GRANT"

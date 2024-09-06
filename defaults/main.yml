@@ -1,0 +1,32 @@
+---
+# defaults file for acr-ansible-owncloud
+owncloud_dest: /var/www/
+owncloud_deploy_path: "{{ owncloud_dest }}owncloud"
+owncloud_admin_user: "admin"
+owncloud_admin_password: "admin"
+owncloud_version: "10.15.0"
+
+#APACHE2 SETTINGS
+owncloud_php_version: "7.4"
+owncloud_libapache2_mod_version: "libapache2-mod-php{{ owncloud_php_version }}"
+owncloud_apache2_modules:
+  - name: rewrite
+  - name: deflate
+  - name: headers
+  - name: ssl
+  - name: authz_host
+  - name: remoteip
+  - name: dir 
+  - name: env
+  - name: mime
+  - name: setenvif
+
+owncloud_vhost_name: owncloud
+owncloud_apache_vhost_template: templates/vhost.conf.j2
+
+#MARIA DB SETTINGS
+owncloud_mysqldb_dbname: owncloud
+owncloud_mysqldb_user: owncloud
+owncloud_mysqldb_host: localhost
+owncloud_mysqldb_password: password
+#owncloud_login_user: owncloud

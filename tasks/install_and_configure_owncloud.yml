@@ -1,0 +1,52 @@
+---
+- name: Create a script for owncloud OCC commands
+  ansible.builtin.copy:
+    dest: "/usr/local/bin/occ"
+    content: |
+      #! /bin/bash
+      cd {{ owncloud_deploy_path }}
+      sudo -E -u www-data /usr/bin/php {{ owncloud_deploy_path }}/occ "$@"
+    mode: '0755'  # Ensure the file is executable
+
+- name: Download and Extract ownCloud archive
+  ansible.builtin.unarchive:
+    src: https://download.owncloud.com/server/stable/owncloud-{{ owncloud_version }}.tar.bz2
+    dest: "{{ owncloud_dest }}"
+    remote_src: true
+
+- name: Set ownership of ownCloud directory
+  ansible.builtin.file:
+    path: "{{ owncoud_deploy_path }}"
+    state: directory
+    recurse: true
+    owner: www-data
+    group: www-data
+
+- name: Check whether occ maintenance:install was already performed
+  ansible.builtin.command:
+    cmd: occ list
+  register: occ_out
+
+- name: Run ownCloud maintenance install
+  ansible.builtin.command:
+    cmd: >
+      occ maintenance:install
+      --database "mysql"
+      --database-name "{{ owncloud_mysqldb_dbname }}"
+      --database-user "{{ owncloud_mysqldb_user }}"
+      --database-pass "{{ owncloud_mysqldb_password }}"
+      --data-dir "{{ owncoud_deploy_path }}/data"
+      --admin-user "{{ owncloud_admin_user }}"
+      --admin-pass "{{ owncloud_admin_password }}"
+  when: "'maintenance:install' in occ_out.stdout"
+
+- name: Configure owncloud's trusted domains
+  ansible.builtin.command:
+    cmd: occ config:system:set trusted_domains {{ item_index + 1 }} --value={{ item }}
+  loop: "{{ cloud_trusted_domains }}"
+  loop_control:
+    index_var: item_index
+
+- name: configure users and groups
+  include_role:
+    name: ait.owncloud.config

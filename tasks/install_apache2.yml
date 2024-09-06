@@ -1,0 +1,16 @@
+---
+- name: Install apache2
+  tags: [install]
+  ansible.builtin.include_role:
+    name: apache2
+  vars:
+    apache2_packages: "{{ [owncloud_libapache2_mod_version] }}"
+    apache2_modules: "{{ owncloud_apache2_modules }}" 
+    apache2_vhosts:
+      - name: "{{ owncloud_vhost_name }}"
+        aliases: "{{ cloud_trusted_domains }}"
+        http: true
+        https: true
+        cert: "{{ ssl_cert }}"
+        key: "{{ ssl_key }}"
+        copycerts: False
