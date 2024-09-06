@@ -1,7 +1,7 @@
 proxy_info_default:
-  name: "{{ proxy_name | default( dns_hostname + '.' + dns_domain ) }}"
-  proxy_target: "{{ proxy_target | default( dns_hostname + '.' + ip_addresses.keys() | first + '.' + dns_domain ) }}"
-  vhost_template: "{{ proxy_template | default('templates/reverse_vhost.conf.j2') }}"
+  name: "{{ dns_hostname + '.' + dns_domain }}"
+  proxy_target: "{{ dns_hostname + '.' + ip_addresses.keys() | first + '.' + dns_domain }}"
+  vhost_template: "templates/reverse_vhost.conf.j2"
   redirect_ssl: true
   enabled: true
   aliases: |
