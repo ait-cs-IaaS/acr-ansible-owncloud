@@ -1,6 +1,6 @@
 ---
-- include_tasks: install_packages_and_smb.yml
-- include_tasks: install_apache2.yml
-- include_tasks: install_mariadb.yml
-- include_tasks: install_owncloud.yml
+- include_tasks: 01_install_packages_and_smb.yml
+- include_tasks: 02_install_apache2.yml
+- include_tasks: 03_install_mariadb.yml
+- include_tasks: 04_install_and_configure_owncloud.yml
 

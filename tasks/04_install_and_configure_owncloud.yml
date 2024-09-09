@@ -16,7 +16,7 @@
 
 - name: Set ownership of ownCloud directory
   ansible.builtin.file:
-    path: "{{ owncoud_deploy_path }}"
+    path: "{{ owncloud_deploy_path }}"
     state: directory
     recurse: true
     owner: www-data
@@ -35,7 +35,7 @@
       --database-name "{{ owncloud_mysqldb_dbname }}"
       --database-user "{{ owncloud_mysqldb_user }}"
       --database-pass "{{ owncloud_mysqldb_password }}"
-      --data-dir "{{ owncoud_deploy_path }}/data"
+      --data-dir "{{ owncloud_deploy_path }}/data"
       --admin-user "{{ owncloud_admin_user }}"
       --admin-pass "{{ owncloud_admin_password }}"
   when: "'maintenance:install' in occ_out.stdout"
