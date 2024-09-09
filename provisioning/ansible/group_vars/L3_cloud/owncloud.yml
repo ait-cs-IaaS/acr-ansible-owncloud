@@ -2,30 +2,22 @@
 # owncloud_prepared_files_src: files/prepared_files/{{ game_env }}
 # owncloud_prepared_files_dest: /mnt/data/local
 owncloud_setup_run_once: false
-cloud_fqdn: "cloud.{{ company_domain }}"
+#cloud_fqdn: "cloud.{{ company_domain }}"
 cloud_trusted_domains:
   - cloud.{{ company_domain }}
+  - cloud.dmz.{{ company_domain }}
   - owncloud.{{ company_domain }}
   - localhost
   - "{{ ip_addresses['dmz'] }}"
 
 fileshare_uri: share.{{ company_domains[company_name + '_access']['domain'] }}
 
-deploy_path: /var/www/cloud
-cloud_version: owncloud-10.4.1
-# For owncloud Role
-owncloud_download_url: https://download.owncloud.com/server/stable/owncloud-{{ owncloud_version }}.tar.bz2
-# For nextcry Role
-cloud_download_url: https://download.owncloud.com/server/stable/owncloud-{{ owncloud_version }}.tar.bz2
-
-nextcry_nginx_real_ip:
-  - "{{ hostvars[company_name + '_proxy'].ip_addresses['dmz'] }}"
-
-nextcry_nginx_ip_header: X-Forwarded-For
+owncloud_dest: /var/www/
+owncloud_deploy_path: "{{ owncloud_dest }}owncloud"
 
 # Cloud config
 
-owncloud_service_user: "{{ users | select_users(filter={'username': 'owncloud'}, single=true) }}"
+#owncloud_service_user: "{{ users | select_users(filter={'username': 'owncloud'}, single=true) }}"
 
 owncloud_users_group: |
   [

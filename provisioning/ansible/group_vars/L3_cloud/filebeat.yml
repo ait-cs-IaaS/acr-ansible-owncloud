@@ -2,5 +2,5 @@
 
 filebeat_modules_host:
   - module: mysql
-  - module: nginx
+  - module: nginx #TODO: Probably that needs to be changed for Suricata / Filebeat.
   - module: redis
