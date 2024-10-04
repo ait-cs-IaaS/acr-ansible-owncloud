@@ -7,7 +7,6 @@
 - name: Update apt package index and upgrade all packages
   ansible.builtin.apt:
     update_cache: true
-    upgrade: dist
 
 - name: Install required packages for ownCloud
   ansible.builtin.apt:
