@@ -1,6 +1,19 @@
 ---
-- include_tasks: 01_install_packages_and_smb.yml
-- include_tasks: 02_install_apache2.yml
-- include_tasks: 03_install_mariadb.yml
-- include_tasks: 04_install_and_configure_owncloud.yml
 
+- name: "01 dependencies"
+  ansible.builtin.include_tasks: "01_dependencies.yml"
+
+- name: "02 smbclient"
+  ansible.builtin.include_tasks: "02_smbclient.yml"
+
+- name: "03 apache"
+  ansible.builtin.include_tasks: "03_apache.yml"
+
+- name: "04 mariadb"
+  ansible.builtin.include_tasks: "04_mariadb.yml"
+
+- name: "05 install owncloud"
+  ansible.builtin.include_tasks: "05_install_owncloud.yml"
+
+- name: "06 manage owncloud"
+  ansible.builtin.include_tasks: "06_manage_owncloud.yml"

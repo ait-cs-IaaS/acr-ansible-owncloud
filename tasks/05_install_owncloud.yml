@@ -1,0 +1,129 @@
+---
+- name: Create a script for owncloud OCC commands
+  ansible.builtin.copy:
+    dest: "/usr/local/bin/occ"
+    content: |
+      #! /bin/bash
+      cd {{ owncloud_deploy_path }}
+      sudo -E -u {{ owncloud_app_user }} /usr/bin/php {{ owncloud_deploy_path }}/occ "$@"
+    mode: '0755'
+
+- name: Download and Extract ownCloud archive
+  ansible.builtin.unarchive:
+    src: https://download.owncloud.com/server/stable/owncloud-{{ owncloud_version }}.tar.bz2
+    dest: "{{ owncloud_dest }}"
+    remote_src: true
+
+- name: Ensure ownCloud directories exist and have proper permissions
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    recurse: true
+    owner: "{{ owncloud_app_user }}"
+    group: "{{ owncloud_app_user }}"
+    mode: "{{ item.mode | default(omit) }}"
+  with_items: 
+    - path: "{{ owncloud_deploy_path }}/"
+    - path: "{{ owncloud_deploy_path }}/config/"
+    - path: "{{ owncloud_deploy_path }}/data/"
+    - path: "{{ owncloud_deploy_path }}/apps-external"
+      mode: "0750"
+    - path: "{{ owncloud_log_path }}"
+      mode: "0750"
+
+- name: Check whether occ maintenance:install was already performed
+  ansible.builtin.command:
+    cmd: "{{ owncloud_occ_executable }} list"
+  register: occ_out
+
+- name: Run ownCloud maintenance install
+  ansible.builtin.command:
+    cmd: >
+      {{ owncloud_occ_executable }} maintenance:install
+      --database "mysql"
+      --database-name "{{ owncloud_mysqldb_dbname }}"
+      --database-user "{{ owncloud_mysqldb_user }}"
+      --database-pass "{{ owncloud_mysqldb_password }}"
+      --data-dir "{{ owncloud_deploy_path }}/data"
+      --admin-user "{{ owncloud_admin_user }}"
+      --admin-pass "{{ owncloud_admin_password }}"
+  when: "'maintenance:install' in occ_out.stdout"
+
+# Configure
+
+- name: Ensure ownCloud config file has proper permissions
+  ansible.builtin.file:
+    path: "{{ owncloud_deploy_path }}/config/config.php"
+    mode: "0640"
+
+- name: Configure owncloud's trusted domains
+  ansible.builtin.command:
+    cmd: "{{ owncloud_occ_executable }} config:system:set trusted_domains {{ item_index + 1 }} --value={{ item }}"
+  loop: "{{ cloud_trusted_domains }}"
+  loop_control:
+    index_var: item_index
+
+- name: Configure owncloud's logging
+  ansible.builtin.command:
+    cmd: "{{ owncloud_occ_executable }} config:system:set {{ item.key }} {{ item.value }}"
+  loop: "{{ ownCloud_log_config | dict2items }}"
+
+- name: Set ownCloud app config attributes
+  become: true
+  oc_config:
+    name: "{{ item.0.name }}"
+    attribute: "{{ item.1.attribute }}"
+    value: "{{ item.1.value }}"
+    state: "{{ item.1.state | default(omit) }}"
+    update_only: "{{ item.1.update_only | default(omit) }}"
+  loop: "{{ owncloud_apps_config | subelements('parameters') }}"
+  loop_control:
+    label: "{{ item.0.name }} - {{ item.1.attribute }}:{{ item.1.value }}"
+
+- name: Set cron background jobs mode
+  become: true
+  oc_config:
+    name: core
+    attribute: backgroundjobs_mode
+    value: cron
+    state: present
+
+- name: Setup system background jobs
+  cron:
+    name: "{{ item.name }}"
+    minute: "{{ item.minute | default('*') }}"
+    hour: "{{ item.hour | default('*') }}"
+    weekday: "{{ item.weekday | default('*') }}"
+    day: "{{ item.day | default('*') }}"
+    month: "{{ item.month | default('*') }}"
+    user: "{{ owncloud_app_user }}"
+    job: "{{ item.job }}"
+    cron_file: owncloud
+    state: present
+  loop: "{{ owncloud_cron_jobs }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Disable maintainance mode
+  become: true
+  command: "{{ owncloud_occ_executable }} {{ item }}"
+  changed_when: False
+  with_items:
+    - "maintenance:singleuser --off"
+    - "maintenance:mode --off"
+
+- name: Enable external files
+  ansible.builtin.command:
+    cmd: "{{ owncloud_occ_executable }} app:enable files_external"
+
+- name: Install ownCloud apps
+  become: true
+  oc_app:
+    name: "{{ item.name }}"
+    state: "{{ item.state | default('present') }}"
+    enabled: "{{ item.enabled | default('yes') }}"
+    from_url: "{{ item.from_url | default('no') }}"
+    executable: "{{ owncloud_occ_executable | default(omit) }}"
+  loop: "{{ owncloud_apps }}"
+  loop_control:
+    label: "{{ item.name }}"

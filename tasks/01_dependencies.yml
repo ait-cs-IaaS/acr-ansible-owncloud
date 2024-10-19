@@ -1,0 +1,49 @@
+---
+- name: Add Ondrej PHP repository
+  become: true
+  ansible.builtin.apt_repository:
+    repo: ppa:ondrej/php
+    state: present
+
+- name: Update apt package index and upgrade all packages
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Install required packages for ownCloud
+  become: true
+  ansible.builtin.apt:
+    name:
+      - openssl
+      - redis-server
+      - wget
+      - php{{ owncloud_php_version }}
+      - php{{ owncloud_php_version }}-imagick
+      - php{{ owncloud_php_version }}-common
+      - php{{ owncloud_php_version }}-curl
+      - php{{ owncloud_php_version }}-gd
+      - php{{ owncloud_php_version }}-imap
+      - php{{ owncloud_php_version }}-intl
+      - php{{ owncloud_php_version }}-json
+      - php{{ owncloud_php_version }}-mbstring
+      - php{{ owncloud_php_version }}-gmp
+      - php{{ owncloud_php_version }}-bcmath
+      - php{{ owncloud_php_version }}-mysql
+      - php{{ owncloud_php_version }}-ssh2
+      - php{{ owncloud_php_version }}-xml
+      - php{{ owncloud_php_version }}-zip
+      - php{{ owncloud_php_version }}-apcu
+      - php{{ owncloud_php_version }}-redis
+      - php{{ owncloud_php_version }}-ldap
+      - php-phpseclib
+      - php{{ owncloud_php_version }}-smbclient
+      - unzip
+      - bzip2
+      - rsync
+      - curl
+      - jq
+      - inetutils-ping
+      - ldap-utils
+      - smbclient
+    state: present
+    update_cache: true

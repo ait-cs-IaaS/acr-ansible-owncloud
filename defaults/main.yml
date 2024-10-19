@@ -1,10 +1,13 @@
 ---
 # defaults file for acr-ansible-owncloud
 owncloud_dest: /var/www/
-owncloud_deploy_path: "{{ owncloud_dest }}owncloud"
+owncloud_deploy_path: "{{ owncloud_dest }}/owncloud"
+owncloud_log_path: /var/log/owncloud
 owncloud_admin_user: "admin"
 owncloud_admin_password: "admin"
 owncloud_version: "10.15.0"
+owncloud_occ_executable: occ
+owncloud_app_user: www-data
 
 #APACHE2 SETTINGS
 owncloud_php_version: "7.4"
@@ -30,3 +33,52 @@ owncloud_mysqldb_user: owncloud
 owncloud_mysqldb_host: localhost
 owncloud_mysqldb_password: password
 #owncloud_login_user: owncloud
+
+owncloud_apps:
+  - name: files_external
+    state: present
+    enabled: 'yes'
+  - name: firstrunwizard
+    state: present
+    enabled: 'no'
+
+owncloud_apps_config:
+  - name: core
+    parameters:
+      - attribute: enable_external_storage
+        value: "yes"
+  - name: files_external
+    parameters:
+      - attribute: allow_user_mounting
+        value: "yes"
+      - attribute: user_mounting_backends
+        value: 'owncloud,sftp,smb,dav,\OC\Files\Storage\SFTP_Key,\OC\Files\Storage\SMB_OC'
+
+owncloud_cron_jobs:
+  - name: oc cron
+    job: "{{ owncloud_occ_executable }} system:cron"
+    minute: "*/15"
+  - name: occ cleanup chunks
+    job: "{{ owncloud_occ_executable }} dav:cleanup-chunks"
+    minute: "0"
+    hour: "2"
+
+ownCloud_log_config:
+  log_type: owncloud
+  log_file: "{{ owncloud_log_path }}/owncloud.log"
+  log_level: 2
+  log_timezone: "Etc/UTC"
+  log_dateformat: "Y-m-d H:i:s.u"
+  log_cron: True
+  log_rotate_size: 0
+  syslog_tag: ownCloud
+  syslog_log_format: "[%reqId%][%remoteAddr%][%user%][%app%][%method%][%url%] %message%"
+
+owncloud_default_share_options:
+  read_only: "false"
+  enable_sharing: "true"
+owncloud_default_share_authentication_backend: "none"
+
+owncloud_shares: []
+owncloud_groups: []
+owncloud_users: []

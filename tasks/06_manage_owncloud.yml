@@ -1,0 +1,37 @@
+---
+
+- name: Configure owncloud user groups
+  oc_group:
+    name: "{{ item }}"
+    chdir: "{{ owncloud_deploy_path }}"
+    executable: "{{ owncloud_occ_executable }}"
+  loop: "{{ owncloud_groups }}"
+  register: occ_output
+  failed_when: "occ_output.msg is defined and 'already exists' not in occ_output.msg"
+
+- name: Configure owncloud users
+  oc_user:
+    name: "{{ item.username }}"
+    password: "{{ item.password | default(omit) }}"
+    enabled: "{{ item.enabled | default(True) }}"
+    display_name: "{{ item.username }}"
+    email: "{{ item.email | default(omit) }}"
+    groups: "{{ item.owncloud_groups | default(omit) }}"
+    chdir: "{{ owncloud_deploy_path }}"
+    executable: "{{ owncloud_occ_executable }}"
+  loop: "{{ owncloud_users }}"
+
+- name: Configure owncloud remote filesystem mounts
+  oc_mount:
+    name: "{{ item.mount_point }}"
+    users: "{{ item.users | default(omit) }}"
+    groups: "{{ item.groups | default(omit) }}"
+    authentication_backend: "{{ item.authentication_backend | default(owncloud_default_share_authentication_backend) }}"
+    storage_backend: "{{ item.storage_backend }}"
+    smb_config: "{{ item.smb_config | default(omit) }}"
+    local_config: "{{ item.local_config | default(omit) }}"
+    authentication_user: "{{ item.authentication_user | default(omit) }}"
+    authentication_password: "{{ item.authentication_password | default(omit) }}"
+    options: "{{ item.options | default(owncloud_default_share_options) }}"
+    executable: "{{ owncloud_occ_executable }}"
+  loop: "{{ owncloud_shares }}"

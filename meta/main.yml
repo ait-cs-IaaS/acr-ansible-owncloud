@@ -1,5 +1,5 @@
 galaxy_info:
-  author: Tobias Pfaller
+  author: Tobias Pfaller, Lenhard Reuter
   description: Ansible role to setup an ownCloud server with associated software and configuration (i.e. php, postgresql, nginx-configuration).
   company: AIT Austrian Institute of Technology
 

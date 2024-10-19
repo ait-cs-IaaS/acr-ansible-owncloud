@@ -1,0 +1,17 @@
+
+- name: Install required smbclient
+  become: true
+  ansible.builtin.apt:
+    name:
+      - smbclient
+      - php{{ owncloud_php_version }}-smbclient
+
+- name: Create smbclient.ini for PHP
+  ansible.builtin.copy:
+    dest: "/etc/php/{{ owncloud_php_version }}/mods-available/smbclient.ini"
+    content: "extension=smbclient.so"
+    mode: '0644'
+
+- name: Enable smbclient PHP extension
+  ansible.builtin.command:
+    cmd: phpenmod smbclient
