@@ -35,3 +35,15 @@
     options: "{{ item.options | default(owncloud_default_share_options) }}"
     executable: "{{ owncloud_occ_executable }}"
   loop: "{{ owncloud_shares }}"
+
+- name: Change ownership of shares
+  become: true
+  ansible.builtin.file:
+    path: "{{ item.local_config.datadir }}"
+    owner: "{{ owncloud_app_user }}"
+    group: "{{ owncloud_app_user }}"
+    mode: "0755"
+    recurse: true
+    state: directory
+  loop: "{{ owncloud_shares }}"
+  when: item.local_config.datadir is defined
